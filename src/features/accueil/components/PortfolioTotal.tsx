@@ -7,24 +7,36 @@ interface PortfolioTotalProps {
 
 export default function PortfolioTotal({ total, monthlyChange = 5.2 }: PortfolioTotalProps) {
   const isPositive = monthlyChange >= 0
+  const formatted = formatCurrency(total).replace(/\u202f/g, '\u00a0')
 
   return (
-    <div className="px-6 pt-6 pb-4">
-      <p className="text-sm font-semibold text-neutral-500 mb-1">Total portefeuille</p>
-      <p className="text-4xl font-semibold text-neutral-900 tracking-tight">
-        {formatCurrency(total)}
+    <div className="flex flex-col items-center pt-8 pb-4 px-6 text-center">
+      <p className="text-base font-semibold text-neutral-500 mb-2">
+        Mes investissements
       </p>
-      <div className="flex items-center gap-1.5 mt-2">
+      <p className="text-5xl font-bold text-primary-900 tracking-tight leading-none mb-3">
+        {formatted}
+      </p>
+      <div className="flex items-center gap-1.5">
+        <svg
+          width="16" height="16" viewBox="0 0 16 16" fill="none"
+          aria-hidden="true"
+          style={{ transform: isPositive ? 'none' : 'rotate(90deg)' }}
+        >
+          <path
+            d="M3 13L13 3M13 3H6M13 3V10"
+            stroke={isPositive ? '#16a34a' : '#dc2626'}
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
         <span
-          className={`text-sm font-semibold px-2 py-0.5 rounded-full ${
-            isPositive
-              ? 'bg-green-100 text-green-700'
-              : 'bg-red-100 text-red-600'
-          }`}
+          className="text-base font-bold"
+          style={{ color: isPositive ? '#16a34a' : '#dc2626' }}
         >
           {isPositive ? '+' : ''}{monthlyChange.toFixed(1)}%
         </span>
-        <span className="text-xs text-neutral-400">ce mois</span>
       </div>
     </div>
   )

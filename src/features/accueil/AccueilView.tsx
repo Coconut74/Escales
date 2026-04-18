@@ -1,28 +1,31 @@
 import { useAccueilStore, selectTotal } from './accueil.store'
 import PortfolioTotal from './components/PortfolioTotal'
-import BarChart3D from './components/BarChart3D'
-import Button from '@/components/ui/Button'
+import IsometricChart from './components/IsometricChart'
+import Icon from '@/components/ui/Icon'
 
 export default function AccueilView() {
   const investments = useAccueilStore((s) => s.investments)
   const total = selectTotal(investments)
 
   return (
-    <div className="flex flex-col h-full pb-28 lg:pb-8">
-      <PortfolioTotal total={total} monthlyChange={5.2} />
+    <div className="flex flex-col items-center min-h-full pb-32 bg-surface">
+      {/* Total */}
+      <PortfolioTotal total={total} monthlyChange={5.6} />
 
-      <div className="px-6 mb-2">
-        <h2 className="text-sm font-semibold text-neutral-400">
-          Répartition du portefeuille
-        </h2>
+      {/* Carte isométrique */}
+      <div className="w-full max-w-xs px-2 mt-2">
+        <IsometricChart investments={investments} total={total} />
       </div>
 
-      <BarChart3D investments={investments} />
-
-      <div className="flex justify-center mt-6 px-6">
-        <Button variant="grey-outline">
-          Modifier mes placements
-        </Button>
+      {/* Bouton modifier */}
+      <div className="mt-8">
+        <button
+          className="flex items-center gap-2 px-6 py-3.5 rounded-2xl border border-neutral-300 bg-white text-neutral-700 text-base font-semibold shadow-sm hover:bg-neutral-50 active:bg-neutral-100 transition-colors"
+          aria-label="Modifier mes investissements"
+        >
+          <Icon name="write" size={18} />
+          Modifier mes investissements
+        </button>
       </div>
     </div>
   )
