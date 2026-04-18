@@ -95,7 +95,7 @@ export default function IsometricChart({ investments, total, onSelect, selected 
 
   return (
     <svg
-      viewBox="0 0 392 480"
+      viewBox="0 140 392 310"
       width="100%"
       className="max-h-[52vh] lg:max-h-[78vh]"
       style={{ overflow: 'visible' }}
