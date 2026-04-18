@@ -28,22 +28,21 @@ export default function BarChart3D({ investments }: BarChart3DProps) {
             const heightPct = (inv.value / maxValue) * 100
             const { bg } = CATEGORY_COLORS[inv.category]
             return (
-              <div key={inv.id} className="flex-1 flex flex-col justify-end h-full">
+              <div
+                key={inv.id}
+                className="relative flex-1 rounded-t-md overflow-hidden"
+                style={{ height: `${heightPct}%`, backgroundColor: bg }}
+              >
+                {/* Tranche lumineuse en haut — face supérieure simulée */}
                 <div
-                  className="relative w-full rounded-t-md overflow-hidden"
-                  style={{ height: `${heightPct}%`, backgroundColor: bg }}
-                >
-                  {/* Tranche lumineuse en haut — face supérieure simulée */}
-                  <div
-                    className="absolute inset-x-0 top-0 h-2 rounded-t-md"
-                    style={{ backgroundColor: 'rgba(255,255,255,0.35)' }}
-                  />
-                  {/* Ombre droite — face latérale simulée */}
-                  <div
-                    className="absolute inset-y-0 right-0 w-1.5"
-                    style={{ backgroundColor: 'rgba(0,0,0,0.25)' }}
-                  />
-                </div>
+                  className="absolute inset-x-0 top-0 h-2 rounded-t-md"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.35)' }}
+                />
+                {/* Ombre droite — face latérale simulée */}
+                <div
+                  className="absolute inset-y-0 right-0 w-1.5"
+                  style={{ backgroundColor: 'rgba(0,0,0,0.25)' }}
+                />
               </div>
             )
           })}
