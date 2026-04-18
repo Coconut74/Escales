@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+@theme {
+  /* Tokens Figma — à compléter avec les valeurs du design */
+  --color-primary: #2563eb;
+  --color-surface: #f8fafc;
+  --color-surface-raised: #ffffff;
+  --font-sans: 'Inter', system-ui, sans-serif;
+}
