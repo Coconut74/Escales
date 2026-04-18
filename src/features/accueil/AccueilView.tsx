@@ -85,7 +85,7 @@ export default function AccueilView() {
       <PortfolioTotal total={total} monthlyChange={5.6} />
 
       {/* Zone graphique : flex-1, aligne le chart en haut */}
-      <div ref={zoneRef} className="flex-1 flex items-start justify-center overflow-hidden pt-4 pb-40">
+      <div ref={zoneRef} className="flex-1 flex items-start justify-center overflow-hidden pt-2">
         {/* Drag wrapper */}
         <div
           ref={chartRef}
