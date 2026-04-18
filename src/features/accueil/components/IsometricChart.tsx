@@ -68,22 +68,23 @@ export default function IsometricChart({ investments, total, onSelect, selected 
   }
 
   const cubes = useMemo((): Cube[] => {
+    const totalValue = sorted.reduce((s, inv) => s + Number(inv.value), 0)
     const list: Cube[] = []
     GRID.forEach(({ col, row }, idx) => {
       const inv = sorted[idx]
       const filled = !!inv
-      const pct = inv ? (inv.value / total) * 100 : 0
+      const pct = filled && totalValue > 0 ? (Number(inv!.value) / totalValue) * 100 : 0
       const faceH = filled ? Math.max(4, Math.round(pct * PX_PER_PCT)) : EH
       list.push({
         col, row, layer: 0, faceH, filled,
         isTop: true,
         sortKey: (col + row) * 1000,
         inv: inv ?? undefined,
-        pct: inv ? pct : undefined,
+        pct: filled ? pct : undefined,
       })
     })
     return list.sort((a, b) => a.sortKey - b.sortKey)
-  }, [sorted, total])
+  }, [sorted])
 
   return (
     <svg

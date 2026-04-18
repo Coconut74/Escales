@@ -20,7 +20,7 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
   const { investments, setInvestments } = useAccueilStore()
   const [draft, setDraft] = useState<Investment[]>([])
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const [emptyError, setEmptyError] = useState(false)
+
 
   useEffect(() => {
     if (open) {
@@ -42,7 +42,6 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
   }
 
   function add() {
-    setEmptyError(false)
     setDraft((d) => [
       ...d,
       { id: crypto.randomUUID(), label: '', category: 'etf', value: 0 },
@@ -54,11 +53,6 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
   }
 
   function save() {
-    if (draft.length === 0) {
-      setEmptyError(true)
-      return
-    }
-    setEmptyError(false)
     const newErrors: Record<string, string> = {}
     draft.forEach((inv) => {
       if (!inv.label.trim()) newErrors[inv.id] = 'label'
@@ -139,11 +133,6 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
           Ajouter un investissement
         </button>
 
-        {emptyError && (
-          <p className="text-sm text-red-500 text-center">
-            Ajoutez au moins un investissement avant d'enregistrer.
-          </p>
-        )}
       </div>
 
       {/* Footer */}
