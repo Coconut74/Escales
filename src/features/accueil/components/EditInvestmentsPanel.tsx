@@ -134,8 +134,11 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
       </div>
 
       {/* Footer */}
-      <div className="px-6 pt-3 pb-6 shrink-0">
-        <Button variant="primary" size="lg" className="w-full rounded-2xl" onClick={save}>
+      <div className="px-6 pt-3 pb-6 shrink-0 flex gap-3">
+        <Button variant="grey-outline" size="lg" className="flex-1 rounded-2xl" onClick={onClose}>
+          Annuler
+        </Button>
+        <Button variant="primary" size="lg" className="flex-1 rounded-2xl" onClick={save}>
           Enregistrer
         </Button>
       </div>
