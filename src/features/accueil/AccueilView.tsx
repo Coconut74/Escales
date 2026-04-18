@@ -22,13 +22,17 @@ export default function AccueilView() {
   const [zoomOrigin, setZoomOrigin] = useState({ x: 50, y: 50 })
 
   const handleSelect = useCallback((inv: Investment, svgPoint: SvgPoint) => {
+    if (selected?.id === inv.id) {
+      handleClose()
+      return
+    }
     setSelected(inv)
     setZoomOrigin({
       x: (svgPoint.x / 392) * 100,
       y: ((svgPoint.y - VB_Y) / VB_H) * 100,
     })
     setZoom(2)
-  }, [])
+  }, [selected])
 
   function handleClose() {
     setSelected(null)
