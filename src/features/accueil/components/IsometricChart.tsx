@@ -107,7 +107,7 @@ export default function IsometricChart({ investments, total, onSelect, selected 
       {cubes.map(({ col, row, layer, faceH, filled, isTop, inv, pct }) => {
         const { x, y } = origin(col, row, layer, faceH)
         const c = filled ? FILLED : EMPTY
-        const isSelected = selected?.id === inv?.id
+        const isSelected = !!selected && selected.id === inv?.id
         const color = inv ? CATEGORY_COLORS[inv.category] : null
 
         // Faces

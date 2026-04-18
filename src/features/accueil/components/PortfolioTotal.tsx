@@ -10,7 +10,7 @@ export default function PortfolioTotal({ total, monthlyChange = 5.2 }: Portfolio
   const formatted = formatCurrency(total).replace(/\u202f/g, '\u00a0')
 
   return (
-    <div className="flex flex-col items-center pt-4 pb-2 px-6 text-center">
+    <div className="flex flex-col items-center pt-8 pb-3 px-6 text-center">
       <p className="text-base font-semibold text-neutral-500 mb-2">
         Mes investissements
       </p>
