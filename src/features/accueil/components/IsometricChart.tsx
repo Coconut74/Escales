@@ -4,7 +4,7 @@ import type { Investment } from '../accueil.types'
 // ─── Dimensions ─────────────────────────────────────────────────────────────
 const TW = 90,  HW = 45   // tuile : largeur / demi-largeur
 const TH = 45,  HH = 22.5 // tuile : hauteur losange / demi-hauteur
-const PX_PER_PCT = 2       // pixels de hauteur par point de pourcentage
+const MAX_BAR_H = GY - 160 // hauteur max disponible (GY=240, viewBox top=140, marge 20px)
 const EH = 2               // hauteur d'un emplacement vide (dalle plate)
 const CX = 196             // centre SVG X
 const GY = 240             // ancre Y du sol (position 0,0)
@@ -69,12 +69,14 @@ export default function IsometricChart({ investments, total, onSelect, selected 
 
   const cubes = useMemo((): Cube[] => {
     const totalValue = sorted.reduce((s, inv) => s + Number(inv.value), 0)
+    const maxPct = sorted[0] && totalValue > 0 ? (sorted[0].value / totalValue) * 100 : 100
+    const pxPerPct = MAX_BAR_H / maxPct
     const list: Cube[] = []
     GRID.forEach(({ col, row }, idx) => {
       const inv = sorted[idx]
       const filled = !!inv
       const pct = filled && totalValue > 0 ? (Number(inv!.value) / totalValue) * 100 : 0
-      const faceH = filled ? Math.max(4, Math.round(pct * PX_PER_PCT)) : EH
+      const faceH = filled ? Math.max(4, Math.round(pct * pxPerPct)) : EH
       list.push({
         col, row, layer: 1, faceH, filled,
         isTop: true,
