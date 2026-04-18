@@ -8,8 +8,8 @@ const TITLES: Record<View, string> = {
 
 export default function Header({ activeView }: { activeView: View }) {
   return (
-    <header className="h-14 bg-white border-b border-gray-200 flex items-center px-6">
-      <h1 className="text-lg font-semibold text-gray-800">{TITLES[activeView]}</h1>
+    <header className="h-14 bg-surface-raised border-b border-gray-200 flex items-center px-6">
+      <h1 className="text-base font-semibold text-gray-800">{TITLES[activeView]}</h1>
     </header>
   )
 }
