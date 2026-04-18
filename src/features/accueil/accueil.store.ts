@@ -14,6 +14,8 @@ interface AccueilStore {
   investments: Investment[]
   setInvestments: (investments: Investment[]) => void
   updateInvestment: (id: string, patch: Partial<Investment>) => void
+  addInvestment: (inv: Investment) => void
+  removeInvestment: (id: string) => void
 }
 
 export const useAccueilStore = create<AccueilStore>()(
@@ -27,6 +29,10 @@ export const useAccueilStore = create<AccueilStore>()(
             inv.id === id ? { ...inv, ...patch } : inv
           ),
         })),
+      addInvestment: (inv) =>
+        set((s) => ({ investments: [...s.investments, inv] })),
+      removeInvestment: (id) =>
+        set((s) => ({ investments: s.investments.filter((i) => i.id !== id) })),
     }),
     { name: 'escales-accueil' }
   )

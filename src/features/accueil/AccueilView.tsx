@@ -4,6 +4,7 @@ import PortfolioTotal from './components/PortfolioTotal'
 import IsometricChart from './components/IsometricChart'
 import type { SvgPoint } from './components/IsometricChart'
 import InvestmentModal from './components/InvestmentModal'
+import EditInvestmentsPanel from './components/EditInvestmentsPanel'
 import type { Investment } from './accueil.types'
 import Icon from '@/components/ui/Icon'
 
@@ -16,6 +17,7 @@ export default function AccueilView() {
   const total = selectTotal(investments)
   const [selected, setSelected] = useState<Investment | null>(null)
 
+  const [editOpen, setEditOpen] = useState(false)
   const [zoom, setZoom] = useState(1)
   const [zoomOrigin, setZoomOrigin] = useState({ x: 50, y: 50 })
 
@@ -62,11 +64,14 @@ export default function AccueilView() {
         <button
           className="flex items-center gap-2 px-6 py-3.5 rounded-2xl border border-neutral-300 bg-white text-neutral-700 text-base font-semibold shadow-sm hover:bg-neutral-50 active:bg-neutral-100 transition-colors whitespace-nowrap"
           aria-label="Modifier mes investissements"
+          onClick={() => setEditOpen(true)}
         >
           <Icon name="write" size={18} />
           Modifier mes investissements
         </button>
       </div>
+
+      <EditInvestmentsPanel open={editOpen} onClose={() => setEditOpen(false)} />
 
       <InvestmentModal
         investment={selected}
