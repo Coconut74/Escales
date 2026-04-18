@@ -103,13 +103,24 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
                       onChange={(e) => update(inv.id, { category: e.target.value as InvestmentCategory })}
                     />
                   </div>
-                  <div className="w-32">
+                  <div className="w-28">
                     <TextField
                       type="number"
                       placeholder="Montant"
                       value={inv.value === 0 ? '' : inv.value}
                       onChange={(e) => update(inv.id, { value: parseFloat(e.target.value) || 0 })}
                       error={errors[inv.id] === 'value' ? 'Valeur > 0' : undefined}
+                    />
+                  </div>
+                  <div className="w-20">
+                    <TextField
+                      type="number"
+                      placeholder="Évol. %"
+                      value={inv.change === undefined ? '' : inv.change}
+                      onChange={(e) => {
+                        const v = e.target.value
+                        update(inv.id, { change: v === '' ? undefined : parseFloat(v) })
+                      }}
                     />
                   </div>
                 </div>
