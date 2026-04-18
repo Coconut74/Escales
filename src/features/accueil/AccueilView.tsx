@@ -87,6 +87,9 @@ export default function AccueilView() {
     <div className="relative w-full h-full overflow-hidden bg-surface" style={{ touchAction: 'none' }}>
       <PortfolioTotal total={total} monthlyChange={5.6} />
 
+      {/* Scale 1.5× en desktop — origin-top pour rester ancré sous le header */}
+      <div className="lg:scale-[1.5] lg:origin-top">
+
       {/* Drag wrapper */}
       <div
         ref={chartRef}
@@ -117,6 +120,7 @@ export default function AccueilView() {
           />
         </div>
       </div>
+      </div>{/* /scale wrapper */}
 
       {/* Bouton modifier */}
       <div className="fixed bottom-[120px] left-1/2 lg:left-[calc(50vw+112px)] -translate-x-1/2 z-[45]">
