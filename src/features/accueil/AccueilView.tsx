@@ -21,18 +21,32 @@ export default function AccueilView() {
   const [editOpen, setEditOpen] = useState(false)
   const [zoom, setZoom] = useState(1)
   const [zoomOrigin, setZoomOrigin] = useState({ x: 50, y: 50 })
+  const [switching, setSwitching] = useState(false)
 
   const handleSelect = useCallback((inv: Investment, svgPoint: SvgPoint) => {
     if (selected?.id === inv.id) {
       handleClose()
       return
     }
-    setSelected(inv)
-    setZoomOrigin({
+    const newOrigin = {
       x: (svgPoint.x / 392) * 100,
       y: ((svgPoint.y - VB_Y) / VB_H) * 100,
-    })
-    setZoom(2)
+    }
+    if (selected) {
+      // Zoom-out rapide, puis zoom-in sur la nouvelle barre
+      setSwitching(true)
+      setZoom(1)
+      setTimeout(() => {
+        setSwitching(false)
+        setSelected(inv)
+        setZoomOrigin(newOrigin)
+        setZoom(2)
+      }, 180)
+    } else {
+      setSelected(inv)
+      setZoomOrigin(newOrigin)
+      setZoom(2)
+    }
   }, [selected])
 
   function handleClose() {
@@ -51,7 +65,9 @@ export default function AccueilView() {
             style={{
               transform: `scale(${zoom})`,
               transformOrigin: `${zoomOrigin.x}% ${zoomOrigin.y}%`,
-              transition: 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+              transition: switching
+                ? 'transform 0.15s ease-in'
+                : 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
             }}
           >
             <IsometricChart
