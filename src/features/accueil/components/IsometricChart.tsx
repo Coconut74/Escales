@@ -4,10 +4,10 @@ import type { Investment } from '../accueil.types'
 // ─── Dimensions ─────────────────────────────────────────────────────────────
 const TW = 90,  HW = 45   // tuile : largeur / demi-largeur
 const TH = 45,  HH = 22.5 // tuile : hauteur losange / demi-hauteur
-const MAX_BAR_H = GY - 160 // hauteur max disponible (GY=240, viewBox top=140, marge 20px)
 const EH = 2               // hauteur d'un emplacement vide (dalle plate)
 const CX = 196             // centre SVG X
 const GY = 240             // ancre Y du sol (position 0,0)
+const MAX_BAR_H = GY - 160 // hauteur max disponible (viewBox top=140, marge 20px)
 
 // ─── Couleurs ────────────────────────────────────────────────────────────────
 const FILLED = { top: '#E17924', left: '#B95415', right: '#5F3012' }
