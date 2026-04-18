@@ -58,7 +58,7 @@ export default function AccueilView() {
       </div>
 
       {/* Bouton modifier */}
-      <div className="fixed bottom-[120px] left-1/2 lg:left-[calc(50vw+112px)] -translate-x-1/2 z-[45]">
+      <div className="fixed bottom-[120px] lg:bottom-8 left-1/2 lg:left-[calc(50vw+112px)] -translate-x-1/2 z-[45]">
         <button
           className="flex items-center gap-2 px-6 py-3.5 rounded-2xl border border-neutral-300 bg-white text-neutral-700 text-base font-semibold shadow-sm hover:bg-neutral-50 active:bg-neutral-100 transition-colors whitespace-nowrap"
           aria-label="Modifier mes investissements"
