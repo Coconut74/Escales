@@ -1,10 +1,10 @@
 import Icon from '@/components/ui/Icon'
 import type { View } from '@/App'
 
-const NAV_ITEMS: { id: View; label: string; icon: 'accueil' | 'journal' | 'map' | 'coffre' }[] = [
-  { id: 'journal', label: 'Journal', icon: 'journal' },
-  { id: 'map',     label: 'Map',     icon: 'map'     },
-  { id: 'coffre',  label: 'Coffre',  icon: 'coffre'  },
+const NAV_ITEMS: { id: View; label: string; icon: 'map' | 'journal' | 'event' }[] = [
+  { id: 'map',     label: 'Carte',         icon: 'map'     },
+  { id: 'journal', label: 'Journal',        icon: 'journal' },
+  { id: 'planner', label: 'Planificateur',  icon: 'event'   },
 ]
 
 interface SidebarProps {

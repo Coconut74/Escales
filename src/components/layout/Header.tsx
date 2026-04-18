@@ -1,9 +1,9 @@
 import type { View } from '@/App'
 
 const TITLES: Record<View, string> = {
+  map:     'Carte du portefeuille',
   journal: 'Journal de bord',
-  map: 'Map du portefeuille',
-  coffre: 'Coffre-fort à projets',
+  planner: 'Planificateur',
 }
 
 export default function Header({ activeView }: { activeView: View }) {

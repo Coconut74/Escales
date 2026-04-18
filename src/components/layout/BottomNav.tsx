@@ -1,10 +1,10 @@
 import Icon from '@/components/ui/Icon'
 import type { View } from '@/App'
 
-const NAV_ITEMS: { id: View; icon: 'journal' | 'map' | 'coffre' }[] = [
-  { id: 'journal', icon: 'journal' },
+const NAV_ITEMS: { id: View; icon: 'map' | 'journal' | 'event' }[] = [
   { id: 'map',     icon: 'map'     },
-  { id: 'coffre',  icon: 'coffre'  },
+  { id: 'journal', icon: 'journal' },
+  { id: 'planner', icon: 'event'   },
 ]
 
 interface BottomNavProps {
@@ -14,18 +14,27 @@ interface BottomNavProps {
 
 export default function BottomNav({ activeView, onNavigate }: BottomNavProps) {
   return (
-    <nav className="flex lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface-raised border-t border-neutral-200 justify-center items-center gap-10 z-50">
-      {NAV_ITEMS.map((item) => (
-        <button
-          key={item.id}
-          onClick={() => onNavigate(item.id)}
-          className={`flex flex-col items-center justify-center p-2 rounded-lg transition-colors
-            ${activeView === item.id ? 'text-primary-600' : 'text-neutral-400 hover:text-neutral-600'}`}
-          aria-label={item.id}
-        >
-          <Icon name={item.icon} size={24} />
-        </button>
-      ))}
-    </nav>
+    <div className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
+      <nav className="flex items-center gap-6 px-6 py-3 bg-white rounded-2xl border border-neutral-200 shadow-lg">
+        {NAV_ITEMS.map((item) => {
+          const isActive = activeView === item.id
+          return (
+            <button
+              key={item.id}
+              onClick={() => onNavigate(item.id)}
+              aria-label={item.id}
+              className={`
+                flex items-center justify-center rounded-xl transition-all
+                ${isActive
+                  ? 'bg-primary-600 text-white p-3 shadow-md'
+                  : 'text-neutral-500 p-2 hover:text-neutral-700'}
+              `}
+            >
+              <Icon name={item.icon} size={isActive ? 26 : 24} />
+            </button>
+          )
+        })}
+      </nav>
+    </div>
   )
 }
