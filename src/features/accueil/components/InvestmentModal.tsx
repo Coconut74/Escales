@@ -87,11 +87,11 @@ export default function InvestmentModal({ investment, total, onClose }: Props) {
                 highlight
               />
               <Metric
-                label="Du portefeuille"
+                label="Part"
                 value={`${pct}%`}
               />
               <Metric
-                label="Ce mois"
+                label="Evolution"
                 value={`${change >= 0 ? '+' : ''}${change.toFixed(1)}%`}
                 positive={change >= 0}
                 negative={change < 0}
