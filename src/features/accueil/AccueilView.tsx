@@ -23,6 +23,7 @@ export default function AccueilView() {
   const posStart = useRef({ x: 0, y: 0 })
   const [chartPos, setChartPos] = useState({ x: 0, y: 0 })
   const chartRef = useRef<HTMLDivElement>(null)
+  const zoneRef  = useRef<HTMLDivElement>(null)
   const dragBounds = useRef({ minX: -Infinity, maxX: Infinity, minY: -Infinity, maxY: Infinity })
 
   function onPointerDown(e: React.PointerEvent<HTMLDivElement>) {
@@ -31,21 +32,17 @@ export default function AccueilView() {
     pointerStart.current = { x: e.clientX, y: e.clientY }
     posStart.current = { ...chartPos }
 
-    if (chartRef.current) {
-      const rect = chartRef.current.getBoundingClientRect()
-      const vw = window.innerWidth
-      const vh = window.innerHeight
-      // Natural (untranslated) edges
-      const nl = rect.left   - chartPos.x
-      const nr = rect.right  - chartPos.x
-      const nt = rect.top    - chartPos.y
-      const nb = rect.bottom - chartPos.y
-      // Reserved zones: header (~100px) and button+nav zone (~160px)
-      const headerH = 100
-      const footerH = 160
-      let minX = -nl,              maxX = vw - nr
-      let minY = headerH - nt,     maxY = (vh - footerH) - nb
-      // If chart larger than available zone, lock axis
+    if (chartRef.current && zoneRef.current) {
+      const cr = chartRef.current.getBoundingClientRect()
+      const zr = zoneRef.current.getBoundingClientRect()
+      // Natural (untranslated) chart edges
+      const nl = cr.left   - chartPos.x
+      const nr = cr.right  - chartPos.x
+      const nt = cr.top    - chartPos.y
+      const nb = cr.bottom - chartPos.y
+      // Bounds: chart must stay fully within the zone container
+      let minX = zr.left   - nl,  maxX = zr.right  - nr
+      let minY = zr.top    - nt,  maxY = zr.bottom  - nb
       if (minX > maxX) { minX = maxX = 0 }
       if (minY > maxY) { minY = maxY = 0 }
       dragBounds.current = { minX, maxX, minY, maxY }
@@ -87,8 +84,8 @@ export default function AccueilView() {
     <div className="flex flex-col w-full h-full overflow-hidden bg-surface" style={{ touchAction: 'none' }}>
       <PortfolioTotal total={total} monthlyChange={5.6} />
 
-      {/* Zone graphique : flex-1, centre le chart verticalement */}
-      <div className="flex-1 flex items-center justify-center overflow-hidden" style={{ paddingBottom: '160px' }}>
+      {/* Zone graphique : flex-1, aligne le chart en haut */}
+      <div ref={zoneRef} className="flex-1 flex items-start justify-center overflow-hidden pt-4 pb-40">
         {/* Drag wrapper */}
         <div
           ref={chartRef}
