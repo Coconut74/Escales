@@ -10,7 +10,7 @@ export default function PortfolioTotal({ total, monthlyChange = 5.2 }: Portfolio
   const formatted = formatCurrency(total).replace(/\u202f/g, '\u00a0')
 
   return (
-    <div className="relative flex flex-col items-center pt-6 pb-2 px-6 text-center">
+    <div className="relative z-10 flex flex-col items-center pt-6 pb-4 px-6 text-center backdrop-blur-md" style={{ background: 'rgba(255,251,248,0.82)' }}>
       <p className="text-base font-semibold text-neutral-500 mb-2">
         Mes investissements
       </p>
@@ -39,13 +39,6 @@ export default function PortfolioTotal({ total, monthlyChange = 5.2 }: Portfolio
         </span>
       </div>
 
-      {/* Fondu bas — déborde sous la section pour masquer le graphique qui remonte */}
-      <div
-        className="absolute top-full left-0 right-0 h-14 pointer-events-none z-10"
-        style={{
-          background: 'linear-gradient(to bottom, #FFFBF8 0%, rgba(255,251,248,0.9) 20%, rgba(255,251,248,0.6) 50%, rgba(255,251,248,0.2) 80%, transparent 100%)',
-        }}
-      />
     </div>
   )
 }
