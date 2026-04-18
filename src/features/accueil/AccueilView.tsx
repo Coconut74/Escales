@@ -84,37 +84,40 @@ export default function AccueilView() {
   }
 
   return (
-    <div className="relative w-full h-full overflow-hidden bg-surface" style={{ touchAction: 'none' }}>
+    <div className="flex flex-col w-full h-full overflow-hidden bg-surface" style={{ touchAction: 'none' }}>
       <PortfolioTotal total={total} monthlyChange={5.6} />
 
-      {/* Drag wrapper */}
-      <div
-        ref={chartRef}
-        className="w-[90%] mx-auto select-none"
-        style={{
-          transform: `translate(${chartPos.x}px, ${chartPos.y}px)`,
-          cursor: isDragging.current ? 'grabbing' : 'grab',
-          touchAction: 'none',
-        }}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={onPointerUp}
-      >
-        {/* Zoom wrapper */}
+      {/* Zone graphique : flex-1, centre le chart verticalement */}
+      <div className="flex-1 flex items-center justify-center overflow-hidden" style={{ paddingBottom: '160px' }}>
+        {/* Drag wrapper */}
         <div
+          ref={chartRef}
+          className="w-[90%] select-none"
           style={{
-            transform: `scale(${zoom})`,
-            transformOrigin: `${zoomOrigin.x}% ${zoomOrigin.y}%`,
-            transition: 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            transform: `translate(${chartPos.x}px, ${chartPos.y}px)`,
+            cursor: isDragging.current ? 'grabbing' : 'grab',
+            touchAction: 'none',
           }}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
         >
-          <IsometricChart
-            investments={investments}
-            total={total}
-            onSelect={handleSelect}
-            selected={selected}
-          />
+          {/* Zoom wrapper */}
+          <div
+            style={{
+              transform: `scale(${zoom})`,
+              transformOrigin: `${zoomOrigin.x}% ${zoomOrigin.y}%`,
+              transition: 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            }}
+          >
+            <IsometricChart
+              investments={investments}
+              total={total}
+              onSelect={handleSelect}
+              selected={selected}
+            />
+          </div>
         </div>
       </div>
 
