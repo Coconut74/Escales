@@ -12,11 +12,7 @@ export default function PortfolioTotal({ total, monthlyChange = 5.2 }: Portfolio
   return (
     <div
       className="relative z-10 flex flex-col items-center pt-6 pb-4 px-6 text-center backdrop-blur-md"
-      style={{
-        background: 'rgba(255,251,248,0.82)',
-        maskImage: 'linear-gradient(to bottom, black 55%, transparent 100%)',
-        WebkitMaskImage: 'linear-gradient(to bottom, black 55%, transparent 100%)',
-      }}
+      style={{ background: 'rgba(255,251,248,0.82)' }}
     >
       <p className="text-base font-semibold text-neutral-500 mb-2">
         Mes investissements
@@ -46,15 +42,14 @@ export default function PortfolioTotal({ total, monthlyChange = 5.2 }: Portfolio
         </span>
       </div>
 
-      {/* Fondu de blur — démarre dans le composant pour chevaucher la zone qui fond */}
+      {/* Fondu de blur sur la bordure basse uniquement */}
       <div
-        className="absolute bottom-0 left-0 right-0 pointer-events-none"
+        className="absolute top-full left-0 right-0 h-16 pointer-events-none"
         style={{
-          height: '160%',
-          backdropFilter: 'blur(10px)',
-          WebkitBackdropFilter: 'blur(10px)',
-          maskImage: 'linear-gradient(to bottom, transparent 0%, black 30%, black 50%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 30%, black 50%, transparent 100%)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          maskImage: 'linear-gradient(to bottom, black 0%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, black 0%, transparent 100%)',
         }}
       />
     </div>
