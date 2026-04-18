@@ -80,7 +80,7 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
       </div>
 
       {/* Liste scrollable */}
-      <div className="flex-1 overflow-y-auto px-6 pb-4 space-y-3">
+      <div className="flex-1 min-h-0 overflow-y-auto px-6 pb-4 space-y-3">
         {draft.map((inv) => (
           <div
             key={inv.id}
@@ -147,7 +147,7 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
       {/* Mobile : fullscreen slide depuis le bas */}
       <div
         className={`
-          lg:hidden fixed inset-0 z-[110]
+          lg:hidden fixed inset-0 z-[110] flex flex-col
           bg-white/80 backdrop-blur-xl border-t border-white/40 shadow-2xl
           transition-transform duration-300 ease-out
           ${open ? 'translate-y-0' : 'translate-y-full'}
@@ -169,7 +169,7 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
       >
         <div
           className={`
-            w-full max-w-lg max-h-[80vh] flex flex-col
+            w-full max-w-lg h-[80vh] flex flex-col
             bg-white/80 backdrop-blur-xl border border-white/40 shadow-2xl rounded-3xl
             transition-transform duration-300 ease-out
             ${open ? 'scale-100' : 'scale-95'}
