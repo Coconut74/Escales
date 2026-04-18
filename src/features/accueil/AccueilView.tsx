@@ -45,7 +45,7 @@ export default function AccueilView() {
       <PortfolioTotal total={total} monthlyChange={avgChange ?? undefined} />
 
       {/* Zone graphique */}
-      <div className="flex-1 flex items-start justify-center overflow-hidden pt-16 lg:pt-2">
+      <div className="flex-1 flex items-start justify-center pt-16 lg:pt-2">
         <div className="w-[90%] max-w-[480px] lg:max-w-[660px]">
           <div
             style={{
