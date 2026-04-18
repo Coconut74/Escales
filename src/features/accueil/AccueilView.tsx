@@ -26,7 +26,6 @@ export default function AccueilView() {
   const dragBounds = useRef({ minX: -Infinity, maxX: Infinity, minY: -Infinity, maxY: Infinity })
 
   function onPointerDown(e: React.PointerEvent<HTMLDivElement>) {
-    // No setPointerCapture — keeps SVG click events functional
     isDragging.current = true
     hasDragged.current = false
     pointerStart.current = { x: e.clientX, y: e.clientY }
@@ -36,15 +35,20 @@ export default function AccueilView() {
       const rect = chartRef.current.getBoundingClientRect()
       const vw = window.innerWidth
       const vh = window.innerHeight
-      const keep = 120 // px minimum visible
-      const nl = rect.left - chartPos.x // natural (un-translated) left
-      const nt = rect.top  - chartPos.y // natural top
-      dragBounds.current = {
-        minX: -(nl + rect.width - keep),
-        maxX: vw - nl - keep,
-        minY: -(nt + rect.height - keep),
-        maxY: vh - nt - keep,
-      }
+      // Natural (untranslated) edges
+      const nl = rect.left   - chartPos.x
+      const nr = rect.right  - chartPos.x
+      const nt = rect.top    - chartPos.y
+      const nb = rect.bottom - chartPos.y
+      // Reserved zones: header (~100px) and button+nav zone (~160px)
+      const headerH = 100
+      const footerH = 160
+      let minX = -nl,              maxX = vw - nr
+      let minY = headerH - nt,     maxY = (vh - footerH) - nb
+      // If chart larger than available zone, lock axis
+      if (minX > maxX) { minX = maxX = 0 }
+      if (minY > maxY) { minY = maxY = 0 }
+      dragBounds.current = { minX, maxX, minY, maxY }
     }
   }
 
