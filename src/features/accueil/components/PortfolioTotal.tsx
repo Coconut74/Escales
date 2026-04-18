@@ -39,6 +39,16 @@ export default function PortfolioTotal({ total, monthlyChange = 5.2 }: Portfolio
         </span>
       </div>
 
+      {/* Fondu de blur — backdrop-blur masqué par un gradient pour une transition douce */}
+      <div
+        className="absolute top-full left-0 right-0 h-16 pointer-events-none"
+        style={{
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          maskImage: 'linear-gradient(to bottom, black 0%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, black 0%, transparent 100%)',
+        }}
+      />
     </div>
   )
 }
