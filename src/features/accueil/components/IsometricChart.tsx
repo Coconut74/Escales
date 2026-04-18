@@ -14,7 +14,7 @@ const BR = 20              // rayon badge
 
 // ─── Couleurs ────────────────────────────────────────────────────────────────
 const FILLED = { top: '#FCCFA9', left: '#E17924', right: '#B95415' }
-const EMPTY  = { top: '#EAECF2', left: '#D4D8E2', right: '#C0C6D4' }
+const EMPTY  = { top: '#F2F3F7', left: '#E8EAF0', right: '#DDE0EA' }
 
 // ─── Grille isométrique ──────────────────────────────────────────────────────
 // (0,0) = centre arrière, le plus élevé visuellement

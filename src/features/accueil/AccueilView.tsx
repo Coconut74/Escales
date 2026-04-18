@@ -26,8 +26,8 @@ export default function AccueilView() {
         />
       </div>
 
-      {/* Bouton modifier — fixé 16px au-dessus de la nav */}
-      <div className="fixed bottom-[90px] left-1/2 -translate-x-1/2 z-[45]">
+      {/* Bouton modifier — fixé au-dessus de la nav, centré dans la zone contenu */}
+      <div className="fixed bottom-[120px] left-1/2 lg:left-[calc(50vw+112px)] -translate-x-1/2 z-[45]">
         <button
           className="flex items-center gap-2 px-6 py-3.5 rounded-2xl border border-neutral-300 bg-white text-neutral-700 text-base font-semibold shadow-sm hover:bg-neutral-50 active:bg-neutral-100 transition-colors whitespace-nowrap"
           aria-label="Modifier mes investissements"

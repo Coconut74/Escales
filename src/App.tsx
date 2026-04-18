@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import Sidebar from '@/components/layout/Sidebar'
-import Header from '@/components/layout/Header'
 import BottomNav from '@/components/layout/BottomNav'
 import AccueilView from '@/features/accueil/AccueilView'
 import JournalView from '@/features/journal/JournalView'
@@ -21,7 +20,6 @@ export default function App() {
     <div className="flex h-screen bg-surface font-sans text-neutral-900">
       <Sidebar activeView={activeView} onNavigate={setActiveView} />
       <div className="flex flex-col flex-1 overflow-hidden">
-        <Header activeView={activeView} />
         <main className="flex-1 overflow-auto">
           {views[activeView]}
         </main>

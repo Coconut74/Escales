@@ -39,12 +39,12 @@ export default function InvestmentModal({ investment, total, onClose }: Props) {
         aria-modal="true"
         aria-label={investment?.label ?? 'Détail investissement'}
         className={`
-          fixed left-4 right-4
+          fixed left-4 right-4 lg:left-[240px]
           bg-white rounded-3xl shadow-2xl
           transition-transform duration-300 ease-out
           ${open ? 'translate-y-0' : 'translate-y-[calc(100%+120px)]'}
         `}
-        style={{ bottom: '90px', maxHeight: '44vh', zIndex: 100 }}
+        style={{ bottom: '120px', maxHeight: '44vh', zIndex: 100 }}
       >
         {/* Contenu */}
         {investment && color && (
