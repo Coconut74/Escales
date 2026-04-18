@@ -97,7 +97,8 @@ export default function IsometricChart({ investments, total, onSelect, selected 
     <svg
       viewBox="0 0 392 480"
       width="100%"
-      style={{ overflow: 'visible', maxHeight: '52vh' }}
+      className="max-h-[52vh] lg:max-h-[78vh]"
+      style={{ overflow: 'visible' }}
       role="img"
       aria-label="Carte isométrique du portefeuille"
     >
