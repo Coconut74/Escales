@@ -16,8 +16,8 @@ export default function AccueilView() {
       {/* Total */}
       <PortfolioTotal total={total} monthlyChange={5.6} />
 
-      {/* Carte isométrique — pleine largeur, pas de max-width */}
-      <div className="w-full px-0 mt-0">
+      {/* Carte isométrique — 80% largeur, centrée */}
+      <div className="w-4/5 mx-auto mt-0">
         <IsometricChart
           investments={investments}
           total={total}
@@ -26,10 +26,10 @@ export default function AccueilView() {
         />
       </div>
 
-      {/* Bouton modifier */}
-      <div className="mt-4 mb-32">
+      {/* Bouton modifier — fixé au-dessus de la nav */}
+      <div className="fixed bottom-[84px] left-1/2 -translate-x-1/2 z-[45]">
         <button
-          className="flex items-center gap-2 px-6 py-3.5 rounded-2xl border border-neutral-300 bg-white text-neutral-700 text-base font-semibold shadow-sm hover:bg-neutral-50 active:bg-neutral-100 transition-colors"
+          className="flex items-center gap-2 px-6 py-3.5 rounded-2xl border border-neutral-300 bg-white text-neutral-700 text-base font-semibold shadow-sm hover:bg-neutral-50 active:bg-neutral-100 transition-colors whitespace-nowrap"
           aria-label="Modifier mes investissements"
         >
           <Icon name="write" size={18} />

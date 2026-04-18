@@ -41,27 +41,22 @@ export default function InvestmentModal({ investment, total, onClose }: Props) {
         aria-hidden="true"
       />
 
-      {/* Feuille glissante depuis le bas */}
+      {/* Carte flottante détachée, au-dessus de la nav */}
       <div
         role="dialog"
         aria-modal="true"
         aria-label={investment?.label ?? 'Détail investissement'}
         className={`
-          fixed bottom-0 left-0 right-0
-          bg-white rounded-t-3xl shadow-2xl
+          fixed left-4 right-4
+          bg-white rounded-3xl shadow-2xl
           transition-transform duration-300 ease-out
-          ${open ? 'translate-y-0' : 'translate-y-full'}
+          ${open ? 'translate-y-0' : 'translate-y-[calc(100%+120px)]'}
         `}
-        style={{ maxHeight: '44vh', zIndex: 100 }}
+        style={{ bottom: '84px', maxHeight: '44vh', zIndex: 100 }}
       >
-        {/* Poignée */}
-        <div className="flex justify-center pt-3 pb-1">
-          <div className="w-10 h-1 rounded-full bg-neutral-300" />
-        </div>
-
         {/* Contenu */}
         {investment && color && (
-          <div className="px-6 pt-2 pb-8">
+          <div className="px-6 pt-5 pb-6">
 
             {/* En-tête : badge catégorie + nom */}
             <div className="flex items-center gap-3 mb-4">
