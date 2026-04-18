@@ -22,7 +22,7 @@ export default function BarChart3D({ investments }: BarChart3DProps) {
       <div className="w-full max-w-xs px-4" style={{ perspective: '600px' }}>
         <div
           className="flex items-end gap-1.5 h-36"
-          style={{ transform: 'rotateX(14deg)', transformOrigin: 'bottom center' }}
+          style={{ transform: 'rotateX(-20deg)', transformOrigin: 'bottom center' }}
         >
           {sorted.map((inv) => {
             const heightPct = (inv.value / maxValue) * 100
