@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import type { Investment } from '../accueil.types'
-import { CATEGORY_COLORS, CATEGORY_LABELS } from '../accueil.types'
+import { CATEGORY_COLORS } from '../accueil.types'
 
 // ─── Dimensions ─────────────────────────────────────────────────────────────
 const TW = 90,  HW = 45   // tuile : largeur / demi-largeur
@@ -10,10 +10,9 @@ const EH = 2               // hauteur d'un emplacement vide (dalle plate)
 const MAX_STACKS = 4       // nombre max de niveaux
 const CX = 196             // centre SVG X
 const GY = 240             // ancre Y du sol (position 0,0)
-const BR = 20              // rayon badge
 
 // ─── Couleurs ────────────────────────────────────────────────────────────────
-const FILLED = { top: '#FCCFA9', left: '#E17924', right: '#B95415' }
+const FILLED = { top: '#E17924', left: '#B95415', right: '#5F3012' }
 const EMPTY  = { top: '#F2F3F7', left: '#E8EAF0', right: '#DDE0EA' }
 
 // ─── Grille isométrique ──────────────────────────────────────────────────────
@@ -108,16 +107,11 @@ export default function IsometricChart({ investments, total, onSelect, selected 
         const { x, y } = origin(col, row, layer, faceH)
         const c = filled ? FILLED : EMPTY
         const isSelected = !!selected && selected.id === inv?.id
-        const color = inv ? CATEGORY_COLORS[inv.category] : null
 
         // Faces
         const topFace   = poly([x,y],[x+HW,y+HH],[x,y+TH],[x-HW,y+HH])
         const leftFace  = poly([x-HW,y+HH],[x,y+TH],[x,y+TH+faceH],[x-HW,y+HH+faceH])
         const rightFace = poly([x,y+TH],[x+HW,y+HH],[x+HW,y+HH+faceH],[x,y+TH+faceH])
-
-        // Centre géométrique de la face gauche
-        const lblX = x - HW * 0.5
-        const lblY = y + (HH + TH + faceH) / 2 + 2
 
         const key = `${col}-${row}-${layer}`
 
@@ -128,53 +122,31 @@ export default function IsometricChart({ investments, total, onSelect, selected 
             style={{ cursor: filled ? 'pointer' : 'default' }}
           >
             {/* Faces du cube */}
-            <polygon points={leftFace}  fill={isSelected ? '#C85E10' : c.left} />
-            <polygon points={rightFace} fill={isSelected ? '#9E490D' : c.right} />
-            <polygon points={topFace}   fill={isSelected ? '#FAB97A' : c.top} />
+            <polygon points={leftFace}  fill={isSelected ? '#7A2E08' : c.left} />
+            <polygon points={rightFace} fill={isSelected ? '#4A1D06' : c.right} />
+            <polygon points={topFace}   fill={isSelected ? '#B95415' : c.top} />
 
-            {/* Zone cliquable (top face agrandie pour faciliter le tap) */}
+            {/* Zone cliquable */}
             {filled && isTop && (
               <polygon points={topFace} fill="transparent" />
             )}
 
-            {/* % sur la face gauche — uniquement pour les cubes remplis du sommet */}
-            {isTop && filled && pct !== undefined && faceH > 10 && (
+            {/* % centré sur la face supérieure */}
+            {isTop && filled && pct !== undefined && (
               <text
-                x={lblX} y={lblY}
+                x={x} y={y + HH}
                 textAnchor="middle"
-                fontSize="16"
-                fontWeight="700"
+                dominantBaseline="middle"
+                fontSize="18"
+                fontWeight="800"
                 fontFamily="Urbanist, sans-serif"
-                fill="rgba(255,255,255,0.95)"
+                fill="rgba(255,255,255,0.92)"
                 style={{ pointerEvents: 'none' }}
               >
-                {pct.toFixed(0)}%
+                {Math.round(pct)}%
               </text>
             )}
 
-            {/* Badge au-dessus du sommet */}
-            {isTop && filled && inv && color && (
-              <g style={{ pointerEvents: 'none' }}>
-                <circle
-                  cx={x} cy={y - BR - 5}
-                  r={BR}
-                  fill={isSelected ? color.bg : 'white'}
-                  stroke={color.bg}
-                  strokeWidth={2.5}
-                />
-                <text
-                  x={x} y={y - BR - 5}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  fontSize="12"
-                  fontWeight="800"
-                  fontFamily="Urbanist, sans-serif"
-                  fill={isSelected ? 'white' : color.bg}
-                >
-                  {inv.label.slice(0, 3).toUpperCase()}
-                </text>
-              </g>
-            )}
           </g>
         )
       })}
