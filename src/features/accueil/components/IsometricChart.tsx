@@ -1,62 +1,59 @@
 import { useMemo } from 'react'
 import type { Investment } from '../accueil.types'
-import { CATEGORY_COLORS } from '../accueil.types'
+import { CATEGORY_COLORS, CATEGORY_LABELS } from '../accueil.types'
 
-// ─── Dimensions isométriques ───────────────────────────────────────────────
-const TW = 90    // largeur tuile
-const HW = 45    // demi-largeur
-const TH = 40    // hauteur face supérieure (losange)
-const HH = 20    // demi-hauteur losange
-const FH = 38    // hauteur des faces latérales (profondeur d'un niveau)
-const CX = 162   // centre SVG X
-const GY = 238   // ancre Y du sol (cube du bas en 0,0)
-const BR = 22    // rayon du badge
+// ─── Dimensions ─────────────────────────────────────────────────────────────
+const TW = 110, HW = 55   // tuile : largeur / demi-largeur
+const TH = 55,  HH = 27.5 // tuile : hauteur losange / demi-hauteur
+const FH = 40              // hauteur d'un niveau de cube rempli
+const EH = 2               // hauteur d'un emplacement vide (dalle plate)
+const MAX_STACKS = 6       // nombre max de niveaux
+const CX = 196             // centre SVG X
+const GY = 330             // ancre Y du sol (position 0,0)
+const BR = 24              // rayon badge
 
-// ─── Couleurs des cubes ────────────────────────────────────────────────────
+// ─── Couleurs ────────────────────────────────────────────────────────────────
 const FILLED = { top: '#FCCFA9', left: '#E17924', right: '#B95415' }
-const EMPTY  = { top: '#EAECF2', left: '#C8CDD8', right: '#B2B8C6' }
+const EMPTY  = { top: '#EAECF2', left: '#D4D8E2', right: '#C0C6D4' }
 
-// ─── Positions sur la grille isométrique ──────────────────────────────────
-// col=0,row=0 = centre arrière (le plus haut visuellement)
-// col+row croissant = de plus en plus au premier plan
-const GRID: { col: number; row: number }[] = [
-  { col: 0, row: 0 }, // 0 → plus grand investissement (centre arrière)
-  { col: 0, row: 1 }, // 1 → gauche milieu
-  { col: 1, row: 0 }, // 2 → droite milieu
-  { col: 0, row: 2 }, // 3 → gauche avant
-  { col: 1, row: 1 }, // 4 → centre avant
-  { col: 2, row: 0 }, // 5 → droite arrière (vide)
-  { col: 1, row: 2 }, // 6 → centre bas (vide)
-  { col: 2, row: 1 }, // 7 → droite bas (vide)
-  { col: 2, row: 2 }, // 8 → angle avant-droit (vide)
+// ─── Grille isométrique ──────────────────────────────────────────────────────
+// (0,0) = centre arrière, le plus élevé visuellement
+// col+row croissant = au premier plan
+const GRID = [
+  { col: 0, row: 0 }, // slot 0 → plus grand
+  { col: 0, row: 1 }, // slot 1
+  { col: 1, row: 0 }, // slot 2
+  { col: 0, row: 2 }, // slot 3
+  { col: 1, row: 1 }, // slot 4
+  { col: 2, row: 0 }, // slot 5 → vide
+  { col: 1, row: 2 }, // slot 6 → vide
+  { col: 2, row: 1 }, // slot 7 → vide
+  { col: 2, row: 2 }, // slot 8 → vide
 ]
 
-function stackHeight(value: number, maxValue: number): number {
-  const r = value / maxValue
-  if (r >= 0.7) return 4
-  if (r >= 0.45) return 3
-  if (r >= 0.25) return 2
-  return 1
+function stacks(value: number, maxValue: number): number {
+  return Math.max(1, Math.round((value / maxValue) * MAX_STACKS))
 }
 
-// Coordonnées SVG du point central-haut de la face supérieure d'un cube
-function cubeOrigin(col: number, row: number, layer: number) {
+function origin(col: number, row: number, layer: number, faceH: number) {
   return {
     x: CX + (col - row) * HW,
-    y: GY + (col + row) * HH - layer * FH,
+    y: GY + (col + row) * HH - layer * faceH,
   }
 }
 
-function pts(...pairs: number[][]) {
-  return pairs.map(([x, y]) => `${x},${y}`).join(' ')
+function poly(...pts: [number, number][]) {
+  return pts.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ')
 }
 
 interface Props {
   investments: Investment[]
   total: number
+  onSelect: (inv: Investment) => void
+  selected: Investment | null
 }
 
-export default function IsometricChart({ investments, total }: Props) {
+export default function IsometricChart({ investments, total, onSelect, selected }: Props) {
   const sorted = useMemo(
     () => [...investments].sort((a, b) => b.value - a.value),
     [investments]
@@ -65,7 +62,7 @@ export default function IsometricChart({ investments, total }: Props) {
 
   type Cube = {
     col: number; row: number; layer: number
-    filled: boolean; isTop: boolean
+    faceH: number; filled: boolean; isTop: boolean
     sortKey: number
     inv?: Investment; pct?: number
   }
@@ -74,14 +71,15 @@ export default function IsometricChart({ investments, total }: Props) {
     const list: Cube[] = []
     GRID.forEach(({ col, row }, idx) => {
       const inv = sorted[idx]
-      const h = inv ? stackHeight(inv.value, maxVal) : 1
+      const filled = !!inv
+      const n = filled ? stacks(inv!.value, maxVal) : 1
+      const faceH = filled ? FH : EH
       const pct = inv ? (inv.value / total) * 100 : 0
-      for (let l = 0; l < h; l++) {
+      for (let l = 0; l < n; l++) {
         list.push({
-          col, row, layer: l,
-          filled: !!inv,
-          isTop: l === h - 1,
-          sortKey: (col + row) * 200 + l,
+          col, row, layer: l, faceH, filled,
+          isTop: l === n - 1,
+          sortKey: (col + row) * 1000 + l,
           inv: inv ?? undefined,
           pct: inv ? pct : undefined,
         })
@@ -92,66 +90,78 @@ export default function IsometricChart({ investments, total }: Props) {
 
   return (
     <svg
-      viewBox="0 0 324 408"
+      viewBox="0 0 392 500"
       width="100%"
-      style={{ overflow: 'visible', maxWidth: 380 }}
+      style={{ overflow: 'visible' }}
       role="img"
       aria-label="Carte isométrique du portefeuille"
     >
-      {cubes.map(({ col, row, layer, filled, isTop, inv, pct }) => {
-        const { x, y } = cubeOrigin(col, row, layer)
+      {cubes.map(({ col, row, layer, faceH, filled, isTop, inv, pct }) => {
+        const { x, y } = origin(col, row, layer, faceH)
         const c = filled ? FILLED : EMPTY
+        const isSelected = selected?.id === inv?.id
         const color = inv ? CATEGORY_COLORS[inv.category] : null
 
-        // Faces du cube
-        const topFace  = pts([x,y], [x+HW,y+HH], [x,y+TH], [x-HW,y+HH])
-        const leftFace = pts([x-HW,y+HH], [x,y+TH], [x,y+TH+FH], [x-HW,y+HH+FH])
-        const rightFace= pts([x,y+TH], [x+HW,y+HH], [x+HW,y+HH+FH], [x,y+TH+FH])
+        // Faces
+        const topFace   = poly([x,y],[x+HW,y+HH],[x,y+TH],[x-HW,y+HH])
+        const leftFace  = poly([x-HW,y+HH],[x,y+TH],[x,y+TH+faceH],[x-HW,y+HH+faceH])
+        const rightFace = poly([x,y+TH],[x+HW,y+HH],[x+HW,y+HH+faceH],[x,y+TH+faceH])
 
-        // Centre géométrique de la face gauche (pour le texte %)
-        const txtX = x - HW * 0.5
-        const txtY = y + (HH + TH + FH) / 2 + 2
+        // Centre géométrique de la face gauche
+        const lblX = x - HW * 0.5
+        const lblY = y + (HH + TH + faceH) / 2 + 2
 
         const key = `${col}-${row}-${layer}`
 
         return (
-          <g key={key}>
-            <polygon points={leftFace}  fill={c.left} />
-            <polygon points={rightFace} fill={c.right} />
-            <polygon points={topFace}   fill={c.top} />
+          <g
+            key={key}
+            onClick={filled && isTop && inv ? () => onSelect(inv) : undefined}
+            style={{ cursor: filled ? 'pointer' : 'default' }}
+          >
+            {/* Faces du cube */}
+            <polygon points={leftFace}  fill={isSelected ? '#C85E10' : c.left} />
+            <polygon points={rightFace} fill={isSelected ? '#9E490D' : c.right} />
+            <polygon points={topFace}   fill={isSelected ? '#FAB97A' : c.top} />
 
-            {/* Pourcentage sur la face gauche du cube du haut */}
-            {isTop && filled && pct !== undefined && (
+            {/* Zone cliquable (top face agrandie pour faciliter le tap) */}
+            {filled && isTop && (
+              <polygon points={topFace} fill="transparent" />
+            )}
+
+            {/* % sur la face gauche — uniquement pour les cubes remplis du sommet */}
+            {isTop && filled && pct !== undefined && faceH > 10 && (
               <text
-                x={txtX} y={txtY}
+                x={lblX} y={lblY}
                 textAnchor="middle"
-                fontSize="15"
+                fontSize="16"
                 fontWeight="700"
                 fontFamily="Urbanist, sans-serif"
                 fill="rgba(255,255,255,0.95)"
+                style={{ pointerEvents: 'none' }}
               >
                 {pct.toFixed(0)}%
               </text>
             )}
 
-            {/* Badge circulaire au-dessus du cube du haut */}
+            {/* Badge au-dessus du sommet */}
             {isTop && filled && inv && color && (
-              <g>
+              <g style={{ pointerEvents: 'none' }}>
                 <circle
-                  cx={x} cy={y - BR - 4}
+                  cx={x} cy={y - BR - 5}
                   r={BR}
-                  fill="white"
+                  fill={isSelected ? color.bg : 'white'}
                   stroke={color.bg}
                   strokeWidth={2.5}
                 />
                 <text
-                  x={x} y={y - BR - 4}
+                  x={x} y={y - BR - 5}
                   textAnchor="middle"
                   dominantBaseline="middle"
-                  fontSize="13"
-                  fontWeight="700"
+                  fontSize="12"
+                  fontWeight="800"
                   fontFamily="Urbanist, sans-serif"
-                  fill={color.bg}
+                  fill={isSelected ? 'white' : color.bg}
                 >
                   {inv.label.slice(0, 3).toUpperCase()}
                 </text>
