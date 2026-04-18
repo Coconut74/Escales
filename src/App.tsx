@@ -2,17 +2,17 @@ import { useState } from 'react'
 import Sidebar from '@/components/layout/Sidebar'
 import Header from '@/components/layout/Header'
 import BottomNav from '@/components/layout/BottomNav'
-import MapView from '@/features/map/MapView'
+import AccueilView from '@/features/accueil/AccueilView'
 import JournalView from '@/features/journal/JournalView'
 import PlannerView from '@/features/planner/PlannerView'
 
-export type View = 'map' | 'journal' | 'planner'
+export type View = 'accueil' | 'journal' | 'planner'
 
 export default function App() {
-  const [activeView, setActiveView] = useState<View>('journal')
+  const [activeView, setActiveView] = useState<View>('accueil')
 
   const views: Record<View, JSX.Element> = {
-    map:     <MapView />,
+    accueil: <AccueilView />,
     journal: <JournalView />,
     planner: <PlannerView />,
   }

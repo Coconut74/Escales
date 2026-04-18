@@ -1,10 +1,10 @@
 import Icon from '@/components/ui/Icon'
 import type { View } from '@/App'
 
-const NAV_ITEMS: { id: View; icon: 'map' | 'journal' | 'event' }[] = [
-  { id: 'map',     icon: 'map'     },
-  { id: 'journal', icon: 'journal' },
-  { id: 'planner', icon: 'event'   },
+const NAV_ITEMS: { id: View; label: string; icon: 'accueil' | 'journal' | 'event' }[] = [
+  { id: 'accueil', label: 'Accueil',        icon: 'accueil' },
+  { id: 'journal', label: 'Journal de bord', icon: 'journal' },
+  { id: 'planner', label: 'Planner',         icon: 'event'   },
 ]
 
 interface BottomNavProps {
@@ -22,7 +22,7 @@ export default function BottomNav({ activeView, onNavigate }: BottomNavProps) {
             <button
               key={item.id}
               onClick={() => onNavigate(item.id)}
-              aria-label={item.id}
+              aria-label={item.label}
               className={`
                 flex items-center justify-center rounded-xl transition-all
                 ${isActive
