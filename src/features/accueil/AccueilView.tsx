@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { useAccueilStore, selectTotal } from './accueil.store'
+import { useAccueilStore, selectTotal, selectAverageChange } from './accueil.store'
 import PortfolioTotal from './components/PortfolioTotal'
 import IsometricChart from './components/IsometricChart'
 import type { SvgPoint } from './components/IsometricChart'
@@ -15,6 +15,7 @@ const VB_H = 310
 export default function AccueilView() {
   const investments = useAccueilStore((s) => s.investments)
   const total = selectTotal(investments)
+  const avgChange = selectAverageChange(investments)
   const [selected, setSelected] = useState<Investment | null>(null)
 
   const [editOpen, setEditOpen] = useState(false)
@@ -41,7 +42,7 @@ export default function AccueilView() {
 
   return (
     <div className="flex flex-col w-full h-full overflow-hidden bg-surface">
-      <PortfolioTotal total={total} monthlyChange={5.6} />
+      <PortfolioTotal total={total} monthlyChange={avgChange ?? undefined} />
 
       {/* Zone graphique */}
       <div className="flex-1 flex items-start justify-center overflow-hidden pt-16 lg:pt-2">

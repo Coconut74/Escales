@@ -11,6 +11,7 @@ export interface Investment {
   label: string
   category: InvestmentCategory
   value: number
+  change?: number // évolution en % (ex: 5.6 = +5.6%)
 }
 
 export const CATEGORY_LABELS: Record<InvestmentCategory, string> = {
