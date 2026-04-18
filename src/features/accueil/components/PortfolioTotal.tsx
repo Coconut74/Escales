@@ -41,8 +41,10 @@ export default function PortfolioTotal({ total, monthlyChange = 5.2 }: Portfolio
 
       {/* Fondu bas — déborde sous la section pour masquer le graphique qui remonte */}
       <div
-        className="absolute top-full left-0 right-0 h-24 pointer-events-none z-10"
-        style={{ background: 'linear-gradient(to bottom, #FFFBF8 0%, #FFFBF8cc 50%, transparent 100%)' }}
+        className="absolute top-full left-0 right-0 h-14 pointer-events-none z-10"
+        style={{
+          background: 'linear-gradient(to bottom, #FFFBF8 0%, rgba(255,251,248,0.9) 20%, rgba(255,251,248,0.6) 50%, rgba(255,251,248,0.2) 80%, transparent 100%)',
+        }}
       />
     </div>
   )
