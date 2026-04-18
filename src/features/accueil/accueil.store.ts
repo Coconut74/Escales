@@ -3,11 +3,11 @@ import { persist } from 'zustand/middleware'
 import type { Investment } from './accueil.types'
 
 const DEMO_INVESTMENTS: Investment[] = [
-  { id: '1', label: 'ETF Monde',     category: 'etf',         value: 5200 },
-  { id: '2', label: 'SCPI Pierre',   category: 'immo',        value: 3400 },
-  { id: '3', label: 'Bitcoin',       category: 'crypto',      value: 2200 },
-  { id: '4', label: 'Livret A',      category: 'epargne',     value: 1450 },
-  { id: '5', label: 'Oblig. État',   category: 'obligations', value: 850  },
+  { id: '1', label: 'ETF Monde',     category: 'etf',         value: 15200 },
+  { id: '2', label: 'SCPI Pierre',   category: 'immo',        value: 7400 },
+  { id: '3', label: 'Bitcoin',       category: 'crypto',      value: 6200 },
+  { id: '4', label: 'Livret A',      category: 'epargne',     value: 5200 },
+  { id: '5', label: 'Oblig. État',   category: 'obligations', value: 5450  },
 ]
 
 interface AccueilStore {
