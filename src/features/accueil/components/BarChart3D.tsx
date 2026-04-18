@@ -25,7 +25,7 @@ export default function BarChart3D({ investments }: BarChart3DProps) {
           style={{ transform: 'rotateX(14deg)', transformOrigin: 'bottom center' }}
         >
           {sorted.map((inv) => {
-            const heightPct = (value / maxValue) * 100
+            const heightPct = (inv.value / maxValue) * 100
             const { bg } = CATEGORY_COLORS[inv.category]
             return (
               <div key={inv.id} className="flex-1 flex flex-col justify-end h-full">
