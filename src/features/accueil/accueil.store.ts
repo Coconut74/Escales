@@ -34,7 +34,15 @@ export const useAccueilStore = create<AccueilStore>()(
       removeInvestment: (id) =>
         set((s) => ({ investments: s.investments.filter((i) => i.id !== id) })),
     }),
-    { name: 'escales-accueil' }
+    {
+      name: 'escales-accueil',
+      // Si la liste persiste vide (suppression accidentelle), restaure les démo
+      onRehydrateStorage: () => (state) => {
+        if (state && state.investments.length === 0) {
+          state.investments = DEMO_INVESTMENTS
+        }
+      },
+    }
   )
 )
 
