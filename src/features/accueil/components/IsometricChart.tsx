@@ -3,14 +3,14 @@ import type { Investment } from '../accueil.types'
 import { CATEGORY_COLORS, CATEGORY_LABELS } from '../accueil.types'
 
 // ─── Dimensions ─────────────────────────────────────────────────────────────
-const TW = 110, HW = 55   // tuile : largeur / demi-largeur
-const TH = 55,  HH = 27.5 // tuile : hauteur losange / demi-hauteur
-const FH = 40              // hauteur d'un niveau de cube rempli
+const TW = 90,  HW = 45   // tuile : largeur / demi-largeur
+const TH = 45,  HH = 22.5 // tuile : hauteur losange / demi-hauteur
+const FH = 24              // hauteur d'un niveau de cube rempli
 const EH = 2               // hauteur d'un emplacement vide (dalle plate)
-const MAX_STACKS = 6       // nombre max de niveaux
+const MAX_STACKS = 4       // nombre max de niveaux
 const CX = 196             // centre SVG X
-const GY = 330             // ancre Y du sol (position 0,0)
-const BR = 24              // rayon badge
+const GY = 240             // ancre Y du sol (position 0,0)
+const BR = 20              // rayon badge
 
 // ─── Couleurs ────────────────────────────────────────────────────────────────
 const FILLED = { top: '#FCCFA9', left: '#E17924', right: '#B95415' }
@@ -25,10 +25,18 @@ const GRID = [
   { col: 1, row: 0 }, // slot 2
   { col: 0, row: 2 }, // slot 3
   { col: 1, row: 1 }, // slot 4
-  { col: 2, row: 0 }, // slot 5 → vide
-  { col: 1, row: 2 }, // slot 6 → vide
-  { col: 2, row: 1 }, // slot 7 → vide
-  { col: 2, row: 2 }, // slot 8 → vide
+  // 11 cases vides
+  { col: 2, row: 0 },
+  { col: 0, row: 3 },
+  { col: 1, row: 2 },
+  { col: 2, row: 1 },
+  { col: 3, row: 0 },
+  { col: 1, row: 3 },
+  { col: 2, row: 2 },
+  { col: 3, row: 1 },
+  { col: 2, row: 3 },
+  { col: 3, row: 2 },
+  { col: 3, row: 3 },
 ]
 
 function stacks(value: number, maxValue: number): number {
@@ -90,9 +98,9 @@ export default function IsometricChart({ investments, total, onSelect, selected 
 
   return (
     <svg
-      viewBox="0 0 392 500"
+      viewBox="0 0 392 480"
       width="100%"
-      style={{ overflow: 'visible' }}
+      style={{ overflow: 'visible', maxHeight: '52vh' }}
       role="img"
       aria-label="Carte isométrique du portefeuille"
     >

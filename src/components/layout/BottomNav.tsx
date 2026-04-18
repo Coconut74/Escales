@@ -14,7 +14,7 @@ interface BottomNavProps {
 
 export default function BottomNav({ activeView, onNavigate }: BottomNavProps) {
   return (
-    <div className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
+    <div className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40">
       <nav className="flex items-center gap-6 px-6 py-3 bg-white rounded-2xl border border-neutral-200 shadow-lg">
         {NAV_ITEMS.map((item) => {
           const isActive = activeView === item.id

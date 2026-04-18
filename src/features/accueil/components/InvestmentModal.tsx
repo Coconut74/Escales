@@ -35,7 +35,8 @@ export default function InvestmentModal({ investment, total, onClose }: Props) {
     <>
       {/* Overlay transparent — ferme la modale sans masquer le graphique */}
       <div
-        className={`fixed inset-0 z-40 transition-opacity duration-300 ${open ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        className={`fixed inset-0 transition-opacity duration-300 ${open ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        style={{ zIndex: 90 }}
         onClick={onClose}
         aria-hidden="true"
       />
@@ -46,12 +47,12 @@ export default function InvestmentModal({ investment, total, onClose }: Props) {
         aria-modal="true"
         aria-label={investment?.label ?? 'Détail investissement'}
         className={`
-          fixed bottom-0 left-0 right-0 z-50
+          fixed bottom-0 left-0 right-0
           bg-white rounded-t-3xl shadow-2xl
           transition-transform duration-300 ease-out
           ${open ? 'translate-y-0' : 'translate-y-full'}
         `}
-        style={{ maxHeight: '44vh' }}
+        style={{ maxHeight: '44vh', zIndex: 100 }}
       >
         {/* Poignée */}
         <div className="flex justify-center pt-3 pb-1">
