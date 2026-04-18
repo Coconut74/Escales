@@ -33,15 +33,7 @@ export default function InvestmentModal({ investment, total, onClose }: Props) {
 
   return (
     <>
-      {/* Overlay transparent — ferme la modale sans masquer le graphique */}
-      <div
-        className={`fixed inset-0 transition-opacity duration-300 ${open ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
-        style={{ zIndex: 90 }}
-        onClick={onClose}
-        aria-hidden="true"
-      />
-
-      {/* Carte flottante détachée, au-dessus de la nav */}
+      {/* Carte flottante détachée, au-dessus de la nav — pointer-events uniquement sur la carte */}
       <div
         role="dialog"
         aria-modal="true"
@@ -52,7 +44,7 @@ export default function InvestmentModal({ investment, total, onClose }: Props) {
           transition-transform duration-300 ease-out
           ${open ? 'translate-y-0' : 'translate-y-[calc(100%+120px)]'}
         `}
-        style={{ bottom: '84px', maxHeight: '44vh', zIndex: 100 }}
+        style={{ bottom: '90px', maxHeight: '44vh', zIndex: 100 }}
       >
         {/* Contenu */}
         {investment && color && (
