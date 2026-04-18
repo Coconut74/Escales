@@ -1,6 +1,5 @@
 import { useMemo } from 'react'
 import type { Investment } from '../accueil.types'
-import { CATEGORY_COLORS } from '../accueil.types'
 
 // ─── Dimensions ─────────────────────────────────────────────────────────────
 const TW = 90,  HW = 45   // tuile : largeur / demi-largeur
@@ -16,15 +15,12 @@ const FILLED = { top: '#E17924', left: '#B95415', right: '#5F3012' }
 const EMPTY  = { top: '#F2F3F7', left: '#E8EAF0', right: '#DDE0EA' }
 
 // ─── Grille isométrique ──────────────────────────────────────────────────────
-// (0,0) = centre arrière, le plus élevé visuellement
-// col+row croissant = au premier plan
 const GRID = [
-  { col: 0, row: 0 }, // slot 0 → plus grand
-  { col: 0, row: 1 }, // slot 1
-  { col: 1, row: 0 }, // slot 2
-  { col: 0, row: 2 }, // slot 3
-  { col: 1, row: 1 }, // slot 4
-  // 11 cases vides
+  { col: 0, row: 0 },
+  { col: 0, row: 1 },
+  { col: 1, row: 0 },
+  { col: 0, row: 2 },
+  { col: 1, row: 1 },
   { col: 2, row: 0 },
   { col: 0, row: 3 },
   { col: 1, row: 2 },
@@ -53,10 +49,12 @@ function poly(...pts: [number, number][]) {
   return pts.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ')
 }
 
+export type SvgPoint = { x: number; y: number }
+
 interface Props {
   investments: Investment[]
   total: number
-  onSelect: (inv: Investment) => void
+  onSelect: (inv: Investment, svgPoint: SvgPoint) => void
   selected: Investment | null
 }
 
@@ -108,7 +106,6 @@ export default function IsometricChart({ investments, total, onSelect, selected 
         const c = filled ? FILLED : EMPTY
         const isSelected = !!selected && selected.id === inv?.id
 
-        // Faces
         const topFace   = poly([x,y],[x+HW,y+HH],[x,y+TH],[x-HW,y+HH])
         const leftFace  = poly([x-HW,y+HH],[x,y+TH],[x,y+TH+faceH],[x-HW,y+HH+faceH])
         const rightFace = poly([x,y+TH],[x+HW,y+HH],[x+HW,y+HH+faceH],[x,y+TH+faceH])
@@ -118,20 +115,19 @@ export default function IsometricChart({ investments, total, onSelect, selected 
         return (
           <g
             key={key}
-            onClick={filled && isTop && inv ? () => onSelect(inv) : undefined}
+            onClick={filled && isTop && inv
+              ? () => onSelect(inv, { x, y: y + HH })
+              : undefined}
             style={{ cursor: filled ? 'pointer' : 'default' }}
           >
-            {/* Faces du cube */}
             <polygon points={leftFace}  fill={isSelected ? '#7A2E08' : c.left} />
             <polygon points={rightFace} fill={isSelected ? '#4A1D06' : c.right} />
             <polygon points={topFace}   fill={isSelected ? '#B95415' : c.top} />
 
-            {/* Zone cliquable */}
             {filled && isTop && (
               <polygon points={topFace} fill="transparent" />
             )}
 
-            {/* % centré sur la face supérieure */}
             {isTop && filled && pct !== undefined && (
               <text
                 x={x} y={y + HH}
@@ -146,7 +142,6 @@ export default function IsometricChart({ investments, total, onSelect, selected 
                 {Math.round(pct)}%
               </text>
             )}
-
           </g>
         )
       })}
