@@ -15,43 +15,57 @@ interface SidebarProps {
 
 export default function Sidebar({ activeView, onNavigate }: SidebarProps) {
   const { firstName, lastName, avatarEmoji } = useProfilStore()
-  const displayName = [firstName, lastName].filter(Boolean).join(' ') || 'Mon profil'
+  const displayName = [firstName, lastName].filter(Boolean).join(' ') || 'Utilisateur'
 
   return (
-    <nav className="hidden lg:flex w-56 bg-surface-raised dark:bg-neutral-800 border-r border-neutral-200 dark:border-neutral-700 flex-col py-6 px-3 gap-1">
-      <span className="text-xl font-semibold text-primary-600 px-3 mb-6 tracking-tight">
-        Escales
-      </span>
-      {NAV_ITEMS.map((item) => (
-        <button
-          key={item.id}
-          onClick={() => onNavigate(item.id)}
-          className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors
-            ${activeView === item.id
-              ? 'bg-primary-600 text-white'
-              : 'text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 hover:text-neutral-800 dark:hover:text-neutral-100'
-            }`}
-        >
-          <Icon name={item.icon} size={20} />
-          {item.label}
-        </button>
-      ))}
+    <aside
+      className="hidden lg:flex fixed left-4 top-4 bottom-4 z-40 w-56 flex-col rounded-3xl backdrop-blur-xl bg-white/80 dark:bg-neutral-900/75 border border-neutral-200/70 dark:border-white/10 shadow-xl shadow-neutral-300/40 dark:shadow-black/30"
+    >
+      {/* Logo */}
+      <div className="flex items-center gap-2 px-5 pt-6 pb-5">
+        <span className="text-xl leading-none">🦉</span>
+        <span className="text-base font-bold tracking-widest text-primary-500 uppercase">
+          Escales
+        </span>
+      </div>
+
+      {/* Nav items */}
+      <nav className="flex flex-col gap-1 px-3">
+        {NAV_ITEMS.map((item) => {
+          const isActive = activeView === item.id
+          return (
+            <button
+              key={item.id}
+              onClick={() => onNavigate(item.id)}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 w-full text-left
+                ${isActive
+                  ? 'bg-primary-500 text-white shadow-md shadow-primary-500/25'
+                  : 'text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100/80 dark:hover:bg-neutral-800/60 hover:text-neutral-700'
+                }`}
+            >
+              <Icon name={item.icon} size={19} />
+              {item.label}
+            </button>
+          )
+        })}
+      </nav>
 
       <div className="flex-1" />
 
-      <button
-        onClick={() => onNavigate('profil')}
-        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors
-          ${activeView === 'profil'
-            ? 'bg-primary-600 text-white'
-            : 'text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 hover:text-neutral-800 dark:hover:text-neutral-100'
-          }`}
-      >
-        <div className="w-5 h-5 rounded-md bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center text-xs leading-none flex-shrink-0">
-          {avatarEmoji}
-        </div>
-        <span className="truncate">{displayName}</span>
-      </button>
-    </nav>
+      {/* User */}
+      <div className="px-3 pb-5">
+        <button
+          onClick={() => onNavigate('profil')}
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 w-full text-left
+            ${activeView === 'profil'
+              ? 'bg-primary-500 text-white shadow-md shadow-primary-500/25'
+              : 'text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100/80 dark:hover:bg-neutral-800/60 hover:text-neutral-700'
+            }`}
+        >
+          <span className="text-base leading-none">{avatarEmoji || '👤'}</span>
+          <span className="truncate">{displayName}</span>
+        </button>
+      </div>
+    </aside>
   )
 }

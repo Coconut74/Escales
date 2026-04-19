@@ -28,7 +28,7 @@ export default function App() {
   return (
     <div className="flex h-screen bg-surface dark:bg-neutral-900 font-sans text-neutral-900 dark:text-neutral-50">
       <Sidebar activeView={activeView} onNavigate={setActiveView} />
-      <div className="flex flex-col flex-1 overflow-hidden">
+      <div className="flex flex-col flex-1 overflow-hidden lg:pl-[248px]">
         <main className="flex-1 overflow-auto">
           {views[activeView]}
         </main>
