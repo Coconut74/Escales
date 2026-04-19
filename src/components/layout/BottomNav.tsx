@@ -22,12 +22,12 @@ export default function BottomNav({ activeView, onNavigate }: BottomNavProps) {
   return (
     <div className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40">
       <nav
-        className="relative flex items-center gap-2 px-3 py-3 rounded-2xl backdrop-blur-xl bg-white/80 dark:bg-neutral-900/75 border border-neutral-200/70 dark:border-white/10 shadow-xl shadow-neutral-300/40 dark:shadow-black/30"
+        className="relative flex items-center gap-2 px-2 py-2 rounded-2xl backdrop-blur-xl bg-white/80 dark:bg-neutral-900/75 border border-neutral-200/70 dark:border-white/10 shadow-xl shadow-neutral-300/40 dark:shadow-black/30"
       >
         {/* orange sliding indicator */}
         <div
           aria-hidden
-          className="absolute top-3 left-3 rounded-xl bg-primary-500"
+          className="absolute top-2 left-2 rounded-xl bg-primary-500"
           style={{
             width: ITEM_SIZE,
             height: ITEM_SIZE,
