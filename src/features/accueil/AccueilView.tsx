@@ -16,7 +16,6 @@ export default function AccueilView() {
   const total = selectTotal(investments)
   const avgChange = selectAverageChange(investments)
   const [selected, setSelected] = useState<Investment | null>(null)
-  const [navDirection, setNavDirection] = useState<'left' | 'right'>('left')
 
   const [editOpen, setEditOpen] = useState(false)
   const [zoom, setZoom] = useState(1)
@@ -47,11 +46,6 @@ export default function AccueilView() {
       setZoom(1)
       return
     }
-    if (selected) {
-      const curIdx = sortedByPct.findIndex((i) => i.id === selected.id)
-      const newIdx = sortedByPct.findIndex((i) => i.id === inv.id)
-      setNavDirection(newIdx > curIdx ? 'right' : 'left')
-    }
     setSelected(inv)
     focusOnBar(inv, svgPoint)
   }, [selected, sortedByPct])
@@ -67,7 +61,6 @@ export default function AccueilView() {
     if (!sortedByPct.length) return
     const next = sortedByPct[(selectedIndex + 1) % sortedByPct.length]
     if (!next) return
-    setNavDirection('right')
     setSelected(next)
     focusOnBar(next)
   }
@@ -76,7 +69,6 @@ export default function AccueilView() {
     if (!sortedByPct.length) return
     const prev = sortedByPct[(selectedIndex - 1 + sortedByPct.length) % sortedByPct.length]
     if (!prev) return
-    setNavDirection('left')
     setSelected(prev)
     focusOnBar(prev)
   }
@@ -126,7 +118,6 @@ export default function AccueilView() {
         onClose={handleClose}
         onNext={selected ? handleNext : undefined}
         onPrev={selected ? handlePrev : undefined}
-        navDirection={navDirection}
         position={{ current: selectedIndex + 1, total: sortedByPct.length }}
       />
     </div>

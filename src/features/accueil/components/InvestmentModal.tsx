@@ -19,7 +19,6 @@ interface Props {
   onClose: () => void
   onNext?: () => void
   onPrev?: () => void
-  navDirection?: 'left' | 'right'
   position?: { current: number; total: number }
 }
 
@@ -30,7 +29,7 @@ type ExitEntry = {
   position?: { current: number; total: number }
 }
 
-export default function InvestmentModal({ investment, total, onClose, onNext, onPrev, navDirection, position }: Props) {
+export default function InvestmentModal({ investment, total, onClose, onNext, onPrev, position }: Props) {
   const open = !!investment
   const currency = useProfilStore((s) => s.currency)
 
@@ -75,10 +74,16 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
 
     if (investment.id === prev.id) return
 
-    // Navigation : changement d'investissement
-    // navDirection et investment changent dans le même batch React → la valeur est déjà
-    // à jour ici, contrairement à navDirRef synced via useEffect (post-paint).
-    const dir = navDirection ?? 'left'
+    // Direction dérivée du changement de position : robuste pour swipe ET clic bouton.
+    // position.current est déjà mis à jour dans ce render ; prevPositionRef.current
+    // contient encore l'ancienne valeur (useEffect court après useLayoutEffect).
+    const prevCur = prevPos?.current ?? 0
+    const newCur  = position?.current ?? 0
+    const tot     = position?.total ?? 1
+    const diff    = newCur - prevCur
+    // Détection du wrap circulaire : si le saut dépasse la moitié du total, on a bouclé.
+    const wrapping = tot > 1 && Math.abs(diff) > tot / 2
+    const dir: 'left' | 'right' = wrapping ? (diff < 0 ? 'right' : 'left') : (diff > 0 ? 'right' : 'left')
     const uid = `${prev.id}-${Date.now()}`
 
     setAnimDir(dir)
