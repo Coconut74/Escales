@@ -41,14 +41,12 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
   const [animDir, setAnimDir] = useState<'left' | 'right'>('left')
   const [isTransitioning, setIsTransitioning] = useState(false)
 
-  const navDirRef = useRef(navDirection)
   const prevInvRef = useRef<Investment | null>(investment)
   // Mémorise la position précédente pour que la carte sortante ait la même hauteur
   const prevPositionRef = useRef(position)
   // Timer du dernier enter (contrôle isTransitioning)
   const enterTimerRef = useRef<ReturnType<typeof setTimeout>>()
 
-  useEffect(() => { navDirRef.current = navDirection }, [navDirection])
   // useEffect (pas useLayoutEffect) : on veut capturer la position AVANT qu'elle change,
   // donc on la mémorise à chaque render APRÈS que useLayoutEffect a déjà lu prevPositionRef.
   useEffect(() => { prevPositionRef.current = position }, [position])
@@ -60,7 +58,9 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
 
     if (!investment || !prev || investment.id === prev.id) return
 
-    const dir = navDirRef.current ?? 'left'
+    // navDirection et investment changent dans le même batch React → la valeur est déjà
+    // à jour ici, contrairement à navDirRef synced via useEffect (post-paint).
+    const dir = navDirection ?? 'left'
     const uid = `${prev.id}-${Date.now()}`
 
     setAnimDir(dir)
