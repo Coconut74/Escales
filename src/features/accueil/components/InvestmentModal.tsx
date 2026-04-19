@@ -2,9 +2,9 @@ import { useEffect } from 'react'
 import type { Investment } from '../accueil.types'
 import { CATEGORY_COLORS, CATEGORY_LABELS } from '../accueil.types'
 import { formatCurrency } from '@/lib/formatting'
+import { useProfilStore } from '@/features/profil/profil.store'
 import Icon from '@/components/ui/Icon'
 
-// Variation fictive par investissement (demo)
 const DEMO_CHANGE: Record<string, number> = {
   '1': 8.3, '2': 4.1, '3': 12.7, '4': 1.2, '5': -2.4,
 }
@@ -17,8 +17,8 @@ interface Props {
 
 export default function InvestmentModal({ investment, total, onClose }: Props) {
   const open = !!investment
+  const currency = useProfilStore((s) => s.currency)
 
-  // Fermer sur Escape
   useEffect(() => {
     if (!open) return
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
@@ -33,7 +33,6 @@ export default function InvestmentModal({ investment, total, onClose }: Props) {
 
   return (
     <>
-      {/* Carte flottante détachée, au-dessus de la nav — pointer-events uniquement sur la carte */}
       <div
         role="dialog"
         aria-modal="true"
@@ -41,17 +40,15 @@ export default function InvestmentModal({ investment, total, onClose }: Props) {
         className={`
           fixed left-1/2 lg:left-[calc(50vw+112px)] -translate-x-1/2
           w-[calc(100%-32px)] max-w-[600px]
-          bg-white rounded-3xl shadow-2xl
+          bg-white dark:bg-neutral-800 rounded-3xl shadow-2xl
           transition-transform duration-300 ease-out
           ${open ? 'translate-y-0' : 'translate-y-[calc(100%+24px)]'}
         `}
         style={{ bottom: '16px', maxHeight: '44vh', zIndex: 100 }}
       >
-        {/* Contenu */}
         {investment && color && (
           <div className="px-6 pt-5 pb-6">
 
-            {/* En-tête : badge catégorie + nom */}
             <div className="flex items-center gap-3 mb-4">
               <div
                 className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold shrink-0"
@@ -60,7 +57,7 @@ export default function InvestmentModal({ investment, total, onClose }: Props) {
                 {investment.label.slice(0, 2).toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-base font-bold text-neutral-900 truncate">
+                <p className="text-base font-bold text-neutral-900 dark:text-neutral-50 truncate">
                   {investment.label}
                 </p>
                 <span
@@ -72,18 +69,17 @@ export default function InvestmentModal({ investment, total, onClose }: Props) {
               </div>
               <button
                 onClick={onClose}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100 text-neutral-500 hover:bg-neutral-200 transition-colors shrink-0"
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors shrink-0"
                 aria-label="Fermer"
               >
                 ✕
               </button>
             </div>
 
-            {/* Métriques */}
             <div className="grid grid-cols-3 gap-3">
               <Metric
                 label="Valeur"
-                value={formatCurrency(investment.value)}
+                value={formatCurrency(investment.value, currency)}
                 highlight
               />
               <Metric
@@ -113,14 +109,14 @@ function Metric({
   positive?: boolean
   negative?: boolean
 }) {
-  let valueColor = 'text-neutral-800'
-  if (positive) valueColor = 'text-green-600'
-  if (negative) valueColor = 'text-red-500'
+  let valueColor = 'text-neutral-800 dark:text-neutral-100'
+  if (positive) valueColor = 'text-green-600 dark:text-green-400'
+  if (negative) valueColor = 'text-red-500 dark:text-red-400'
 
   return (
-    <div className="bg-neutral-50 rounded-2xl px-3 py-3">
-      <p className="text-sm text-neutral-500 mb-1 leading-tight">{label}</p>
-      <p className={`text-base font-bold leading-tight ${highlight ? 'text-primary-700' : valueColor}`}>
+    <div className="bg-neutral-50 dark:bg-neutral-700 rounded-2xl px-3 py-3">
+      <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-1 leading-tight">{label}</p>
+      <p className={`text-base font-bold leading-tight ${highlight ? 'text-primary-700 dark:text-primary-400' : valueColor}`}>
         {value}
       </p>
     </div>

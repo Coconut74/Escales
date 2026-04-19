@@ -70,10 +70,10 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="flex items-center justify-between px-6 pt-6 pb-4 shrink-0">
-        <h2 className="text-lg font-bold text-neutral-900">Mes investissements</h2>
+        <h2 className="text-lg font-bold text-neutral-900 dark:text-neutral-50">Mes investissements</h2>
         <button
           onClick={onClose}
-          className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100/80 text-neutral-500 hover:bg-neutral-200/80 transition-colors"
+          className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100/80 dark:bg-neutral-700/80 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-200/80 dark:hover:bg-neutral-600/80 transition-colors"
           aria-label="Fermer"
         >
           ✕
@@ -85,7 +85,7 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
         {draft.map((inv) => (
           <div
             key={inv.id}
-            className="bg-white/60 backdrop-blur-sm border border-neutral-200/50 rounded-2xl p-4 space-y-3"
+            className="bg-white/60 dark:bg-neutral-700/60 backdrop-blur-sm border border-neutral-200/50 dark:border-neutral-600/50 rounded-2xl p-4 space-y-3"
           >
             <div className="flex items-start gap-2">
               <div className="flex-1 space-y-3">
@@ -138,7 +138,7 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
 
         <button
           onClick={add}
-          className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl border border-dashed border-neutral-300 text-neutral-500 hover:border-primary-400 hover:text-primary-600 transition-colors text-sm font-semibold"
+          className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl border border-dashed border-neutral-300 dark:border-neutral-600 text-neutral-500 dark:text-neutral-400 hover:border-primary-400 hover:text-primary-600 dark:hover:border-primary-500 dark:hover:text-primary-400 transition-colors text-sm font-semibold"
         >
           <Icon name="plus" size={16} />
           Ajouter un investissement
@@ -164,7 +164,7 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
       <div
         className={`
           lg:hidden fixed inset-0 z-[110] flex flex-col
-          bg-white/80 backdrop-blur-xl border-t border-white/40 shadow-2xl
+          bg-white/80 dark:bg-neutral-900/90 backdrop-blur-xl border-t border-white/40 dark:border-neutral-700/40 shadow-2xl
           transition-transform duration-300 ease-out
           ${open ? 'translate-y-0' : 'translate-y-full'}
         `}
@@ -186,7 +186,7 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
         <div
           className={`
             w-full max-w-lg h-[80vh] flex flex-col
-            bg-white/80 backdrop-blur-xl border border-white/40 shadow-2xl rounded-3xl
+            bg-white/80 dark:bg-neutral-900/90 backdrop-blur-xl border border-white/40 dark:border-neutral-700/40 shadow-2xl rounded-3xl
             transition-transform duration-300 ease-out
             ${open ? 'scale-100' : 'scale-95'}
           `}

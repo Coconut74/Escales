@@ -41,7 +41,7 @@ export default function AccueilView() {
   }
 
   return (
-    <div className="flex flex-col w-full h-full overflow-hidden bg-surface">
+    <div className="flex flex-col w-full h-full overflow-hidden bg-surface dark:bg-neutral-900">
       <PortfolioTotal total={total} monthlyChange={avgChange ?? undefined} />
 
       {/* Zone graphique */}
@@ -67,7 +67,7 @@ export default function AccueilView() {
       {/* Bouton modifier */}
       <div className="fixed bottom-[120px] lg:bottom-8 left-1/2 lg:left-[calc(50vw+112px)] -translate-x-1/2 z-[45]">
         <button
-          className="flex items-center gap-2 px-6 py-3.5 rounded-2xl border border-neutral-300 bg-white text-neutral-700 text-base font-semibold shadow-sm hover:bg-neutral-50 active:bg-neutral-100 transition-colors whitespace-nowrap"
+          className="flex items-center gap-2 px-6 py-3.5 rounded-2xl border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 text-base font-semibold shadow-sm hover:bg-neutral-50 dark:hover:bg-neutral-700 active:bg-neutral-100 dark:active:bg-neutral-600 transition-colors whitespace-nowrap"
           aria-label="Modifier mes investissements"
           onClick={() => setEditOpen(true)}
         >

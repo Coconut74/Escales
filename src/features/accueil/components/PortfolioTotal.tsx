@@ -1,4 +1,5 @@
 import { formatCurrency } from '@/lib/formatting'
+import { useProfilStore } from '@/features/profil/profil.store'
 
 interface PortfolioTotalProps {
   total: number
@@ -6,18 +7,21 @@ interface PortfolioTotalProps {
 }
 
 export default function PortfolioTotal({ total, monthlyChange = 5.2 }: PortfolioTotalProps) {
+  const { currency, theme } = useProfilStore()
   const isPositive = monthlyChange >= 0
-  const formatted = formatCurrency(total).replace(/\u202f/g, '\u00a0')
+  const formatted = formatCurrency(total, currency).replace(/\u202f/g, '\u00a0')
+
+  const bgColor = theme === 'dark' ? 'rgba(28,23,23,0.85)' : 'rgba(255,251,248,0.82)'
 
   return (
     <div
       className="relative z-10 flex flex-col items-center pt-6 pb-4 px-6 text-center backdrop-blur-md"
-      style={{ background: 'rgba(255,251,248,0.82)' }}
+      style={{ background: bgColor }}
     >
-      <p className="text-base font-semibold text-neutral-500 mb-2">
+      <p className="text-base font-semibold text-neutral-500 dark:text-neutral-400 mb-2">
         Mes investissements
       </p>
-      <p className="text-5xl font-bold text-primary-900 tracking-tight leading-none mb-3">
+      <p className="text-5xl font-bold text-primary-900 dark:text-primary-300 tracking-tight leading-none mb-3">
         {formatted}
       </p>
       <div className="flex items-center gap-1.5">

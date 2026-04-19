@@ -4,6 +4,7 @@ const TITLES: Record<View, string> = {
   accueil: 'Accueil',
   journal: 'Journal de bord',
   planner: 'Planner',
+  profil:  'Profil',
 }
 
 export default function Header({ activeView }: { activeView: View }) {
