@@ -20,3 +20,7 @@
   from { transform: translateX(calc(-50% - 100vw)); }
   to   { transform: translateX(-50%); }
 }
+@keyframes card-exit-down {
+  from { transform: translateX(-50%) translateY(0); }
+  to   { transform: translateX(-50%) translateY(calc(100% + 24px)); }
+}

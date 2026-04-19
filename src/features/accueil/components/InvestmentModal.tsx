@@ -26,7 +26,7 @@ interface Props {
 type ExitEntry = {
   uid: string
   inv: Investment
-  dir: 'left' | 'right'
+  dir: 'left' | 'right' | 'down'
   position?: { current: number; total: number }
 }
 
@@ -40,6 +40,9 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
   const [exitStack, setExitStack] = useState<ExitEntry[]>([])
   const [animDir, setAnimDir] = useState<'left' | 'right'>('left')
   const [isTransitioning, setIsTransitioning] = useState(false)
+  // Snap le div principal hors-écran sans transition pendant l'animation de fermeture,
+  // pour éviter qu'un rectangle vide glisse par-dessus la carte sortante.
+  const [isClosing, setIsClosing] = useState(false)
 
   const prevInvRef = useRef<Investment | null>(investment)
   // Mémorise la position précédente pour que la carte sortante ait la même hauteur
@@ -56,8 +59,23 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
     const prevPos = prevPositionRef.current
     prevInvRef.current = investment ?? null
 
-    if (!investment || !prev || investment.id === prev.id) return
+    if (!prev) return
 
+    // Fermeture : investment est devenu null
+    if (!investment) {
+      const uid = `${prev.id}-${Date.now()}`
+      setIsClosing(true)
+      setExitStack(s => [...s, { uid, inv: prev, dir: 'down', position: prevPos }])
+      setTimeout(() => {
+        setExitStack(s => s.filter(e => e.uid !== uid))
+        setIsClosing(false)
+      }, ANIM_DURATION)
+      return
+    }
+
+    if (investment.id === prev.id) return
+
+    // Navigation : changement d'investissement
     // navDirection et investment changent dans le même batch React → la valeur est déjà
     // à jour ici, contrairement à navDirRef synced via useEffect (post-paint).
     const dir = navDirection ?? 'left'
@@ -136,7 +154,7 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
             ...baseLeft,
             bottom: '16px',
             zIndex: 99,
-            animation: `${dir === 'left' ? 'card-exit-left' : 'card-exit-right'} ${ANIM_DURATION}ms ease-out forwards`,
+            animation: `${dir === 'left' ? 'card-exit-left' : dir === 'right' ? 'card-exit-right' : 'card-exit-down'} ${ANIM_DURATION}ms ease-out forwards`,
           }}
         >
           <CardContent investment={inv} total={total} currency={currency} onClose={onClose} position={exitPos} />
@@ -159,7 +177,7 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
           animation: isTransitioning
             ? `${animDir === 'left' ? 'card-enter-from-right' : 'card-enter-from-left'} ${ANIM_DURATION}ms ease-out forwards`
             : 'none',
-          transition: isTransitioning || dragDelta !== 0 ? 'none' : 'transform 0.3s ease-out',
+          transition: isTransitioning || isClosing || dragDelta !== 0 ? 'none' : 'transform 0.3s ease-out',
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
