@@ -64,7 +64,8 @@ export default function AccueilView() {
   const selectedIndex = selected ? sortedByPct.findIndex((i) => i.id === selected.id) : -1
 
   function handleNext() {
-    const next = sortedByPct[selectedIndex + 1]
+    if (!sortedByPct.length) return
+    const next = sortedByPct[(selectedIndex + 1) % sortedByPct.length]
     if (!next) return
     setNavDirection('left')
     setSelected(next)
@@ -72,7 +73,8 @@ export default function AccueilView() {
   }
 
   function handlePrev() {
-    const prev = sortedByPct[selectedIndex - 1]
+    if (!sortedByPct.length) return
+    const prev = sortedByPct[(selectedIndex - 1 + sortedByPct.length) % sortedByPct.length]
     if (!prev) return
     setNavDirection('right')
     setSelected(prev)
@@ -122,8 +124,8 @@ export default function AccueilView() {
         investment={selected}
         total={total}
         onClose={handleClose}
-        onNext={selectedIndex < sortedByPct.length - 1 ? handleNext : undefined}
-        onPrev={selectedIndex > 0 ? handlePrev : undefined}
+        onNext={selected ? handleNext : undefined}
+        onPrev={selected ? handlePrev : undefined}
         navDirection={navDirection}
         position={{ current: selectedIndex + 1, total: sortedByPct.length }}
       />

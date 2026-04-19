@@ -233,8 +233,7 @@ function CardContent({
           <button
             onClick={(e) => { e.stopPropagation(); onPrev?.() }}
             onMouseDown={(e) => e.stopPropagation()}
-            disabled={!onPrev}
-            className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold text-neutral-400 dark:text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+            className="flex items-center gap-1 px-2 py-1 text-xs font-semibold text-neutral-400 dark:text-neutral-500"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
             Préc.
@@ -249,8 +248,7 @@ function CardContent({
           <button
             onClick={(e) => { e.stopPropagation(); onNext?.() }}
             onMouseDown={(e) => e.stopPropagation()}
-            disabled={!onNext}
-            className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold text-neutral-400 dark:text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+            className="flex items-center gap-1 px-2 py-1 text-xs font-semibold text-neutral-400 dark:text-neutral-500"
           >
             Suiv.
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
