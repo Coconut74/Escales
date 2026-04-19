@@ -8,7 +8,6 @@ import EditInvestmentsPanel from './components/EditInvestmentsPanel'
 import type { Investment } from './accueil.types'
 import Icon from '@/components/ui/Icon'
 
-// viewBox origin Y and height (must match IsometricChart viewBox "0 140 392 310")
 const VB_Y = 140
 const VB_H = 310
 
@@ -17,6 +16,7 @@ export default function AccueilView() {
   const total = selectTotal(investments)
   const avgChange = selectAverageChange(investments)
   const [selected, setSelected] = useState<Investment | null>(null)
+  const [navDirection, setNavDirection] = useState<'left' | 'right'>('left')
 
   const [editOpen, setEditOpen] = useState(false)
   const [zoom, setZoom] = useState(1)
@@ -24,16 +24,21 @@ export default function AccueilView() {
 
   // Ordre croissant de pourcentage pour la navigation swipe
   const sortedByPct = useMemo(
-    () => total > 0
-      ? [...investments].sort((a, b) => a.value - b.value)
-      : investments,
+    () => total > 0 ? [...investments].sort((a, b) => a.value - b.value) : investments,
     [investments, total]
   )
 
   const handleSelect = useCallback((inv: Investment, svgPoint: SvgPoint) => {
     if (selected?.id === inv.id) {
-      handleClose()
+      setSelected(null)
+      setZoom(1)
       return
+    }
+    // Détermine la direction d'animation selon la position dans le tri
+    if (selected) {
+      const curIdx = sortedByPct.findIndex((i) => i.id === selected.id)
+      const newIdx = sortedByPct.findIndex((i) => i.id === inv.id)
+      setNavDirection(newIdx > curIdx ? 'left' : 'right')
     }
     setSelected(inv)
     setZoomOrigin({
@@ -41,15 +46,10 @@ export default function AccueilView() {
       y: ((svgPoint.y - VB_Y) / VB_H) * 100,
     })
     setZoom(2)
-  }, [selected])
+  }, [selected, sortedByPct])
 
   function handleClose() {
     setSelected(null)
-    setZoom(1)
-  }
-
-  function navigateTo(inv: Investment) {
-    setSelected(inv)
     setZoom(1)
   }
 
@@ -57,12 +57,12 @@ export default function AccueilView() {
 
   function handleNext() {
     const next = sortedByPct[selectedIndex + 1]
-    if (selectedIndex < sortedByPct.length - 1 && next) navigateTo(next)
+    if (next) { setNavDirection('left'); setSelected(next) }
   }
 
   function handlePrev() {
     const prev = sortedByPct[selectedIndex - 1]
-    if (selectedIndex > 0 && prev) navigateTo(prev)
+    if (prev) { setNavDirection('right'); setSelected(prev) }
   }
 
   return (
@@ -109,6 +109,7 @@ export default function AccueilView() {
         onClose={handleClose}
         onNext={selectedIndex < sortedByPct.length - 1 ? handleNext : undefined}
         onPrev={selectedIndex > 0 ? handlePrev : undefined}
+        navDirection={navDirection}
         position={{ current: selectedIndex + 1, total: sortedByPct.length }}
       />
     </div>
