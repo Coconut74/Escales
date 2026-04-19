@@ -113,7 +113,7 @@ export default function AccueilView() {
       <div className="fixed bottom-[120px] lg:bottom-8 left-1/2 lg:left-[calc(50vw+112px)] -translate-x-1/2 z-[45]">
         <Button
           variant="grey-outline"
-          size="md"
+          size="lg"
           aria-label="Modifier mes investissements"
           onClick={() => setEditOpen(true)}
           className="whitespace-nowrap shadow-sm"
