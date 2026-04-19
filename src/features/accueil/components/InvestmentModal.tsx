@@ -124,8 +124,8 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
   }
   function handleTouchEnd() {
     const d = dragDelta; touchStartX.current = null; setDragDelta(0)
-    if (d < -SWIPE_THRESHOLD) onNext?.()
-    else if (d > SWIPE_THRESHOLD) onPrev?.()
+    if (d < -SWIPE_THRESHOLD) onPrev?.()
+    else if (d > SWIPE_THRESHOLD) onNext?.()
   }
   function handleMouseDown(e: React.MouseEvent) { mouseStartX.current = e.clientX }
   function handleMouseMove(e: React.MouseEvent) {
@@ -134,8 +134,8 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
   }
   function handleMouseUp() {
     const d = dragDelta; mouseStartX.current = null; setDragDelta(0)
-    if (d < -SWIPE_THRESHOLD) onNext?.()
-    else if (d > SWIPE_THRESHOLD) onPrev?.()
+    if (d < -SWIPE_THRESHOLD) onPrev?.()
+    else if (d > SWIPE_THRESHOLD) onNext?.()
   }
 
   const clampedDrag = Math.max(-18, Math.min(18, dragDelta * 0.35))

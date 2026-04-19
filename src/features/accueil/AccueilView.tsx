@@ -50,7 +50,7 @@ export default function AccueilView() {
     if (selected) {
       const curIdx = sortedByPct.findIndex((i) => i.id === selected.id)
       const newIdx = sortedByPct.findIndex((i) => i.id === inv.id)
-      setNavDirection(newIdx > curIdx ? 'left' : 'right')
+      setNavDirection(newIdx > curIdx ? 'right' : 'left')
     }
     setSelected(inv)
     focusOnBar(inv, svgPoint)
@@ -67,7 +67,7 @@ export default function AccueilView() {
     if (!sortedByPct.length) return
     const next = sortedByPct[(selectedIndex + 1) % sortedByPct.length]
     if (!next) return
-    setNavDirection('left')
+    setNavDirection('right')
     setSelected(next)
     focusOnBar(next)
   }
@@ -76,7 +76,7 @@ export default function AccueilView() {
     if (!sortedByPct.length) return
     const prev = sortedByPct[(selectedIndex - 1 + sortedByPct.length) % sortedByPct.length]
     if (!prev) return
-    setNavDirection('right')
+    setNavDirection('left')
     setSelected(prev)
     focusOnBar(prev)
   }
