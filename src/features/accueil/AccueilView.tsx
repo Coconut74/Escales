@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo, useRef } from 'react'
 import { useAccueilStore, selectTotal, selectAverageChange } from './accueil.store'
 import PortfolioTotal from './components/PortfolioTotal'
 import IsometricChart from './components/IsometricChart'
@@ -8,7 +8,6 @@ import EditInvestmentsPanel from './components/EditInvestmentsPanel'
 import type { Investment } from './accueil.types'
 import Icon from '@/components/ui/Icon'
 
-// viewBox origin Y and height (must match IsometricChart viewBox "0 140 392 310")
 const VB_Y = 140
 const VB_H = 310
 
@@ -22,10 +21,28 @@ export default function AccueilView() {
   const [zoom, setZoom] = useState(1)
   const [zoomOrigin, setZoomOrigin] = useState({ x: 50, y: 50 })
 
+  const navDirRef = useRef<'left' | 'right'>('right')
+
+  // Ordre croissant de pourcentage pour la navigation swipe
+  const sortedByPct = useMemo(
+    () => total > 0 ? [...investments].sort((a, b) => a.value - b.value) : investments,
+    [investments, total]
+  )
+
+  const selectedIndex = selected ? sortedByPct.findIndex((i) => i.id === selected.id) : -1
+
   const handleSelect = useCallback((inv: Investment, svgPoint: SvgPoint) => {
     if (selected?.id === inv.id) {
-      handleClose()
+      setSelected(null)
+      setZoom(1)
       return
+    }
+    const newIndex = sortedByPct.findIndex(i => i.id === inv.id)
+    const tot = sortedByPct.length
+    if (tot > 1 && selectedIndex >= 0) {
+      const diff = newIndex - selectedIndex
+      const wrapping = Math.abs(diff) > tot / 2
+      navDirRef.current = wrapping ? (diff < 0 ? 'right' : 'left') : (diff > 0 ? 'right' : 'left')
     }
     setSelected(inv)
     setZoomOrigin({
@@ -33,11 +50,27 @@ export default function AccueilView() {
       y: ((svgPoint.y - VB_Y) / VB_H) * 100,
     })
     setZoom(2)
-  }, [selected])
+  }, [selected, sortedByPct, selectedIndex])
 
   function handleClose() {
     setSelected(null)
     setZoom(1)
+  }
+
+  function handleNext() {
+    if (!sortedByPct.length) return
+    const next = sortedByPct[(selectedIndex + 1) % sortedByPct.length]
+    if (!next) return
+    navDirRef.current = 'right'
+    setSelected(next)
+  }
+
+  function handlePrev() {
+    if (!sortedByPct.length) return
+    const prev = sortedByPct[(selectedIndex - 1 + sortedByPct.length) % sortedByPct.length]
+    if (!prev) return
+    navDirRef.current = 'left'
+    setSelected(prev)
   }
 
   return (
@@ -82,6 +115,10 @@ export default function AccueilView() {
         investment={selected}
         total={total}
         onClose={handleClose}
+        onNext={selected ? handleNext : undefined}
+        onPrev={selected ? handlePrev : undefined}
+        position={{ current: selectedIndex + 1, total: sortedByPct.length }}
+        navDirRef={navDirRef}
       />
     </div>
   )

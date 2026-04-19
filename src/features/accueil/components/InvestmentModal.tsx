@@ -19,46 +19,80 @@ interface Props {
   onClose: () => void
   onNext?: () => void
   onPrev?: () => void
-  navDirection?: 'left' | 'right'
+  position?: { current: number; total: number }
+  navDirRef?: { readonly current: 'left' | 'right' }
+}
+
+type ExitEntry = {
+  uid: string
+  inv: Investment
+  dir: 'left' | 'right' | 'down'
   position?: { current: number; total: number }
 }
 
-export default function InvestmentModal({ investment, total, onClose, onNext, onPrev, navDirection, position }: Props) {
+export default function InvestmentModal({ investment, total, onClose, onNext, onPrev, position, navDirRef }: Props) {
   const open = !!investment
   const currency = useProfilStore((s) => s.currency)
 
-  const [exitingInv, setExitingInv] = useState<Investment | null>(null)
+  // Chaque transition ajoute une entrée ; chacune se retire après ANIM_DURATION.
+  // Cela évite le flash quand on swipe en sens inverse avant la fin de l'animation :
+  // l'ancienne carte sortante reste vivante jusqu'au bout de sa propre animation.
+  const [exitStack, setExitStack] = useState<ExitEntry[]>([])
   const [animDir, setAnimDir] = useState<'left' | 'right'>('left')
   const [isTransitioning, setIsTransitioning] = useState(false)
+  // Snap le div principal hors-écran sans transition pendant l'animation de fermeture,
+  // pour éviter qu'un rectangle vide glisse par-dessus la carte sortante.
+  const [isClosing, setIsClosing] = useState(false)
 
-  const animTimerRef = useRef<ReturnType<typeof setTimeout>>()
-  const navDirRef = useRef(navDirection)
-  // Mémorise l'investissement précédent pour construire la carte sortante
   const prevInvRef = useRef<Investment | null>(investment)
+  // Mémorise la position précédente pour que la carte sortante ait la même hauteur
+  const prevPositionRef = useRef(position)
+  // Timer du dernier enter (contrôle isTransitioning)
+  const enterTimerRef = useRef<ReturnType<typeof setTimeout>>()
 
-  useEffect(() => { navDirRef.current = navDirection }, [navDirection])
+  // useEffect (pas useLayoutEffect) : on veut capturer la position AVANT qu'elle change,
+  // donc on la mémorise à chaque render APRÈS que useLayoutEffect a déjà lu prevPositionRef.
+  useEffect(() => { prevPositionRef.current = position }, [position])
 
-  // useLayoutEffect : se déclenche AVANT le premier paint du navigateur
-  // → élimine le flash d'un frame avant que l'animation démarre
   useLayoutEffect(() => {
     const prev = prevInvRef.current
+    const prevPos = prevPositionRef.current
     prevInvRef.current = investment ?? null
 
-    if (!investment || !prev || investment.id === prev.id) return
+    if (!prev) return
 
-    const dir = navDirRef.current ?? 'left'
+    // Fermeture : investment est devenu null
+    if (!investment) {
+      const uid = `${prev.id}-${Date.now()}`
+      setIsClosing(true)
+      setExitStack(s => [...s, { uid, inv: prev, dir: 'down', position: prevPos }])
+      setTimeout(() => {
+        setExitStack(s => s.filter(e => e.uid !== uid))
+        setIsClosing(false)
+      }, ANIM_DURATION)
+      return
+    }
+
+    if (investment.id === prev.id) return
+
+    const dir: 'left' | 'right' = navDirRef?.current ?? 'right'
+    const uid = `${prev.id}-${Date.now()}`
+
     setAnimDir(dir)
-    setExitingInv(prev)
     setIsTransitioning(true)
+    setExitStack(s => [...s, { uid, inv: prev, dir, position: prevPos }])
 
-    clearTimeout(animTimerRef.current)
-    animTimerRef.current = setTimeout(() => {
-      setExitingInv(null)
-      setIsTransitioning(false)
+    // Chaque carte sortante se retire seule après sa propre animation
+    setTimeout(() => {
+      setExitStack(s => s.filter(e => e.uid !== uid))
     }, ANIM_DURATION)
+
+    // Réinitialise isTransitioning après la dernière animation en cours
+    clearTimeout(enterTimerRef.current)
+    enterTimerRef.current = setTimeout(() => setIsTransitioning(false), ANIM_DURATION)
   }, [investment?.id])
 
-  useEffect(() => () => clearTimeout(animTimerRef.current), [])
+  useEffect(() => () => clearTimeout(enterTimerRef.current), [])
 
   // Keyboard
   useEffect(() => {
@@ -87,8 +121,8 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
   }
   function handleTouchEnd() {
     const d = dragDelta; touchStartX.current = null; setDragDelta(0)
-    if (d < -SWIPE_THRESHOLD) onNext?.()
-    else if (d > SWIPE_THRESHOLD) onPrev?.()
+    if (d < -SWIPE_THRESHOLD) onPrev?.()
+    else if (d > SWIPE_THRESHOLD) onNext?.()
   }
   function handleMouseDown(e: React.MouseEvent) { mouseStartX.current = e.clientX }
   function handleMouseMove(e: React.MouseEvent) {
@@ -97,8 +131,8 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
   }
   function handleMouseUp() {
     const d = dragDelta; mouseStartX.current = null; setDragDelta(0)
-    if (d < -SWIPE_THRESHOLD) onNext?.()
-    else if (d > SWIPE_THRESHOLD) onPrev?.()
+    if (d < -SWIPE_THRESHOLD) onPrev?.()
+    else if (d > SWIPE_THRESHOLD) onNext?.()
   }
 
   const clampedDrag = Math.max(-18, Math.min(18, dragDelta * 0.35))
@@ -107,22 +141,22 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
 
   return (
     <>
-      {/* Carte sortante — slide out, key garantit une animation fraîche */}
-      {exitingInv && (
+      {/* Cartes sortantes — chacune vit jusqu'à la fin de sa propre animation */}
+      {exitStack.map(({ uid, inv, dir, position: exitPos }) => (
         <div
-          key={exitingInv.id}
+          key={uid}
           aria-hidden="true"
           className={`${CARD_CLASSES} lg:left-[calc(50vw+112px)] pointer-events-none`}
           style={{
             ...baseLeft,
             bottom: '16px',
             zIndex: 99,
-            animation: `${animDir === 'left' ? 'card-exit-left' : 'card-exit-right'} ${ANIM_DURATION}ms ease-out forwards`,
+            animation: `${dir === 'left' ? 'card-exit-left' : dir === 'right' ? 'card-exit-right' : 'card-exit-down'} ${ANIM_DURATION}ms ease-out forwards`,
           }}
         >
-          <CardContent investment={exitingInv} total={total} currency={currency} onClose={onClose} />
+          <CardContent investment={inv} total={total} currency={currency} onClose={onClose} position={exitPos} />
         </div>
-      )}
+      ))}
 
       {/* Carte principale — open/close + drag + enter animation */}
       <div
@@ -134,16 +168,13 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
           ...baseLeft,
           bottom: '16px',
           zIndex: 100,
-          // Pendant l'animation, CSS animation prend le dessus sur transform.
-          // Les keyframes se terminent à translateX(-50%) = même valeur que le
-          // style statique → aucun saut quand l'animation se retire.
           transform: open
             ? `translateX(calc(-50% + ${dragDelta !== 0 ? clampedDrag : 0}px))`
             : 'translateX(-50%) translateY(calc(100% + 24px))',
           animation: isTransitioning
             ? `${animDir === 'left' ? 'card-enter-from-right' : 'card-enter-from-left'} ${ANIM_DURATION}ms ease-out forwards`
             : 'none',
-          transition: isTransitioning || dragDelta !== 0 ? 'none' : 'transform 0.3s ease-out',
+          transition: isTransitioning || isClosing || dragDelta !== 0 ? 'none' : 'transform 0.3s ease-out',
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -217,8 +248,7 @@ function CardContent({
           <button
             onClick={(e) => { e.stopPropagation(); onPrev?.() }}
             onMouseDown={(e) => e.stopPropagation()}
-            disabled={!onPrev}
-            className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold text-neutral-400 dark:text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+            className="flex items-center gap-1 px-2 py-1 text-xs font-semibold text-neutral-400 dark:text-neutral-500"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
             Préc.
@@ -233,8 +263,7 @@ function CardContent({
           <button
             onClick={(e) => { e.stopPropagation(); onNext?.() }}
             onMouseDown={(e) => e.stopPropagation()}
-            disabled={!onNext}
-            className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold text-neutral-400 dark:text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+            className="flex items-center gap-1 px-2 py-1 text-xs font-semibold text-neutral-400 dark:text-neutral-500"
           >
             Suiv.
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
