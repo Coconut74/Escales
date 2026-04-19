@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import type { Investment } from '../accueil.types'
+import { useProfilStore } from '@/features/profil/profil.store'
 
 // ─── Dimensions ─────────────────────────────────────────────────────────────
 const TW = 90,  HW = 45   // tuile : largeur / demi-largeur
@@ -10,8 +11,9 @@ const GY = 240             // ancre Y du sol (position 0,0)
 const MAX_BAR_H = GY - 160 // hauteur max disponible (viewBox top=140, marge 20px)
 
 // ─── Couleurs ────────────────────────────────────────────────────────────────
-const FILLED = { top: '#E17924', left: '#B95415', right: '#5F3012' }
-const EMPTY  = { top: '#F2F3F7', left: '#E8EAF0', right: '#DDE0EA' }
+const FILLED      = { top: '#E17924', left: '#B95415', right: '#5F3012' }
+const EMPTY_LIGHT = { top: '#F2F3F7', left: '#E8EAF0', right: '#DDE0EA' }
+const EMPTY_DARK  = { top: '#3A3532', left: '#2E2B28', right: '#252220' }
 
 // ─── Grille isométrique ──────────────────────────────────────────────────────
 const GRID = [
@@ -55,6 +57,9 @@ interface Props {
 }
 
 export default function IsometricChart({ investments, total, onSelect, selected }: Props) {
+  const theme = useProfilStore((s) => s.theme)
+  const EMPTY = theme === 'dark' ? EMPTY_DARK : EMPTY_LIGHT
+
   const sorted = useMemo(
     () => [...investments].sort((a, b) => b.value - a.value),
     [investments]

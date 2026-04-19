@@ -49,7 +49,7 @@ export default function BarChart3D({ investments }: BarChart3DProps) {
         </div>
 
         {/* Sol */}
-        <div className="h-px bg-neutral-300" />
+        <div className="h-px bg-neutral-300 dark:bg-neutral-600" />
       </div>
 
       {/* Légende — hors du transform 3D */}
@@ -59,10 +59,10 @@ export default function BarChart3D({ investments }: BarChart3DProps) {
           return (
             <div key={inv.id} className="flex-1 flex flex-col items-center gap-0.5">
               <div className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: bg }} />
-              <p className="text-[9px] text-neutral-400 leading-tight text-center truncate w-full">
+              <p className="text-[9px] text-neutral-400 dark:text-neutral-500 leading-tight text-center truncate w-full">
                 {inv.label}
               </p>
-              <p className="text-[9px] font-semibold text-neutral-600 leading-none">
+              <p className="text-[9px] font-semibold text-neutral-600 dark:text-neutral-300 leading-none">
                 {formatCurrency(inv.value, 'EUR').replace(/\s/g, '\u202f')}
               </p>
             </div>

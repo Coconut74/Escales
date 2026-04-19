@@ -23,8 +23,8 @@ export default function SearchField({ label, className = '', id, ...props }: Sea
           type="search"
           className={`
             w-full pl-11 pr-4 py-3.5 rounded-xl border text-sm font-sans
-            bg-white placeholder-neutral-400 text-neutral-900
-            border-neutral-200 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200
+            bg-white dark:bg-neutral-700 placeholder-neutral-400 dark:placeholder-neutral-500 text-neutral-900 dark:text-neutral-50
+            border-neutral-200 dark:border-neutral-600 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800
             ${className}
           `.trim()}
           {...props}
