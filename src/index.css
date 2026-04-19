@@ -2,19 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Les keyframes incluent l'offset de centrage (-50%) pour éviter tout saut
+   quand l'animation démarre ou se termine vs. le style.transform statique. */
 @keyframes card-exit-left {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-100vw); }
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(calc(-50% - 100vw)); }
 }
 @keyframes card-exit-right {
-  from { transform: translateX(0); }
-  to   { transform: translateX(100vw); }
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(calc(-50% + 100vw)); }
 }
 @keyframes card-enter-from-right {
-  from { transform: translateX(100vw); }
-  to   { transform: translateX(0); }
+  from { transform: translateX(calc(-50% + 100vw)); }
+  to   { transform: translateX(-50%); }
 }
 @keyframes card-enter-from-left {
-  from { transform: translateX(-100vw); }
-  to   { transform: translateX(0); }
+  from { transform: translateX(calc(-50% - 100vw)); }
+  to   { transform: translateX(-50%); }
 }

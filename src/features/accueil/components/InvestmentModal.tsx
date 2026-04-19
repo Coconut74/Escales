@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useEffect, useRef, useState } from 'react'
 import type { Investment } from '../accueil.types'
 import { CATEGORY_COLORS, CATEGORY_LABELS } from '../accueil.types'
 import { formatCurrency } from '@/lib/formatting'
@@ -11,8 +11,7 @@ const DEMO_CHANGE: Record<string, number> = {
 const SWIPE_THRESHOLD = 50
 const ANIM_DURATION = 280
 
-// Classes de positionnement partagées entre la carte entrante et sortante
-const CARD_POSITION = 'fixed w-[calc(100%-32px)] max-w-[600px] bg-white dark:bg-neutral-800 rounded-3xl shadow-2xl'
+const CARD_CLASSES = 'fixed w-[calc(100%-32px)] max-w-[600px] bg-white dark:bg-neutral-800 rounded-3xl shadow-2xl'
 
 interface Props {
   investment: Investment | null
@@ -28,35 +27,28 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
   const open = !!investment
   const currency = useProfilStore((s) => s.currency)
 
-  // Animation state
-  const [displayedInv, setDisplayedInv] = useState<Investment | null>(investment)
   const [exitingInv, setExitingInv] = useState<Investment | null>(null)
   const [animDir, setAnimDir] = useState<'left' | 'right'>('left')
   const [isTransitioning, setIsTransitioning] = useState(false)
-  const animTimerRef = useRef<ReturnType<typeof setTimeout>>()
 
-  // Ref pour lire la dernière direction sans créer de dépendance dans l'effet
+  const animTimerRef = useRef<ReturnType<typeof setTimeout>>()
   const navDirRef = useRef(navDirection)
+  // Mémorise l'investissement précédent pour construire la carte sortante
+  const prevInvRef = useRef<Investment | null>(investment)
+
   useEffect(() => { navDirRef.current = navDirection }, [navDirection])
 
-  // Déclenche l'animation de slide quand l'investissement change
-  useEffect(() => {
-    if (!investment) {
-      setExitingInv(null)
-      setIsTransitioning(false)
-      clearTimeout(animTimerRef.current)
-      return
-    }
-    if (!displayedInv) {
-      setDisplayedInv(investment)
-      return
-    }
-    if (investment.id === displayedInv.id) return
+  // useLayoutEffect : se déclenche AVANT le premier paint du navigateur
+  // → élimine le flash d'un frame avant que l'animation démarre
+  useLayoutEffect(() => {
+    const prev = prevInvRef.current
+    prevInvRef.current = investment ?? null
+
+    if (!investment || !prev || investment.id === prev.id) return
 
     const dir = navDirRef.current ?? 'left'
     setAnimDir(dir)
-    setExitingInv(displayedInv)
-    setDisplayedInv(investment)
+    setExitingInv(prev)
     setIsTransitioning(true)
 
     clearTimeout(animTimerRef.current)
@@ -64,7 +56,7 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
       setExitingInv(null)
       setIsTransitioning(false)
     }, ANIM_DURATION)
-  }, [investment?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [investment?.id])
 
   useEffect(() => () => clearTimeout(animTimerRef.current), [])
 
@@ -80,7 +72,7 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
     return () => window.removeEventListener('keydown', handler)
   }, [open, onClose, onNext, onPrev])
 
-  // Swipe / drag sur la carte principale
+  // Swipe / drag
   const touchStartX = useRef<number | null>(null)
   const mouseStartX = useRef<number | null>(null)
   const [dragDelta, setDragDelta] = useState(0)
@@ -94,11 +86,9 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
     if (x !== undefined) setDragDelta(x - touchStartX.current)
   }
   function handleTouchEnd() {
-    const delta = dragDelta
-    touchStartX.current = null
-    setDragDelta(0)
-    if (delta < -SWIPE_THRESHOLD) onNext?.()
-    else if (delta > SWIPE_THRESHOLD) onPrev?.()
+    const d = dragDelta; touchStartX.current = null; setDragDelta(0)
+    if (d < -SWIPE_THRESHOLD) onNext?.()
+    else if (d > SWIPE_THRESHOLD) onPrev?.()
   }
   function handleMouseDown(e: React.MouseEvent) { mouseStartX.current = e.clientX }
   function handleMouseMove(e: React.MouseEvent) {
@@ -106,55 +96,47 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
     setDragDelta(e.clientX - mouseStartX.current)
   }
   function handleMouseUp() {
-    const delta = dragDelta
-    mouseStartX.current = null
-    setDragDelta(0)
-    if (delta < -SWIPE_THRESHOLD) onNext?.()
-    else if (delta > SWIPE_THRESHOLD) onPrev?.()
+    const d = dragDelta; mouseStartX.current = null; setDragDelta(0)
+    if (d < -SWIPE_THRESHOLD) onNext?.()
+    else if (d > SWIPE_THRESHOLD) onPrev?.()
   }
 
   const clampedDrag = Math.max(-18, Math.min(18, dragDelta * 0.35))
 
-  // Position de base partagée (bottom + centrage)
-  const baseStyle = {
-    bottom: '16px',
-    left: '50%',
-  } as const
-
-  const desktopLeft = 'lg:left-[calc(50vw+112px)]'
+  const baseLeft = { left: '50%' } as const
 
   return (
     <>
-      {/* Carte sortante — slide out */}
+      {/* Carte sortante — slide out, key garantit une animation fraîche */}
       {exitingInv && (
         <div
+          key={exitingInv.id}
           aria-hidden="true"
-          className={`${CARD_POSITION} ${desktopLeft} pointer-events-none`}
+          className={`${CARD_CLASSES} lg:left-[calc(50vw+112px)] pointer-events-none`}
           style={{
-            ...baseStyle,
+            ...baseLeft,
+            bottom: '16px',
             zIndex: 99,
-            transform: 'translateX(-50%)',
             animation: `${animDir === 'left' ? 'card-exit-left' : 'card-exit-right'} ${ANIM_DURATION}ms ease-out forwards`,
           }}
         >
-          <CardContent
-            investment={exitingInv}
-            total={total}
-            currency={currency}
-            onClose={onClose}
-          />
+          <CardContent investment={exitingInv} total={total} currency={currency} onClose={onClose} />
         </div>
       )}
 
-      {/* Carte principale — slide in + open/close + drag */}
+      {/* Carte principale — open/close + drag + enter animation */}
       <div
         role="dialog"
         aria-modal="true"
         aria-label={investment?.label ?? 'Détail investissement'}
-        className={`${CARD_POSITION} ${desktopLeft} select-none cursor-grab active:cursor-grabbing`}
+        className={`${CARD_CLASSES} lg:left-[calc(50vw+112px)] select-none cursor-grab active:cursor-grabbing`}
         style={{
-          ...baseStyle,
+          ...baseLeft,
+          bottom: '16px',
           zIndex: 100,
+          // Pendant l'animation, CSS animation prend le dessus sur transform.
+          // Les keyframes se terminent à translateX(-50%) = même valeur que le
+          // style statique → aucun saut quand l'animation se retire.
           transform: open
             ? `translateX(calc(-50% + ${dragDelta !== 0 ? clampedDrag : 0}px))`
             : 'translateX(-50%) translateY(calc(100% + 24px))',
@@ -171,9 +153,9 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
       >
-        {displayedInv && (
+        {investment && (
           <CardContent
-            investment={displayedInv}
+            investment={investment}
             total={total}
             currency={currency}
             onClose={onClose}
@@ -192,12 +174,8 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
 function CardContent({
   investment, total, currency, onClose, onNext, onPrev, position,
 }: {
-  investment: Investment
-  total: number
-  currency: string
-  onClose: () => void
-  onNext?: () => void
-  onPrev?: () => void
+  investment: Investment; total: number; currency: string
+  onClose: () => void; onNext?: () => void; onPrev?: () => void
   position?: { current: number; total: number }
 }) {
   const pct    = ((investment.value / total) * 100).toFixed(1)
@@ -207,7 +185,6 @@ function CardContent({
 
   return (
     <div className="px-6 pt-5 pb-6">
-      {/* En-tête */}
       <div className="flex items-center gap-3 mb-4">
         <div
           className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold shrink-0"
@@ -216,13 +193,8 @@ function CardContent({
           {investment.label.slice(0, 2).toUpperCase()}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-base font-bold text-neutral-900 dark:text-neutral-50 truncate">
-            {investment.label}
-          </p>
-          <span
-            className="text-sm font-semibold px-2 py-0.5 rounded-full"
-            style={{ backgroundColor: `${color.bg}22`, color: color.bg }}
-          >
+          <p className="text-base font-bold text-neutral-900 dark:text-neutral-50 truncate">{investment.label}</p>
+          <span className="text-sm font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: `${color.bg}22`, color: color.bg }}>
             {label}
           </span>
         </div>
@@ -231,24 +203,15 @@ function CardContent({
           onMouseDown={(e) => e.stopPropagation()}
           className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors shrink-0"
           aria-label="Fermer"
-        >
-          ✕
-        </button>
+        >✕</button>
       </div>
 
-      {/* Métriques */}
       <div className="grid grid-cols-3 gap-3 mb-4">
         <Metric label="Valeur" value={formatCurrency(investment.value, currency)} highlight />
         <Metric label="Part" value={`${pct}%`} />
-        <Metric
-          label="Evolution"
-          value={`${change >= 0 ? '+' : ''}${change.toFixed(1)}%`}
-          positive={change >= 0}
-          negative={change < 0}
-        />
+        <Metric label="Evolution" value={`${change >= 0 ? '+' : ''}${change.toFixed(1)}%`} positive={change >= 0} negative={change < 0} />
       </div>
 
-      {/* Navigation */}
       {position && (
         <div className="flex items-center justify-between">
           <button
@@ -257,22 +220,13 @@ function CardContent({
             disabled={!onPrev}
             className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold text-neutral-400 dark:text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-30 disabled:pointer-events-none transition-colors"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
             Préc.
           </button>
 
           <div className="flex items-center gap-1.5">
             {Array.from({ length: position.total }).map((_, i) => (
-              <div
-                key={i}
-                className={`rounded-full transition-all duration-200 ${
-                  i === position.current - 1
-                    ? 'w-4 h-1.5 bg-primary-500'
-                    : 'w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600'
-                }`}
-              />
+              <div key={i} className={`rounded-full transition-all duration-200 ${i === position.current - 1 ? 'w-4 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600'}`} />
             ))}
           </div>
 
@@ -283,9 +237,7 @@ function CardContent({
             className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold text-neutral-400 dark:text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-30 disabled:pointer-events-none transition-colors"
           >
             Suiv.
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
           </button>
         </div>
       )}
@@ -294,19 +246,15 @@ function CardContent({
 }
 
 function Metric({ label, value, highlight, positive, negative }: {
-  label: string; value: string
-  highlight?: boolean; positive?: boolean; negative?: boolean
+  label: string; value: string; highlight?: boolean; positive?: boolean; negative?: boolean
 }) {
   let valueColor = 'text-neutral-800 dark:text-neutral-100'
   if (positive) valueColor = 'text-green-600 dark:text-green-400'
   if (negative) valueColor = 'text-red-500 dark:text-red-400'
-
   return (
     <div className="bg-neutral-50 dark:bg-neutral-700 rounded-2xl px-3 py-3">
       <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-1 leading-tight">{label}</p>
-      <p className={`text-base font-bold leading-tight ${highlight ? 'text-primary-700 dark:text-primary-400' : valueColor}`}>
-        {value}
-      </p>
+      <p className={`text-base font-bold leading-tight ${highlight ? 'text-primary-700 dark:text-primary-400' : valueColor}`}>{value}</p>
     </div>
   )
 }
