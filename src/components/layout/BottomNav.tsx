@@ -8,7 +8,7 @@ const NAV_ITEMS: { id: View; label: string; icon: 'accueil' | 'journal' | 'event
   { id: 'profil',  label: 'Profil',          icon: 'profile'  },
 ]
 
-const ITEM_SIZE = 52
+const ITEM_SIZE = 60
 const GAP = 8
 
 interface BottomNavProps {
@@ -32,7 +32,7 @@ export default function BottomNav({ activeView, onNavigate }: BottomNavProps) {
             width: ITEM_SIZE,
             height: ITEM_SIZE,
             transform: `translateX(${activeIndex * (ITEM_SIZE + GAP)}px)`,
-            transition: 'transform 350ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+            transition: 'transform 380ms cubic-bezier(0.25, 1.2, 0.5, 1)',
           }}
         />
 
