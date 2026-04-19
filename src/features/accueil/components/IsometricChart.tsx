@@ -1,14 +1,14 @@
-import { useMemo } from 'react'
+import { useMemo, useImperativeHandle, forwardRef } from 'react'
 import type { Investment } from '../accueil.types'
 import { useProfilStore } from '@/features/profil/profil.store'
 
 // ─── Dimensions ─────────────────────────────────────────────────────────────
-const TW = 90,  HW = 45   // tuile : largeur / demi-largeur
-const TH = 45,  HH = 22.5 // tuile : hauteur losange / demi-hauteur
-const EH = 2               // hauteur d'un emplacement vide (dalle plate)
-const CX = 196             // centre SVG X
-const GY = 240             // ancre Y du sol (position 0,0)
-const MAX_BAR_H = GY - 160 // hauteur max disponible (viewBox top=140, marge 20px)
+const TW = 90,  HW = 45
+const TH = 45,  HH = 22.5
+const EH = 2
+const CX = 196
+const GY = 240
+const MAX_BAR_H = GY - 160
 
 // ─── Couleurs ────────────────────────────────────────────────────────────────
 const FILLED      = { top: '#E17924', left: '#B95415', right: '#5F3012' }
@@ -35,7 +35,6 @@ const GRID = [
   { col: 3, row: 3 },
 ]
 
-
 function origin(col: number, row: number, layer: number, faceH: number) {
   return {
     x: CX + (col - row) * HW,
@@ -49,6 +48,10 @@ function poly(...pts: [number, number][]) {
 
 export type SvgPoint = { x: number; y: number }
 
+export interface IsometricChartHandle {
+  getBarPosition: (id: string) => SvgPoint | null
+}
+
 interface Props {
   investments: Investment[]
   total: number
@@ -56,7 +59,9 @@ interface Props {
   selected: Investment | null
 }
 
-export default function IsometricChart({ investments, total, onSelect, selected }: Props) {
+const IsometricChart = forwardRef<IsometricChartHandle, Props>(function IsometricChart(
+  { investments, total, onSelect, selected }, ref
+) {
   const theme = useProfilStore((s) => s.theme)
   const EMPTY = theme === 'dark' ? EMPTY_DARK : EMPTY_LIGHT
 
@@ -92,6 +97,16 @@ export default function IsometricChart({ investments, total, onSelect, selected 
     })
     return list.sort((a, b) => a.sortKey - b.sortKey)
   }, [sorted])
+
+  // Expose la position SVG de chaque barre pour le zoom externe
+  useImperativeHandle(ref, () => ({
+    getBarPosition: (id: string): SvgPoint | null => {
+      const cube = cubes.find((c) => c.inv?.id === id)
+      if (!cube) return null
+      const { x, y } = origin(cube.col, cube.row, cube.layer, cube.faceH)
+      return { x, y: y + HH }
+    },
+  }), [cubes])
 
   return (
     <svg
@@ -148,4 +163,6 @@ export default function IsometricChart({ investments, total, onSelect, selected 
       })}
     </svg>
   )
-}
+})
+
+export default IsometricChart

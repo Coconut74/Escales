@@ -9,7 +9,10 @@ const DEMO_CHANGE: Record<string, number> = {
 }
 
 const SWIPE_THRESHOLD = 50
-const ANIM_DURATION = 240
+const ANIM_DURATION = 280
+
+// Classes de positionnement partagées entre la carte entrante et sortante
+const CARD_POSITION = 'fixed w-[calc(100%-32px)] max-w-[600px] bg-white dark:bg-neutral-800 rounded-3xl shadow-2xl'
 
 interface Props {
   investment: Investment | null
@@ -32,29 +35,24 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
   const [isTransitioning, setIsTransitioning] = useState(false)
   const animTimerRef = useRef<ReturnType<typeof setTimeout>>()
 
-  // navDirection ref so the animation effect always reads the latest value
+  // Ref pour lire la dernière direction sans créer de dépendance dans l'effet
   const navDirRef = useRef(navDirection)
   useEffect(() => { navDirRef.current = navDirection }, [navDirection])
 
-  // Watch investment changes and trigger slide animation
+  // Déclenche l'animation de slide quand l'investissement change
   useEffect(() => {
     if (!investment) {
-      // Modal closing — keep displayed content until slide-out completes
       setExitingInv(null)
       setIsTransitioning(false)
       clearTimeout(animTimerRef.current)
       return
     }
-
     if (!displayedInv) {
-      // First open — no animation, just show
       setDisplayedInv(investment)
       return
     }
-
     if (investment.id === displayedInv.id) return
 
-    // Switch investment — trigger slide animation
     const dir = navDirRef.current ?? 'left'
     setAnimDir(dir)
     setExitingInv(displayedInv)
@@ -70,7 +68,7 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
 
   useEffect(() => () => clearTimeout(animTimerRef.current), [])
 
-  // Keyboard navigation
+  // Keyboard
   useEffect(() => {
     if (!open) return
     const handler = (e: KeyboardEvent) => {
@@ -82,14 +80,13 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
     return () => window.removeEventListener('keydown', handler)
   }, [open, onClose, onNext, onPrev])
 
-  // Swipe / drag
+  // Swipe / drag sur la carte principale
   const touchStartX = useRef<number | null>(null)
   const mouseStartX = useRef<number | null>(null)
   const [dragDelta, setDragDelta] = useState(0)
 
   function handleTouchStart(e: React.TouchEvent) {
     touchStartX.current = e.touches[0]?.clientX ?? null
-    setDragDelta(0)
   }
   function handleTouchMove(e: React.TouchEvent) {
     if (touchStartX.current === null) return
@@ -103,7 +100,6 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
     if (delta < -SWIPE_THRESHOLD) onNext?.()
     else if (delta > SWIPE_THRESHOLD) onPrev?.()
   }
-
   function handleMouseDown(e: React.MouseEvent) { mouseStartX.current = e.clientX }
   function handleMouseMove(e: React.MouseEvent) {
     if (mouseStartX.current === null) return
@@ -117,81 +113,81 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
     else if (delta > SWIPE_THRESHOLD) onPrev?.()
   }
 
-  // Drag resistance on the outer container (max ±16px)
-  const clampedDrag = Math.max(-16, Math.min(16, dragDelta * 0.35))
+  const clampedDrag = Math.max(-18, Math.min(18, dragDelta * 0.35))
+
+  // Position de base partagée (bottom + centrage)
+  const baseStyle = {
+    bottom: '16px',
+    left: '50%',
+  } as const
+
+  const desktopLeft = 'lg:left-[calc(50vw+112px)]'
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label={investment?.label ?? 'Détail investissement'}
-      className={`
-        fixed left-1/2 w-[calc(100%-32px)] max-w-[600px]
-        lg:left-[calc(50vw+112px)]
-        bg-white dark:bg-neutral-800 rounded-3xl shadow-2xl
-        select-none cursor-grab active:cursor-grabbing
-      `}
-      style={{
-        bottom: '16px',
-        maxHeight: '44vh',
-        zIndex: 100,
-        transform: open
-          ? `translateX(calc(-50% + ${clampedDrag}px)) translateY(0)`
-          : 'translateX(-50%) translateY(calc(100% + 24px))',
-        transition: dragDelta !== 0 ? 'none' : 'transform 0.3s ease-out',
-      }}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
-    >
-      {/* Conteneur avec overflow:hidden pour clipper les animations de slide */}
-      <div className="relative overflow-hidden rounded-3xl">
+    <>
+      {/* Carte sortante — slide out */}
+      {exitingInv && (
+        <div
+          aria-hidden="true"
+          className={`${CARD_POSITION} ${desktopLeft} pointer-events-none`}
+          style={{
+            ...baseStyle,
+            zIndex: 99,
+            transform: 'translateX(-50%)',
+            animation: `${animDir === 'left' ? 'card-exit-left' : 'card-exit-right'} ${ANIM_DURATION}ms ease-out forwards`,
+          }}
+        >
+          <CardContent
+            investment={exitingInv}
+            total={total}
+            currency={currency}
+            onClose={onClose}
+          />
+        </div>
+      )}
 
-        {/* Contenu sortant (animé vers l'extérieur) */}
-        {exitingInv && (
-          <div
-            aria-hidden="true"
-            style={{
-              position: 'absolute', inset: 0,
-              animation: `${animDir === 'left' ? 'card-exit-left' : 'card-exit-right'} ${ANIM_DURATION}ms ease-out forwards`,
-            }}
-          >
-            <CardContent investment={exitingInv} total={total} currency={currency} onClose={onClose} />
-          </div>
-        )}
-
-        {/* Contenu entrant (animé depuis l'extérieur) */}
+      {/* Carte principale — slide in + open/close + drag */}
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={investment?.label ?? 'Détail investissement'}
+        className={`${CARD_POSITION} ${desktopLeft} select-none cursor-grab active:cursor-grabbing`}
+        style={{
+          ...baseStyle,
+          zIndex: 100,
+          transform: open
+            ? `translateX(calc(-50% + ${dragDelta !== 0 ? clampedDrag : 0}px))`
+            : 'translateX(-50%) translateY(calc(100% + 24px))',
+          animation: isTransitioning
+            ? `${animDir === 'left' ? 'card-enter-from-right' : 'card-enter-from-left'} ${ANIM_DURATION}ms ease-out forwards`
+            : 'none',
+          transition: isTransitioning || dragDelta !== 0 ? 'none' : 'transform 0.3s ease-out',
+        }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+      >
         {displayedInv && (
-          <div
-            style={{
-              animation: isTransitioning
-                ? `${animDir === 'left' ? 'card-enter-from-right' : 'card-enter-from-left'} ${ANIM_DURATION}ms ease-out forwards`
-                : 'none',
-            }}
-          >
-            <CardContent
-              investment={displayedInv}
-              total={total}
-              currency={currency}
-              onClose={onClose}
-              onNext={onNext}
-              onPrev={onPrev}
-              position={position}
-            />
-          </div>
+          <CardContent
+            investment={displayedInv}
+            total={total}
+            currency={currency}
+            onClose={onClose}
+            onNext={onNext}
+            onPrev={onPrev}
+            position={position}
+          />
         )}
       </div>
-    </div>
+    </>
   )
 }
 
 // ─── Contenu de la card ──────────────────────────────────────────────────────
-
-const DEMO_CHANGE_MAP = DEMO_CHANGE
 
 function CardContent({
   investment, total, currency, onClose, onNext, onPrev, position,
@@ -205,13 +201,12 @@ function CardContent({
   position?: { current: number; total: number }
 }) {
   const pct    = ((investment.value / total) * 100).toFixed(1)
-  const change = DEMO_CHANGE_MAP[investment.id] ?? 0
+  const change = DEMO_CHANGE[investment.id] ?? 0
   const color  = CATEGORY_COLORS[investment.category]
   const label  = CATEGORY_LABELS[investment.category]
 
   return (
     <div className="px-6 pt-5 pb-6">
-
       {/* En-tête */}
       <div className="flex items-center gap-3 mb-4">
         <div
@@ -261,7 +256,6 @@ function CardContent({
             onMouseDown={(e) => e.stopPropagation()}
             disabled={!onPrev}
             className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold text-neutral-400 dark:text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-30 disabled:pointer-events-none transition-colors"
-            aria-label="Précédent"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
               <polyline points="15 18 9 12 15 6" />
@@ -287,7 +281,6 @@ function CardContent({
             onMouseDown={(e) => e.stopPropagation()}
             disabled={!onNext}
             className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold text-neutral-400 dark:text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-30 disabled:pointer-events-none transition-colors"
-            aria-label="Suivant"
           >
             Suiv.
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">

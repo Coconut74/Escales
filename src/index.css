@@ -3,18 +3,18 @@
 @tailwind utilities;
 
 @keyframes card-exit-left {
-  from { transform: translateX(0); opacity: 1; }
-  to   { transform: translateX(-110%); opacity: 0; }
+  from { transform: translateX(0); }
+  to   { transform: translateX(-100vw); }
 }
 @keyframes card-exit-right {
-  from { transform: translateX(0); opacity: 1; }
-  to   { transform: translateX(110%); opacity: 0; }
+  from { transform: translateX(0); }
+  to   { transform: translateX(100vw); }
 }
 @keyframes card-enter-from-right {
-  from { transform: translateX(110%); opacity: 0; }
-  to   { transform: translateX(0); opacity: 1; }
+  from { transform: translateX(100vw); }
+  to   { transform: translateX(0); }
 }
 @keyframes card-enter-from-left {
-  from { transform: translateX(-110%); opacity: 0; }
-  to   { transform: translateX(0); opacity: 1; }
+  from { transform: translateX(-100vw); }
+  to   { transform: translateX(0); }
 }

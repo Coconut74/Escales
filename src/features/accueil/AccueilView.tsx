@@ -1,8 +1,8 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useRef } from 'react'
 import { useAccueilStore, selectTotal, selectAverageChange } from './accueil.store'
 import PortfolioTotal from './components/PortfolioTotal'
 import IsometricChart from './components/IsometricChart'
-import type { SvgPoint } from './components/IsometricChart'
+import type { SvgPoint, IsometricChartHandle } from './components/IsometricChart'
 import InvestmentModal from './components/InvestmentModal'
 import EditInvestmentsPanel from './components/EditInvestmentsPanel'
 import type { Investment } from './accueil.types'
@@ -22,11 +22,24 @@ export default function AccueilView() {
   const [zoom, setZoom] = useState(1)
   const [zoomOrigin, setZoomOrigin] = useState({ x: 50, y: 50 })
 
+  const chartRef = useRef<IsometricChartHandle>(null)
+
   // Ordre croissant de pourcentage pour la navigation swipe
   const sortedByPct = useMemo(
     () => total > 0 ? [...investments].sort((a, b) => a.value - b.value) : investments,
     [investments, total]
   )
+
+  function focusOnBar(inv: Investment, svgPoint?: SvgPoint) {
+    const point = svgPoint ?? chartRef.current?.getBarPosition(inv.id)
+    if (point) {
+      setZoomOrigin({
+        x: (point.x / 392) * 100,
+        y: ((point.y - VB_Y) / VB_H) * 100,
+      })
+      setZoom(2)
+    }
+  }
 
   const handleSelect = useCallback((inv: Investment, svgPoint: SvgPoint) => {
     if (selected?.id === inv.id) {
@@ -34,18 +47,13 @@ export default function AccueilView() {
       setZoom(1)
       return
     }
-    // Détermine la direction d'animation selon la position dans le tri
     if (selected) {
       const curIdx = sortedByPct.findIndex((i) => i.id === selected.id)
       const newIdx = sortedByPct.findIndex((i) => i.id === inv.id)
       setNavDirection(newIdx > curIdx ? 'left' : 'right')
     }
     setSelected(inv)
-    setZoomOrigin({
-      x: (svgPoint.x / 392) * 100,
-      y: ((svgPoint.y - VB_Y) / VB_H) * 100,
-    })
-    setZoom(2)
+    focusOnBar(inv, svgPoint)
   }, [selected, sortedByPct])
 
   function handleClose() {
@@ -57,12 +65,18 @@ export default function AccueilView() {
 
   function handleNext() {
     const next = sortedByPct[selectedIndex + 1]
-    if (next) { setNavDirection('left'); setSelected(next) }
+    if (!next) return
+    setNavDirection('left')
+    setSelected(next)
+    focusOnBar(next)
   }
 
   function handlePrev() {
     const prev = sortedByPct[selectedIndex - 1]
-    if (prev) { setNavDirection('right'); setSelected(prev) }
+    if (!prev) return
+    setNavDirection('right')
+    setSelected(prev)
+    focusOnBar(prev)
   }
 
   return (
@@ -80,6 +94,7 @@ export default function AccueilView() {
             }}
           >
             <IsometricChart
+              ref={chartRef}
               investments={investments}
               total={total}
               onSelect={handleSelect}
