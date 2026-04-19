@@ -85,7 +85,7 @@ export default function AccueilView() {
   }
 
   return (
-    <div className="flex flex-col w-full h-full overflow-hidden bg-surface dark:bg-neutral-900">
+    <div className="flex flex-col w-full h-full overflow-hidden">
       <PortfolioTotal total={total} monthlyChange={avgChange ?? undefined} />
 
       {/* Zone graphique */}
