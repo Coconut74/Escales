@@ -22,6 +22,7 @@ export default function AccueilView() {
   const [zoomOrigin, setZoomOrigin] = useState({ x: 50, y: 50 })
 
   const chartRef = useRef<IsometricChartHandle>(null)
+  const navDirRef = useRef<'left' | 'right'>('right')
 
   // Ordre croissant de pourcentage pour la navigation swipe
   const sortedByPct = useMemo(
@@ -40,27 +41,35 @@ export default function AccueilView() {
     }
   }
 
+  const selectedIndex = selected ? sortedByPct.findIndex((i) => i.id === selected.id) : -1
+
   const handleSelect = useCallback((inv: Investment, svgPoint: SvgPoint) => {
     if (selected?.id === inv.id) {
       setSelected(null)
       setZoom(1)
       return
     }
+    const newIndex = sortedByPct.findIndex(i => i.id === inv.id)
+    const tot = sortedByPct.length
+    if (tot > 1 && selectedIndex >= 0) {
+      const diff = newIndex - selectedIndex
+      const wrapping = Math.abs(diff) > tot / 2
+      navDirRef.current = wrapping ? (diff < 0 ? 'right' : 'left') : (diff > 0 ? 'right' : 'left')
+    }
     setSelected(inv)
     focusOnBar(inv, svgPoint)
-  }, [selected, sortedByPct])
+  }, [selected, sortedByPct, selectedIndex])
 
   function handleClose() {
     setSelected(null)
     setZoom(1)
   }
 
-  const selectedIndex = selected ? sortedByPct.findIndex((i) => i.id === selected.id) : -1
-
   function handleNext() {
     if (!sortedByPct.length) return
     const next = sortedByPct[(selectedIndex + 1) % sortedByPct.length]
     if (!next) return
+    navDirRef.current = 'right'
     setSelected(next)
     focusOnBar(next)
   }
@@ -69,6 +78,7 @@ export default function AccueilView() {
     if (!sortedByPct.length) return
     const prev = sortedByPct[(selectedIndex - 1 + sortedByPct.length) % sortedByPct.length]
     if (!prev) return
+    navDirRef.current = 'left'
     setSelected(prev)
     focusOnBar(prev)
   }
@@ -119,6 +129,7 @@ export default function AccueilView() {
         onNext={selected ? handleNext : undefined}
         onPrev={selected ? handlePrev : undefined}
         position={{ current: selectedIndex + 1, total: sortedByPct.length }}
+        navDirRef={navDirRef}
       />
     </div>
   )
