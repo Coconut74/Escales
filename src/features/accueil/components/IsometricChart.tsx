@@ -12,7 +12,7 @@ const MAX_BAR_H = GY - 160
 
 // ─── Couleurs ────────────────────────────────────────────────────────────────
 const FILLED      = { top: '#E17924', left: '#B95415', right: '#5F3012' }
-const EMPTY_LIGHT = { top: '#F2F3F8', left: '#E6E7F0', right: '#CBCEDD' }
+const EMPTY_LIGHT = { top: '#E4E6F2', left: '#D5D8E8', right: '#BEC3D6' }
 const EMPTY_DARK  = { top: '#2E3148', left: '#252840', right: '#1C1E33' }
 
 // ─── Grille isométrique ──────────────────────────────────────────────────────

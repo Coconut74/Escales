@@ -11,7 +11,7 @@ export default function PortfolioTotal({ total, monthlyChange = 5.2 }: Portfolio
   const isPositive = monthlyChange >= 0
   const formatted = formatCurrency(total, currency).replace(/\u202f/g, '\u00a0')
 
-  const bgColor = theme === 'dark' ? 'rgba(20,22,42,0.88)' : 'rgba(246,247,251,0.85)'
+  const bgColor = theme === 'dark' ? 'rgba(20,22,42,0.88)' : 'rgba(255,255,255,0.88)'
 
   return (
     <div

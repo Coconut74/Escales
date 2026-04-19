@@ -33,7 +33,7 @@ export default {
           800: '#22253B',
           900: '#14162A',
         },
-        surface: '#F6F7FB',
+        surface: '#FFFFFF',
         'surface-raised': '#FFFFFF',
       },
     },
