@@ -190,8 +190,6 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
             total={total}
             currency={currency}
             onClose={onClose}
-            onNext={onNext}
-            onPrev={onPrev}
             position={position}
           />
         )}
@@ -203,10 +201,10 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
 // ─── Contenu de la card ──────────────────────────────────────────────────────
 
 function CardContent({
-  investment, total, currency, onClose, onNext, onPrev, position,
+  investment, total, currency, onClose, position,
 }: {
   investment: Investment; total: number; currency: string
-  onClose: () => void; onNext?: () => void; onPrev?: () => void
+  onClose: () => void
   position?: { current: number; total: number }
 }) {
   const pct    = ((investment.value / total) * 100).toFixed(1)
@@ -244,30 +242,10 @@ function CardContent({
       </div>
 
       {position && (
-        <div className="flex items-center justify-between">
-          <button
-            onClick={(e) => { e.stopPropagation(); onPrev?.() }}
-            onMouseDown={(e) => e.stopPropagation()}
-            className="flex items-center gap-1 px-2 py-1 text-xs font-semibold text-neutral-400 dark:text-neutral-500"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
-            Préc.
-          </button>
-
-          <div className="flex items-center gap-1.5">
-            {Array.from({ length: position.total }).map((_, i) => (
-              <div key={i} className={`rounded-full transition-all duration-200 ${i === position.current - 1 ? 'w-4 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600'}`} />
-            ))}
-          </div>
-
-          <button
-            onClick={(e) => { e.stopPropagation(); onNext?.() }}
-            onMouseDown={(e) => e.stopPropagation()}
-            className="flex items-center gap-1 px-2 py-1 text-xs font-semibold text-neutral-400 dark:text-neutral-500"
-          >
-            Suiv.
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
-          </button>
+        <div className="flex items-center justify-center gap-1.5">
+          {Array.from({ length: position.total }).map((_, i) => (
+            <div key={i} className={`rounded-full transition-all duration-200 ${i === position.current - 1 ? 'w-4 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600'}`} />
+          ))}
         </div>
       )}
     </div>
