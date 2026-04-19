@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useAccueilStore, selectTotal, selectAverageChange } from './accueil.store'
 import PortfolioTotal from './components/PortfolioTotal'
 import IsometricChart from './components/IsometricChart'
@@ -22,6 +22,14 @@ export default function AccueilView() {
   const [zoom, setZoom] = useState(1)
   const [zoomOrigin, setZoomOrigin] = useState({ x: 50, y: 50 })
 
+  // Ordre croissant de pourcentage pour la navigation swipe
+  const sortedByPct = useMemo(
+    () => total > 0
+      ? [...investments].sort((a, b) => a.value - b.value)
+      : investments,
+    [investments, total]
+  )
+
   const handleSelect = useCallback((inv: Investment, svgPoint: SvgPoint) => {
     if (selected?.id === inv.id) {
       handleClose()
@@ -38,6 +46,23 @@ export default function AccueilView() {
   function handleClose() {
     setSelected(null)
     setZoom(1)
+  }
+
+  function navigateTo(inv: Investment) {
+    setSelected(inv)
+    setZoom(1)
+  }
+
+  const selectedIndex = selected ? sortedByPct.findIndex((i) => i.id === selected.id) : -1
+
+  function handleNext() {
+    const next = sortedByPct[selectedIndex + 1]
+    if (selectedIndex < sortedByPct.length - 1 && next) navigateTo(next)
+  }
+
+  function handlePrev() {
+    const prev = sortedByPct[selectedIndex - 1]
+    if (selectedIndex > 0 && prev) navigateTo(prev)
   }
 
   return (
@@ -82,6 +107,9 @@ export default function AccueilView() {
         investment={selected}
         total={total}
         onClose={handleClose}
+        onNext={selectedIndex < sortedByPct.length - 1 ? handleNext : undefined}
+        onPrev={selectedIndex > 0 ? handlePrev : undefined}
+        position={{ current: selectedIndex + 1, total: sortedByPct.length }}
       />
     </div>
   )
