@@ -1,11 +1,20 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useAccueilStore } from '../accueil.store'
 import type { Investment, InvestmentCategory } from '../accueil.types'
 import { CATEGORY_LABELS } from '../accueil.types'
+import { useProfilStore } from '@/features/profil/profil.store'
+import { searchSymbol } from '@/services/finnhub'
+import type { FinnhubSearchResult } from '@/services/finnhub'
 import TextField from '@/components/ui/TextField'
 import DropdownField from '@/components/ui/DropdownField'
 import Button from '@/components/ui/Button'
 import Icon from '@/components/ui/Icon'
+
+const ChartIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" /><polyline points="16 7 22 7 22 13" />
+  </svg>
+)
 
 const CATEGORY_OPTIONS = (Object.keys(CATEGORY_LABELS) as InvestmentCategory[]).map(
   (k) => ({ value: k, label: CATEGORY_LABELS[k] })
@@ -18,9 +27,9 @@ interface Props {
 
 export default function EditInvestmentsPanel({ open, onClose }: Props) {
   const { investments, setInvestments } = useAccueilStore()
+  const finnhubKey = useProfilStore((s) => s.finnhubKey)
   const [draft, setDraft] = useState<Investment[]>([])
   const [errors, setErrors] = useState<Record<string, string>>({})
-
 
   useEffect(() => {
     if (open) {
@@ -56,7 +65,11 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
     const newErrors: Record<string, string> = {}
     draft.forEach((inv) => {
       if (!inv.label.trim()) newErrors[inv.id] = 'label'
-      else if (inv.value <= 0) newErrors[inv.id] = 'value'
+      else if (inv.ticker) {
+        if (!inv.shares || inv.shares <= 0) newErrors[inv.id] = 'shares'
+      } else if (inv.value <= 0) {
+        newErrors[inv.id] = 'value'
+      }
     })
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors)
@@ -103,27 +116,52 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
                       onChange={(e) => update(inv.id, { category: e.target.value as InvestmentCategory })}
                     />
                   </div>
-                  <div className="w-28">
-                    <TextField
-                      type="number"
-                      placeholder="Montant"
-                      value={inv.value === 0 ? '' : inv.value}
-                      onChange={(e) => update(inv.id, { value: parseFloat(e.target.value) || 0 })}
-                      error={errors[inv.id] === 'value' ? 'Valeur > 0' : undefined}
-                    />
-                  </div>
-                  <div className="w-20">
-                    <TextField
-                      type="number"
-                      placeholder="Évol. %"
-                      value={inv.change === undefined ? '' : inv.change}
-                      onChange={(e) => {
-                        const v = e.target.value
-                        update(inv.id, { change: v === '' ? undefined : parseFloat(v) })
-                      }}
-                    />
-                  </div>
+                  {/* Valeur manuelle — cachée quand ticker lié */}
+                  {!inv.ticker && (
+                    <>
+                      <div className="w-28">
+                        <TextField
+                          type="number"
+                          placeholder="Montant"
+                          value={inv.value === 0 ? '' : inv.value}
+                          onChange={(e) => update(inv.id, { value: parseFloat(e.target.value) || 0 })}
+                          error={errors[inv.id] === 'value' ? 'Valeur > 0' : undefined}
+                        />
+                      </div>
+                      <div className="w-20">
+                        <TextField
+                          type="number"
+                          placeholder="Évol. %"
+                          value={inv.change === undefined ? '' : inv.change}
+                          onChange={(e) => {
+                            const v = e.target.value
+                            update(inv.id, { change: v === '' ? undefined : parseFloat(v) })
+                          }}
+                        />
+                      </div>
+                    </>
+                  )}
+                  {/* Parts — affichées quand ticker lié */}
+                  {inv.ticker && (
+                    <div className="w-28">
+                      <TextField
+                        type="number"
+                        placeholder="Nb parts"
+                        value={inv.shares === undefined ? '' : inv.shares}
+                        onChange={(e) => update(inv.id, { shares: parseFloat(e.target.value) || undefined })}
+                        error={errors[inv.id] === 'shares' ? 'Parts > 0' : undefined}
+                      />
+                    </div>
+                  )}
                 </div>
+
+                {/* Champ ticker */}
+                <TickerField
+                  ticker={inv.ticker}
+                  apiKey={finnhubKey}
+                  onSelect={(ticker) => update(inv.id, { ticker, shares: inv.shares ?? 1 })}
+                  onUnlink={() => update(inv.id, { ticker: undefined, shares: undefined })}
+                />
               </div>
               <button
                 onClick={() => remove(inv.id)}
@@ -143,7 +181,6 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
           <Icon name="plus" size={16} />
           Ajouter un investissement
         </button>
-
       </div>
 
       {/* Footer */}
@@ -195,5 +232,100 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
         </div>
       </div>
     </>
+  )
+}
+
+// ─── Champ de recherche ticker ───────────────────────────────────────────────
+
+function TickerField({ ticker, apiKey, onSelect, onUnlink }: {
+  ticker?: string
+  apiKey: string
+  onSelect: (symbol: string) => void
+  onUnlink: () => void
+}) {
+  const [query, setQuery] = useState('')
+  const [results, setResults] = useState<FinnhubSearchResult[]>([])
+  const [open, setOpen] = useState(false)
+  const [searching, setSearching] = useState(false)
+  const timerRef = useRef<ReturnType<typeof setTimeout>>()
+  const wrapRef = useRef<HTMLDivElement>(null)
+
+  // Ferme le dropdown si clic en dehors
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  function handleChange(v: string) {
+    setQuery(v)
+    setOpen(true)
+    clearTimeout(timerRef.current)
+    if (!apiKey || v.length < 1) { setResults([]); return }
+    timerRef.current = setTimeout(async () => {
+      setSearching(true)
+      try {
+        setResults(await searchSymbol(v, apiKey))
+      } catch { setResults([]) }
+      finally { setSearching(false) }
+    }, 350)
+  }
+
+  if (ticker) {
+    return (
+      <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-primary-300 dark:border-primary-700 bg-primary-50 dark:bg-primary-900/20">
+        <ChartIcon />
+        <span className="text-sm font-bold text-primary-700 dark:text-primary-300 font-mono">{ticker}</span>
+        <span className="text-xs text-primary-500 dark:text-primary-400">· prix live activé</span>
+        <button
+          onClick={onUnlink}
+          onMouseDown={(e) => e.stopPropagation()}
+          className="ml-auto text-primary-400 hover:text-primary-600 dark:hover:text-primary-200 text-base leading-none"
+          aria-label="Délier"
+        >×</button>
+      </div>
+    )
+  }
+
+  return (
+    <div ref={wrapRef} className="relative">
+      <div className="relative">
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => handleChange(e.target.value)}
+          onFocus={() => results.length > 0 && setOpen(true)}
+          placeholder={apiKey ? 'Lier à une action (ex: AAPL, BTC…)' : 'Configurez votre clé Finnhub dans le profil'}
+          disabled={!apiKey}
+          className="w-full px-3 py-2 pl-8 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-sm placeholder:text-neutral-400 dark:placeholder:text-neutral-500 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
+        />
+        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none">
+          {searching ? (
+            <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" strokeOpacity="0.25"/><path d="M21 12a9 9 0 00-9-9" /></svg>
+          ) : (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          )}
+        </span>
+      </div>
+
+      {open && results.length > 0 && (
+        <div className="absolute top-full left-0 right-0 z-20 mt-1 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-xl max-h-48 overflow-y-auto">
+          {results.map((r) => (
+            <button
+              key={r.symbol}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => { onSelect(r.symbol); setQuery(''); setResults([]); setOpen(false) }}
+              className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-neutral-50 dark:hover:bg-neutral-700 text-left transition-colors"
+            >
+              <span className="text-sm font-bold text-neutral-900 dark:text-neutral-50 font-mono w-20 shrink-0">{r.displaySymbol}</span>
+              <span className="text-xs text-neutral-500 dark:text-neutral-400 truncate">{r.description}</span>
+              <span className="text-xs text-neutral-400 dark:text-neutral-500 shrink-0 ml-auto">{r.type}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   )
 }

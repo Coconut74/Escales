@@ -11,7 +11,9 @@ export interface Investment {
   label: string
   category: InvestmentCategory
   value: number
-  change?: number // évolution en % (ex: 5.6 = +5.6%)
+  change?: number  // évolution en % (ex: 5.6 = +5.6%)
+  ticker?: string  // symbole Finnhub (ex: "AAPL", "BTC-USD")
+  shares?: number  // nombre de parts/unités
 }
 
 export const CATEGORY_LABELS: Record<InvestmentCategory, string> = {

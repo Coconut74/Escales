@@ -4,10 +4,6 @@ import { CATEGORY_COLORS, CATEGORY_LABELS } from '../accueil.types'
 import { formatCurrency } from '@/lib/formatting'
 import { useProfilStore } from '@/features/profil/profil.store'
 
-const DEMO_CHANGE: Record<string, number> = {
-  '1': 8.3, '2': 4.1, '3': 12.7, '4': 1.2, '5': -2.4,
-}
-
 const SWIPE_THRESHOLD = 50
 const ANIM_DURATION = 280
 
@@ -208,7 +204,7 @@ function CardContent({
   position?: { current: number; total: number }
 }) {
   const pct    = ((investment.value / total) * 100).toFixed(1)
-  const change = DEMO_CHANGE[investment.id] ?? 0
+  const change = investment.change ?? 0
   const color  = CATEGORY_COLORS[investment.category]
   const label  = CATEGORY_LABELS[investment.category]
 
@@ -222,7 +218,14 @@ function CardContent({
           {investment.label.slice(0, 2).toUpperCase()}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-base font-bold text-neutral-900 dark:text-neutral-50 truncate">{investment.label}</p>
+          <div className="flex items-center gap-2">
+            <p className="text-base font-bold text-neutral-900 dark:text-neutral-50 truncate">{investment.label}</p>
+            {investment.ticker && (
+              <span className="text-xs font-mono px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400 shrink-0">
+                {investment.ticker}
+              </span>
+            )}
+          </div>
           <span className="text-sm font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: `${color.bg}22`, color: color.bg }}>
             {label}
           </span>

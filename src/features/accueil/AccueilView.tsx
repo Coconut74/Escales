@@ -8,15 +8,35 @@ import InvestmentModal from './components/InvestmentModal'
 import EditInvestmentsPanel from './components/EditInvestmentsPanel'
 import type { Investment } from './accueil.types'
 import Icon from '@/components/ui/Icon'
+import { useProfilStore } from '@/features/profil/profil.store'
+import { useStockPrices } from '@/hooks/useStockPrices'
 
 const VB_Y = 140
 const VB_H = 310
 
 export default function AccueilView() {
   const investments = useAccueilStore((s) => s.investments)
-  const total = selectTotal(investments)
-  const avgChange = selectAverageChange(investments)
+  const finnhubKey = useProfilStore((s) => s.finnhubKey)
+  const { prices } = useStockPrices(investments, finnhubKey)
+
+  // Investissements avec prix live injectés (fallback sur valeur manuelle)
+  const effectiveInvestments = useMemo(() =>
+    investments.map(inv => {
+      const live = prices[inv.id]
+      if (live && inv.ticker && inv.shares) {
+        return { ...inv, value: Math.round(live.price * inv.shares * 100) / 100, change: live.changePercent }
+      }
+      return inv
+    }), [investments, prices])
+
+  const total = selectTotal(effectiveInvestments)
+  const avgChange = selectAverageChange(effectiveInvestments)
   const [selected, setSelected] = useState<Investment | null>(null)
+
+  // selected avec prix live
+  const effectiveSelected = selected
+    ? effectiveInvestments.find(i => i.id === selected.id) ?? selected
+    : null
 
   const [editOpen, setEditOpen] = useState(false)
   const [zoom, setZoom] = useState(1)
@@ -27,8 +47,8 @@ export default function AccueilView() {
 
   // Ordre croissant de pourcentage pour la navigation swipe
   const sortedByPct = useMemo(
-    () => total > 0 ? [...investments].sort((a, b) => a.value - b.value) : investments,
-    [investments, total]
+    () => total > 0 ? [...effectiveInvestments].sort((a, b) => a.value - b.value) : effectiveInvestments,
+    [effectiveInvestments, total]
   )
 
   function focusOnBar(inv: Investment, svgPoint?: SvgPoint) {
@@ -100,10 +120,10 @@ export default function AccueilView() {
           >
             <IsometricChart
               ref={chartRef}
-              investments={investments}
+              investments={effectiveInvestments}
               total={total}
               onSelect={handleSelect}
-              selected={selected}
+              selected={effectiveSelected}
             />
           </div>
         </div>
@@ -126,11 +146,11 @@ export default function AccueilView() {
       <EditInvestmentsPanel open={editOpen} onClose={() => setEditOpen(false)} />
 
       <InvestmentModal
-        investment={selected}
+        investment={effectiveSelected}
         total={total}
         onClose={handleClose}
-        onNext={selected ? handleNext : undefined}
-        onPrev={selected ? handlePrev : undefined}
+        onNext={effectiveSelected ? handleNext : undefined}
+        onPrev={effectiveSelected ? handlePrev : undefined}
         position={{ current: selectedIndex + 1, total: sortedByPct.length }}
         navDirRef={navDirRef}
       />
