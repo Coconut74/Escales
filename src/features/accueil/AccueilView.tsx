@@ -8,7 +8,6 @@ import InvestmentModal from './components/InvestmentModal'
 import EditInvestmentsPanel from './components/EditInvestmentsPanel'
 import type { Investment } from './accueil.types'
 import Icon from '@/components/ui/Icon'
-import { useProfilStore } from '@/features/profil/profil.store'
 import { useStockPrices } from '@/hooks/useStockPrices'
 
 const VB_Y = 140
@@ -16,8 +15,7 @@ const VB_H = 310
 
 export default function AccueilView() {
   const investments = useAccueilStore((s) => s.investments)
-  const finnhubKey = useProfilStore((s) => s.finnhubKey)
-  const { prices } = useStockPrices(investments, finnhubKey)
+  const { prices } = useStockPrices(investments, import.meta.env.VITE_FINNHUB_KEY ?? '')
 
   // Investissements avec prix live injectés (fallback sur valeur manuelle)
   const effectiveInvestments = useMemo(() =>

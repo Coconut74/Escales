@@ -22,8 +22,8 @@ const LANGUAGE_OPTIONS: { value: Language; label: string }[] = [
 
 export default function ProfilView() {
   const {
-    firstName, lastName, avatarEmoji, currency, language, theme, colorTheme, finnhubKey, memberSince,
-    setFirstName, setLastName, setAvatarEmoji, setCurrency, setLanguage, setTheme, setColorTheme, setFinnhubKey,
+    firstName, lastName, avatarEmoji, currency, language, theme, colorTheme, memberSince,
+    setFirstName, setLastName, setAvatarEmoji, setCurrency, setLanguage, setTheme, setColorTheme,
     resetProfil,
   } = useProfilStore()
 
@@ -154,28 +154,6 @@ export default function ProfilView() {
                     <option key={l.value} value={l.value}>{l.label}</option>
                   ))}
                 </select>
-              </Field>
-              <Field label="Clé API Finnhub">
-                <div className="flex gap-2">
-                  <input
-                    type="password"
-                    value={finnhubKey}
-                    onChange={(e) => setFinnhubKey(e.target.value)}
-                    placeholder="Obtenez votre clé sur finnhub.io"
-                    className="flex-1 px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-sm placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
-                  />
-                  <a
-                    href="https://finnhub.io/register"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600 text-xs font-semibold text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors whitespace-nowrap"
-                  >
-                    Obtenir
-                  </a>
-                </div>
-                {finnhubKey && (
-                  <p className="text-xs text-green-600 dark:text-green-400 mt-1">✓ Clé configurée — prix live activés</p>
-                )}
               </Field>
             </Section>
 

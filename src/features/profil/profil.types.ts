@@ -21,6 +21,5 @@ export interface ProfilState {
   finnhubKey: string
   setTheme: (v: Theme) => void
   setColorTheme: (v: ColorTheme) => void
-  setFinnhubKey: (v: string) => void
   resetProfil: () => void
 }

@@ -12,7 +12,6 @@ export const useProfilStore = create<ProfilState>()(
       language: 'fr' as Language,
       theme: 'light' as Theme,
       colorTheme: 'orange' as ColorTheme,
-      finnhubKey: '',
       memberSince: new Date().toISOString(),
       setFirstName: (firstName) => set({ firstName }),
       setLastName: (lastName) => set({ lastName }),
@@ -21,7 +20,6 @@ export const useProfilStore = create<ProfilState>()(
       setLanguage: (language) => set({ language }),
       setTheme: (theme) => set({ theme }),
       setColorTheme: (colorTheme) => set({ colorTheme }),
-      setFinnhubKey: (finnhubKey) => set({ finnhubKey }),
       resetProfil: () => set({
         firstName: '',
         lastName: '',
@@ -30,7 +28,6 @@ export const useProfilStore = create<ProfilState>()(
         language: 'fr' as Language,
         theme: 'light' as Theme,
         colorTheme: 'orange' as ColorTheme,
-        finnhubKey: '',
         memberSince: new Date().toISOString(),
       }),
     }),
@@ -44,7 +41,6 @@ export const useProfilStore = create<ProfilState>()(
         language: state.language,
         theme: state.theme,
         colorTheme: state.colorTheme,
-        finnhubKey: state.finnhubKey,
         memberSince: state.memberSince,
       }),
     }
