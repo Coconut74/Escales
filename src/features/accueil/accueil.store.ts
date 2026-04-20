@@ -2,13 +2,6 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { Investment } from './accueil.types'
 
-const DEMO_INVESTMENTS: Investment[] = [
-  { id: '1', label: 'ETF Monde',     category: 'etf',         value: 15200, change:  8.4 },
-  { id: '2', label: 'SCPI Pierre',   category: 'immo',        value: 7400,  change:  3.1 },
-  { id: '3', label: 'Bitcoin',       category: 'crypto',      value: 6200,  change: 15.2 },
-  { id: '4', label: 'Livret A',      category: 'epargne',     value: 5200,  change:  3.0 },
-  { id: '5', label: 'Oblig. État',   category: 'obligations', value: 5450,  change: -1.2 },
-]
 
 interface AccueilStore {
   investments: Investment[]
@@ -22,7 +15,7 @@ interface AccueilStore {
 export const useAccueilStore = create<AccueilStore>()(
   persist(
     (set) => ({
-      investments: DEMO_INVESTMENTS,
+      investments: [],
       setInvestments: (investments) => set({ investments }),
       updateInvestment: (id, patch) =>
         set((s) => ({
@@ -34,17 +27,9 @@ export const useAccueilStore = create<AccueilStore>()(
         set((s) => ({ investments: [...s.investments, inv] })),
       removeInvestment: (id) =>
         set((s) => ({ investments: s.investments.filter((i) => i.id !== id) })),
-      resetInvestments: () => set({ investments: DEMO_INVESTMENTS }),
+      resetInvestments: () => set({ investments: [] }),
     }),
-    {
-      name: 'escales-accueil',
-      // Si la liste persiste vide (suppression accidentelle), restaure les démo
-      onRehydrateStorage: () => (state) => {
-        if (state && state.investments.length === 0) {
-          state.investments = DEMO_INVESTMENTS
-        }
-      },
-    }
+    { name: 'escales-accueil' }
   )
 )
 

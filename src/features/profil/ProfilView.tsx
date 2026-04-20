@@ -24,6 +24,7 @@ export default function ProfilView() {
   const {
     firstName, lastName, avatarEmoji, currency, language, theme, colorTheme, finnhubKey, memberSince,
     setFirstName, setLastName, setAvatarEmoji, setCurrency, setLanguage, setTheme, setColorTheme, setFinnhubKey,
+    resetProfil,
   } = useProfilStore()
 
   const investments = useAccueilStore((s) => s.investments)
@@ -35,6 +36,7 @@ export default function ProfilView() {
 
   function handleReset() {
     resetInvestments()
+    resetProfil()
     setShowResetConfirm(false)
   }
 

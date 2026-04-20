@@ -22,6 +22,17 @@ export const useProfilStore = create<ProfilState>()(
       setTheme: (theme) => set({ theme }),
       setColorTheme: (colorTheme) => set({ colorTheme }),
       setFinnhubKey: (finnhubKey) => set({ finnhubKey }),
+      resetProfil: () => set({
+        firstName: '',
+        lastName: '',
+        avatarEmoji: '🧑',
+        currency: 'EUR' as Currency,
+        language: 'fr' as Language,
+        theme: 'light' as Theme,
+        colorTheme: 'orange' as ColorTheme,
+        finnhubKey: '',
+        memberSince: new Date().toISOString(),
+      }),
     }),
     {
       name: 'escales-profil',
