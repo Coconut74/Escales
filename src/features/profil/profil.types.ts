@@ -18,7 +18,6 @@ export interface ProfilState {
   setAvatarEmoji: (v: string) => void
   setCurrency: (v: Currency) => void
   setLanguage: (v: Language) => void
-  finnhubKey: string
   setTheme: (v: Theme) => void
   setColorTheme: (v: ColorTheme) => void
   resetProfil: () => void
