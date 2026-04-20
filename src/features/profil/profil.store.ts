@@ -12,7 +12,7 @@ export const useProfilStore = create<ProfilState>()(
       language: 'fr' as Language,
       theme: 'light' as Theme,
       colorTheme: 'orange' as ColorTheme,
-      finnhubKey: '',
+      finnhubKey: 'RF8d5fzq0so0hqlr',
       memberSince: new Date().toISOString(),
       setFirstName: (firstName) => set({ firstName }),
       setLastName: (lastName) => set({ lastName }),
@@ -30,16 +30,16 @@ export const useProfilStore = create<ProfilState>()(
         language: 'fr' as Language,
         theme: 'light' as Theme,
         colorTheme: 'orange' as ColorTheme,
-        finnhubKey: '',
+        finnhubKey: 'RF8d5fzq0so0hqlr',
         memberSince: new Date().toISOString(),
       }),
     }),
     {
       name: 'escales-profil',
-      version: 1,
+      version: 2,
       migrate: (persisted: any) => {
-        if (!persisted.finnhubKey) {
-          persisted.finnhubKey = ''
+        if (!persisted.finnhubKey || persisted.finnhubKey === 'd7iv50hr01qn2qavhu30d7iv50hr01qn2qavhu3g') {
+          persisted.finnhubKey = 'RF8d5fzq0so0hqlr'
         }
         return persisted
       },
