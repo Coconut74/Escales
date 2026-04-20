@@ -31,6 +31,7 @@ export default function ProfilView() {
   const resetInvestments = useAccueilStore((s) => s.resetInvestments)
 
   const [showResetConfirm, setShowResetConfirm] = useState(false)
+  const [showKey, setShowKey] = useState(false)
 
   const displayName = [firstName, lastName].filter(Boolean).join(' ') || 'Mon profil'
 
@@ -155,15 +156,38 @@ export default function ProfilView() {
                   ))}
                 </select>
               </Field>
-              <Field label="Clé API Finnhub">
+              <Field
+                label={
+                  <span className="flex items-center gap-1.5">
+                    Clé API Finnhub
+                    <button
+                      type="button"
+                      onClick={() => setShowKey(!showKey)}
+                      className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors p-0.5 rounded focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
+                      title={showKey ? 'Masquer la clé' : 'Afficher la clé'}
+                    >
+                      <Icon name={showKey ? 'eye-off' : 'eye'} size={16} />
+                    </button>
+                  </span>
+                }
+              >
                 <div className="flex gap-2">
                   <input
-                    type="password"
+                    type={showKey ? 'text' : 'password'}
                     value={finnhubKey}
                     onChange={(e) => setFinnhubKey(e.target.value)}
                     placeholder="Clé Finnhub"
                     className="flex-1 px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-sm placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
                   />
+                  <a
+                    href="https://finnhub.io/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-sm font-medium hover:bg-primary-200 dark:hover:bg-primary-900/50 transition-colors whitespace-nowrap"
+                  >
+                    <Icon name="external-link" size={14} />
+                    Obtenir une clé
+                  </a>
                 </div>
                 {finnhubKey && (
                   <p className="text-xs text-green-600 dark:text-green-400 mt-1">✓ Prix live activés</p>
@@ -230,7 +254,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   )
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ label, children }: { label: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
       <label className="text-sm font-medium text-neutral-700 dark:text-neutral-200">{label}</label>
