@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { Currency, Language, ProfilState, Theme } from './profil.types'
+import type { ColorTheme, Currency, Language, ProfilState, Theme } from './profil.types'
 
 export const useProfilStore = create<ProfilState>()(
   persist(
@@ -11,6 +11,7 @@ export const useProfilStore = create<ProfilState>()(
       currency: 'EUR' as Currency,
       language: 'fr' as Language,
       theme: 'light' as Theme,
+      colorTheme: 'orange' as ColorTheme,
       memberSince: new Date().toISOString(),
       setFirstName: (firstName) => set({ firstName }),
       setLastName: (lastName) => set({ lastName }),
@@ -18,6 +19,7 @@ export const useProfilStore = create<ProfilState>()(
       setCurrency: (currency) => set({ currency }),
       setLanguage: (language) => set({ language }),
       setTheme: (theme) => set({ theme }),
+      setColorTheme: (colorTheme) => set({ colorTheme }),
     }),
     {
       name: 'escales-profil',
@@ -28,6 +30,7 @@ export const useProfilStore = create<ProfilState>()(
         currency: state.currency,
         language: state.language,
         theme: state.theme,
+        colorTheme: state.colorTheme,
         memberSince: state.memberSince,
       }),
     }

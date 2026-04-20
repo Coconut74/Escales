@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Palette primary par défaut (orange) — surchargée dynamiquement via JS */
+:root {
+  --p100: 255 248 241;
+  --p200: 255 236 220;
+  --p300: 252 207 169;
+  --p400: 249 172 109;
+  --p500: 238 144 68;
+  --p600: 225 121 36;
+  --p700: 185 84 21;
+  --p800: 95 48 18;
+  --p900: 44 25 20;
+}
+
 /* Les keyframes incluent l'offset de centrage (-50%) pour éviter tout saut
    quand l'animation démarre ou se termine vs. le style.transform statique. */
 @keyframes card-exit-left {

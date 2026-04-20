@@ -8,17 +8,17 @@ export default {
         sans: ['Urbanist', 'system-ui', 'sans-serif'],
       },
       colors: {
-        // Palette primary — source Token.json Figma
+        // Palette primary — pilotée par CSS custom properties (thème couleur dynamique)
         primary: {
-          100: '#FFF8F1',
-          200: '#FFECDC',
-          300: '#FCCFA9',
-          400: '#F9AC6D',
-          500: '#EE9044',
-          600: '#E17924',
-          700: '#B95415',
-          800: '#5F3012',
-          900: '#2C1914',
+          100: 'rgb(var(--p100) / <alpha-value>)',
+          200: 'rgb(var(--p200) / <alpha-value>)',
+          300: 'rgb(var(--p300) / <alpha-value>)',
+          400: 'rgb(var(--p400) / <alpha-value>)',
+          500: 'rgb(var(--p500) / <alpha-value>)',
+          600: 'rgb(var(--p600) / <alpha-value>)',
+          700: 'rgb(var(--p700) / <alpha-value>)',
+          800: 'rgb(var(--p800) / <alpha-value>)',
+          900: 'rgb(var(--p900) / <alpha-value>)',
         },
         // Palette neutre — gris légèrement cassé bleu (très subtil)
         neutral: {

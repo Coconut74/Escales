@@ -1,6 +1,7 @@
 import { useMemo, useImperativeHandle, forwardRef } from 'react'
 import type { Investment } from '../accueil.types'
 import { useProfilStore } from '@/features/profil/profil.store'
+import { COLOR_THEME_BARS } from '@/features/profil/color-themes'
 
 // ─── Dimensions ─────────────────────────────────────────────────────────────
 const TW = 90,  HW = 45
@@ -11,7 +12,6 @@ const GY = 240
 const MAX_BAR_H = GY - 160
 
 // ─── Couleurs ────────────────────────────────────────────────────────────────
-const FILLED      = { top: '#E17924', left: '#B95415', right: '#5F3012' }
 const EMPTY_LIGHT = { top: '#E4E6F2', left: '#D5D8E8', right: '#BEC3D6' }
 const EMPTY_DARK  = { top: '#2E3148', left: '#252840', right: '#1C1E33' }
 
@@ -63,7 +63,9 @@ const IsometricChart = forwardRef<IsometricChartHandle, Props>(function Isometri
   { investments, total, onSelect, selected }, ref
 ) {
   const theme = useProfilStore((s) => s.theme)
+  const colorTheme = useProfilStore((s) => s.colorTheme)
   const EMPTY = theme === 'dark' ? EMPTY_DARK : EMPTY_LIGHT
+  const FILLED = COLOR_THEME_BARS[colorTheme]
 
   const sorted = useMemo(
     () => [...investments].sort((a, b) => b.value - a.value),

@@ -6,17 +6,25 @@ import JournalView from '@/features/journal/JournalView'
 import PlannerView from '@/features/planner/PlannerView'
 import ProfilView from '@/features/profil/ProfilView'
 import { useProfilStore } from '@/features/profil/profil.store'
+import { COLOR_THEME_VARS } from '@/features/profil/color-themes'
 
 export type View = 'accueil' | 'journal' | 'planner' | 'profil'
 
 export default function App() {
   const [activeView, setActiveView] = useState<View>('accueil')
   const theme = useProfilStore((s) => s.theme)
+  const colorTheme = useProfilStore((s) => s.colorTheme)
 
   useEffect(() => {
     if (theme === 'dark') document.documentElement.classList.add('dark')
     else document.documentElement.classList.remove('dark')
   }, [theme])
+
+  useEffect(() => {
+    const vars = COLOR_THEME_VARS[colorTheme]
+    const root = document.documentElement
+    Object.entries(vars).forEach(([key, val]) => root.style.setProperty(key, val))
+  }, [colorTheme])
 
   const views: Record<View, JSX.Element> = {
     accueil: <AccueilView />,

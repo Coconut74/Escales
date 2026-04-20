@@ -4,6 +4,7 @@ import { useAccueilStore } from '@/features/accueil/accueil.store'
 import { formatDate } from '@/lib/formatting'
 import Icon from '@/components/ui/Icon'
 import type { Currency, Language, Theme } from './profil.types'
+import { COLOR_THEMES } from './color-themes'
 
 const AVATAR_OPTIONS = ['🧑', '👩', '👨', '🧑‍💼', '👩‍💼', '👨‍💼', '🦊', '🐻', '🐼', '🦁', '🐯', '🦝']
 
@@ -21,8 +22,8 @@ const LANGUAGE_OPTIONS: { value: Language; label: string }[] = [
 
 export default function ProfilView() {
   const {
-    firstName, lastName, avatarEmoji, currency, language, theme, memberSince,
-    setFirstName, setLastName, setAvatarEmoji, setCurrency, setLanguage, setTheme,
+    firstName, lastName, avatarEmoji, currency, language, theme, colorTheme, memberSince,
+    setFirstName, setLastName, setAvatarEmoji, setCurrency, setLanguage, setTheme, setColorTheme,
   } = useProfilStore()
 
   const investments = useAccueilStore((s) => s.investments)
@@ -106,6 +107,27 @@ export default function ProfilView() {
                   <ThemeButton active={theme === 'dark'} onClick={() => setTheme('dark')} icon="moon" label="Sombre" />
                 </div>
               </div>
+              <div className="space-y-2">
+                <span className="text-sm font-medium text-neutral-700 dark:text-neutral-200">Couleur d'accentuation</span>
+                <div className="flex gap-3">
+                  {COLOR_THEMES.map((ct) => (
+                    <button
+                      key={ct.id}
+                      onClick={() => setColorTheme(ct.id)}
+                      title={ct.label}
+                      className="relative w-8 h-8 rounded-full transition-transform hover:scale-110 focus:outline-none"
+                      style={{ backgroundColor: ct.swatch }}
+                    >
+                      {colorTheme === ct.id && (
+                        <span
+                          className="absolute inset-0 rounded-full ring-2 ring-offset-2 ring-offset-white dark:ring-offset-neutral-800"
+                          style={{ '--tw-ring-color': ct.swatch } as React.CSSProperties}
+                        />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </Section>
 
             <Section title="Préférences">
@@ -185,7 +207,7 @@ export default function ProfilView() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-surface-raised dark:bg-neutral-800 rounded-2xl p-5 border border-neutral-200 dark:border-neutral-700 space-y-4">
+    <div className="bg-white dark:bg-neutral-800 rounded-2xl p-5 border border-neutral-200 dark:border-neutral-700 space-y-4">
       <p className="text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">{title}</p>
       {children}
     </div>
