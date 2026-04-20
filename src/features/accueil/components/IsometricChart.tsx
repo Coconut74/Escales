@@ -12,6 +12,14 @@ const GY = 240
 const MAX_BAR_H = GY - 160
 
 // ─── Couleurs ────────────────────────────────────────────────────────────────
+function darken(hex: string, amount = 0.25): string {
+  const n = parseInt(hex.slice(1), 16)
+  const r = Math.max(0, (n >> 16) - Math.round(((n >> 16)) * amount))
+  const g = Math.max(0, ((n >> 8) & 0xff) - Math.round(((n >> 8) & 0xff) * amount))
+  const b = Math.max(0, (n & 0xff) - Math.round((n & 0xff) * amount))
+  return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`
+}
+
 const EMPTY_LIGHT = { top: '#E4E6F2', left: '#D5D8E8', right: '#BEC3D6' }
 const EMPTY_DARK  = { top: '#2E3148', left: '#252840', right: '#1C1E33' }
 
@@ -66,6 +74,8 @@ const IsometricChart = forwardRef<IsometricChartHandle, Props>(function Isometri
   const colorTheme = useProfilStore((s) => s.colorTheme)
   const EMPTY = theme === 'dark' ? EMPTY_DARK : EMPTY_LIGHT
   const FILLED = COLOR_THEME_BARS[colorTheme]
+  // Face selected = version plus sombre du thème (face du bas surtout)
+  const SELECTED = { top: FILLED.left, left: FILLED.right, right: darken(FILLED.right) }
 
   const sorted = useMemo(
     () => [...investments].sort((a, b) => b.value - a.value),
@@ -138,9 +148,9 @@ const IsometricChart = forwardRef<IsometricChartHandle, Props>(function Isometri
               : undefined}
             style={{ cursor: filled ? 'pointer' : 'default' }}
           >
-            <polygon points={leftFace}  fill={isSelected ? '#7A2E08' : c.left} />
-            <polygon points={rightFace} fill={isSelected ? '#4A1D06' : c.right} />
-            <polygon points={topFace}   fill={isSelected ? '#B95415' : c.top} />
+            <polygon points={leftFace}  fill={isSelected ? SELECTED.left  : c.left} />
+            <polygon points={rightFace} fill={isSelected ? SELECTED.right : c.right} />
+            <polygon points={topFace}   fill={isSelected ? SELECTED.top   : c.top} />
 
             {filled && isTop && (
               <polygon points={topFace} fill="transparent" />
