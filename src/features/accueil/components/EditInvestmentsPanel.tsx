@@ -252,11 +252,16 @@ function TickerField({ ticker, apiKey, onSelect, onUnlink }: {
   const timerRef = useRef<ReturnType<typeof setTimeout>>()
   const inputRef = useRef<HTMLInputElement>(null)
   const wrapRef = useRef<HTMLDivElement>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
-  // Ferme le dropdown si clic en dehors
+  // Ferme le dropdown si clic en dehors (wrapRef ET dropdownRef portal)
   useEffect(() => {
     function handleClick(e: MouseEvent) {
-      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false)
+      const t = e.target as Node
+      if (
+        wrapRef.current && !wrapRef.current.contains(t) &&
+        dropdownRef.current && !dropdownRef.current.contains(t)
+      ) setOpen(false)
     }
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
@@ -300,6 +305,7 @@ function TickerField({ ticker, apiKey, onSelect, onUnlink }: {
   const dropdown = open && results.length > 0 && dropdownRect
     ? createPortal(
         <div
+          ref={dropdownRef}
           style={{
             position: 'fixed',
             top: dropdownRect.bottom + 4,
