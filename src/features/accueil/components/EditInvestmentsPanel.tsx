@@ -3,8 +3,8 @@ import { createPortal } from 'react-dom'
 import { useAccueilStore } from '../accueil.store'
 import type { Investment, InvestmentCategory } from '../accueil.types'
 import { CATEGORY_LABELS } from '../accueil.types'
-import { searchSymbol } from '@/services/alphavantage'
-import type { AVSearchResult } from '@/services/alphavantage'
+import { searchSymbol } from '@/services/finnhub'
+import type { FinnhubSearchResult } from '@/services/finnhub'
 import { useProfilStore } from '@/features/profil/profil.store'
 import TextField from '@/components/ui/TextField'
 import DropdownField from '@/components/ui/DropdownField'
@@ -245,7 +245,7 @@ function TickerField({ ticker, apiKey, onSelect, onUnlink }: {
   onUnlink: () => void
 }) {
   const [query, setQuery] = useState('')
-  const [results, setResults] = useState<AVSearchResult[]>([])
+  const [results, setResults] = useState<FinnhubSearchResult[]>([])
   const [open, setOpen] = useState(false)
   const [searching, setSearching] = useState(false)
   const [dropdownRect, setDropdownRect] = useState<DOMRect | null>(null)
@@ -341,7 +341,7 @@ function TickerField({ ticker, apiKey, onSelect, onUnlink }: {
           value={query}
           onChange={(e) => handleChange(e.target.value)}
           onFocus={() => { if (results.length > 0) openDropdown() }}
-          placeholder={apiKey ? 'Lier à une action (ex: AAPL, MSFT…)' : 'Configurez votre clé Alpha Vantage dans le profil'}
+          placeholder={apiKey ? 'Lier à une action (ex: AAPL, BTC…)' : 'Configurez votre clé Finnhub dans le profil'}
           disabled={!apiKey}
           className="w-full px-3 py-2 pl-8 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-sm placeholder:text-neutral-400 dark:placeholder:text-neutral-500 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
         />
