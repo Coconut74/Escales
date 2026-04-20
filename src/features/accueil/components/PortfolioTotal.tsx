@@ -6,11 +6,9 @@ interface PortfolioTotalProps {
   monthlyChange?: number
 }
 
-export default function PortfolioTotal({ total, monthlyChange = 5.2 }: PortfolioTotalProps) {
+export default function PortfolioTotal({ total, monthlyChange }: PortfolioTotalProps) {
   const { currency, theme } = useProfilStore()
-  const isPositive = monthlyChange >= 0
   const formatted = formatCurrency(total, currency).replace(/\u202f/g, '\u00a0')
-
   const bgColor = theme === 'dark' ? 'rgba(34,37,59,0.92)' : 'rgba(242,243,248,0.92)'
 
   return (
@@ -24,27 +22,29 @@ export default function PortfolioTotal({ total, monthlyChange = 5.2 }: Portfolio
       <p className="text-5xl font-bold text-primary-900 dark:text-primary-300 tracking-tight leading-none mb-3">
         {formatted}
       </p>
-      <div className="flex items-center gap-1.5">
-        <svg
-          width="16" height="16" viewBox="0 0 16 16" fill="none"
-          aria-hidden="true"
-          style={{ transform: isPositive ? 'none' : 'rotate(90deg)' }}
-        >
-          <path
-            d="M3 13L13 3M13 3H6M13 3V10"
-            stroke={isPositive ? '#16a34a' : '#dc2626'}
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-        <span
-          className="text-base font-bold"
-          style={{ color: isPositive ? '#16a34a' : '#dc2626' }}
-        >
-          {isPositive ? '+' : ''}{monthlyChange.toFixed(1)}%
-        </span>
-      </div>
+      {monthlyChange !== undefined && (
+        <div className="flex items-center gap-1.5">
+          <svg
+            width="16" height="16" viewBox="0 0 16 16" fill="none"
+            aria-hidden="true"
+            style={{ transform: monthlyChange >= 0 ? 'none' : 'rotate(90deg)' }}
+          >
+            <path
+              d="M3 13L13 3M13 3H6M13 3V10"
+              stroke={monthlyChange >= 0 ? '#16a34a' : '#dc2626'}
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <span
+            className="text-base font-bold"
+            style={{ color: monthlyChange >= 0 ? '#16a34a' : '#dc2626' }}
+          >
+            {monthlyChange >= 0 ? '+' : ''}{monthlyChange.toFixed(1)}%
+          </span>
+        </div>
+      )}
 
       {/* Fondu de blur sur la bordure basse uniquement */}
       <div
