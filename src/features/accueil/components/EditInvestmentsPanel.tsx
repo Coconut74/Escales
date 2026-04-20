@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useAccueilStore } from '../accueil.store'
 import type { Investment, InvestmentCategory } from '../accueil.types'
 import { CATEGORY_LABELS } from '../accueil.types'
@@ -247,7 +248,9 @@ function TickerField({ ticker, apiKey, onSelect, onUnlink }: {
   const [results, setResults] = useState<FinnhubSearchResult[]>([])
   const [open, setOpen] = useState(false)
   const [searching, setSearching] = useState(false)
+  const [dropdownRect, setDropdownRect] = useState<DOMRect | null>(null)
   const timerRef = useRef<ReturnType<typeof setTimeout>>()
+  const inputRef = useRef<HTMLInputElement>(null)
   const wrapRef = useRef<HTMLDivElement>(null)
 
   // Ferme le dropdown si clic en dehors
@@ -259,9 +262,14 @@ function TickerField({ ticker, apiKey, onSelect, onUnlink }: {
     return () => document.removeEventListener('mousedown', handleClick)
   }, [])
 
+  function openDropdown() {
+    if (inputRef.current) setDropdownRect(inputRef.current.getBoundingClientRect())
+    setOpen(true)
+  }
+
   function handleChange(v: string) {
     setQuery(v)
-    setOpen(true)
+    openDropdown()
     clearTimeout(timerRef.current)
     if (!apiKey || v.length < 1) { setResults([]); return }
     timerRef.current = setTimeout(async () => {
@@ -289,29 +297,18 @@ function TickerField({ ticker, apiKey, onSelect, onUnlink }: {
     )
   }
 
-  return (
-    <div ref={wrapRef} className="relative">
-      <div className="relative">
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => handleChange(e.target.value)}
-          onFocus={() => results.length > 0 && setOpen(true)}
-          placeholder={apiKey ? 'Lier à une action (ex: AAPL, BTC…)' : 'Configurez votre clé Finnhub dans le profil'}
-          disabled={!apiKey}
-          className="w-full px-3 py-2 pl-8 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-sm placeholder:text-neutral-400 dark:placeholder:text-neutral-500 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
-        />
-        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none">
-          {searching ? (
-            <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" strokeOpacity="0.25"/><path d="M21 12a9 9 0 00-9-9" /></svg>
-          ) : (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          )}
-        </span>
-      </div>
-
-      {open && results.length > 0 && (
-        <div className="absolute top-full left-0 right-0 z-20 mt-1 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-xl max-h-48 overflow-y-auto">
+  const dropdown = open && results.length > 0 && dropdownRect
+    ? createPortal(
+        <div
+          style={{
+            position: 'fixed',
+            top: dropdownRect.bottom + 4,
+            left: dropdownRect.left,
+            width: dropdownRect.width,
+            zIndex: 9999,
+          }}
+          className="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-xl max-h-48 overflow-y-auto"
+        >
           {results.map((r) => (
             <button
               key={r.symbol}
@@ -324,8 +321,33 @@ function TickerField({ ticker, apiKey, onSelect, onUnlink }: {
               <span className="text-xs text-neutral-400 dark:text-neutral-500 shrink-0 ml-auto">{r.type}</span>
             </button>
           ))}
-        </div>
-      )}
+        </div>,
+        document.body
+      )
+    : null
+
+  return (
+    <div ref={wrapRef} className="relative">
+      <div className="relative">
+        <input
+          ref={inputRef}
+          type="text"
+          value={query}
+          onChange={(e) => handleChange(e.target.value)}
+          onFocus={() => { if (results.length > 0) openDropdown() }}
+          placeholder={apiKey ? 'Lier à une action (ex: AAPL, BTC…)' : 'Configurez votre clé Finnhub dans le profil'}
+          disabled={!apiKey}
+          className="w-full px-3 py-2 pl-8 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-sm placeholder:text-neutral-400 dark:placeholder:text-neutral-500 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
+        />
+        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none">
+          {searching ? (
+            <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" strokeOpacity="0.25"/><path d="M21 12a9 9 0 00-9-9" /></svg>
+          ) : (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          )}
+        </span>
+      </div>
+      {dropdown}
     </div>
   )
 }
