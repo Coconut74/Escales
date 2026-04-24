@@ -160,9 +160,11 @@ export default function ProjectTimeline({ project, onBack }: Props) {
         )}
       </div>
 
-      {/* Formulaire nouveau jalon */}
+      {/* Formulaire nouveau jalon — overlay fixe au-dessus de la navbar */}
       {showMilestoneForm && (
-        <MilestoneForm onSave={handleAddMilestone} onCancel={() => setShowMilestoneForm(false)} />
+        <div className="fixed inset-0 z-50 flex items-end lg:items-center justify-center bg-black/30 backdrop-blur-sm">
+          <MilestoneForm onSave={handleAddMilestone} onCancel={() => setShowMilestoneForm(false)} />
+        </div>
       )}
 
       {/* Bouton flottant */}
@@ -212,8 +214,11 @@ function MilestoneForm({ onSave, onCancel }: {
   }
 
   return (
-    <div className="border-t border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-4 py-4 space-y-3">
-      <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-100">Nouveau jalon</p>
+    <div className="w-full max-w-lg bg-white dark:bg-neutral-900 rounded-t-3xl lg:rounded-3xl border border-neutral-200 dark:border-neutral-700 shadow-2xl px-6 py-5 space-y-3">
+      <div className="flex items-center justify-between mb-1">
+        <p className="text-base font-bold text-neutral-900 dark:text-neutral-50">Nouveau jalon</p>
+        <button onClick={onCancel} className="p-1.5 text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200">✕</button>
+      </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
           <input
@@ -252,10 +257,7 @@ function MilestoneForm({ onSave, onCancel }: {
         />
       </div>
       {error && <p className="text-xs text-red-500">{error}</p>}
-      <div className="flex gap-3">
-        <Button variant="grey-outline" size="md" className="flex-1 rounded-2xl" onClick={onCancel}>Annuler</Button>
-        <Button variant="primary" size="md" className="flex-1 rounded-2xl" onClick={handleSave}>Ajouter</Button>
-      </div>
+      <Button variant="primary" size="lg" className="w-full rounded-2xl" onClick={handleSave}>Ajouter le jalon</Button>
     </div>
   )
 }
