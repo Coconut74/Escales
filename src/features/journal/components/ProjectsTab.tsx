@@ -104,7 +104,7 @@ function ProjectCard({ project, onClick, onDelete }: {
   onDelete: () => void
 }) {
   const currency = useProfilStore((s) => s.currency)
-  const meta = TYPE_META[project.type]
+  const meta = TYPE_META[project.type] ?? { icon: '📋', label: 'Projet' }
   const progress = calcProgress(project)
 
   return (
@@ -206,7 +206,7 @@ function ProjectDetail({ project, onClose }: { project: Project; onClose: () => 
   const { updateProject, toggleChecklistItem } = useJournalStore()
   const currency = useProfilStore((s) => s.currency)
   const [currentInput, setCurrentInput] = useState(project.currentAmount?.toString() ?? '')
-  const meta = TYPE_META[project.type]
+  const meta = TYPE_META[project.type] ?? { icon: '📋', label: 'Projet' }
   const progress = calcProgress(project)
 
   function saveCurrentAmount() {

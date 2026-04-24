@@ -52,6 +52,19 @@ export const useJournalStore = create<JournalStore>()(
         ),
       })),
     }),
-    { name: 'escales-journal' }
+    {
+      name: 'escales-journal',
+      version: 2,
+      migrate: (state: unknown) => {
+        const s = state as { notes?: unknown[]; projects?: unknown[] }
+        return {
+          notes: s.notes ?? [],
+          // Drop projects that don't have the new type field (old format)
+          projects: (s.projects ?? []).filter(
+            (p) => typeof (p as { type?: string }).type === 'string'
+          ),
+        }
+      },
+    }
   )
 )
