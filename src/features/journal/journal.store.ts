@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { Note, Project, Milestone } from './journal.types'
+import type { Note, Project, ChecklistItem } from './journal.types'
 
 interface JournalStore {
   notes: Note[]
@@ -11,9 +11,9 @@ interface JournalStore {
   addProject(project: Project): void
   updateProject(id: string, patch: Partial<Project>): void
   removeProject(id: string): void
-  addMilestone(projectId: string, milestone: Milestone): void
-  updateMilestone(projectId: string, milestoneId: string, patch: Partial<Milestone>): void
-  removeMilestone(projectId: string, milestoneId: string): void
+  toggleChecklistItem(projectId: string, itemId: string): void
+  addChecklistItem(projectId: string, item: ChecklistItem): void
+  removeChecklistItem(projectId: string, itemId: string): void
 }
 
 export const useJournalStore = create<JournalStore>()(
@@ -34,25 +34,21 @@ export const useJournalStore = create<JournalStore>()(
       })),
       removeProject: (id) => set((s) => ({ projects: s.projects.filter((p) => p.id !== id) })),
 
-      addMilestone: (projectId, milestone) => set((s) => ({
+      toggleChecklistItem: (projectId, itemId) => set((s) => ({
         projects: s.projects.map((p) =>
           p.id === projectId
-            ? { ...p, milestones: [...p.milestones, milestone].sort((a, b) => a.date.localeCompare(b.date)) }
+            ? { ...p, checklist: p.checklist.map((i) => i.id === itemId ? { ...i, done: !i.done } : i) }
             : p
         ),
       })),
-      updateMilestone: (projectId, milestoneId, patch) => set((s) => ({
+      addChecklistItem: (projectId, item) => set((s) => ({
         projects: s.projects.map((p) =>
-          p.id === projectId
-            ? { ...p, milestones: p.milestones.map((m) => m.id === milestoneId ? { ...m, ...patch } : m) }
-            : p
+          p.id === projectId ? { ...p, checklist: [...p.checklist, item] } : p
         ),
       })),
-      removeMilestone: (projectId, milestoneId) => set((s) => ({
+      removeChecklistItem: (projectId, itemId) => set((s) => ({
         projects: s.projects.map((p) =>
-          p.id === projectId
-            ? { ...p, milestones: p.milestones.filter((m) => m.id !== milestoneId) }
-            : p
+          p.id === projectId ? { ...p, checklist: p.checklist.filter((i) => i.id !== itemId) } : p
         ),
       })),
     }),

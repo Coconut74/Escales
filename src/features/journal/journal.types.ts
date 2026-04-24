@@ -2,27 +2,36 @@ export interface Note {
   id: string
   title: string
   content: string   // HTML (innerHTML du contentEditable)
-  createdAt: string // ISO
-  updatedAt: string // ISO
+  createdAt: string
+  updatedAt: string
 }
 
-export type MilestoneStatus = 'planned' | 'in-progress' | 'done'
+export type ProjectType = 'savings' | 'real-estate' | 'investment' | 'free' | 'loan'
 
-export interface Milestone {
+export interface ChecklistItem {
   id: string
-  title: string
-  date: string      // ISO
-  status: MilestoneStatus
-  description?: string
+  label: string
+  done: boolean
 }
 
 export interface Project {
   id: string
+  type: ProjectType
   name: string
-  description: string
+  description?: string
+  // Épargne + Investissement
   targetAmount?: number
-  startDate?: string
-  endDate?: string
-  milestones: Milestone[]
-  createdAt: string // ISO
+  currentAmount?: number
+  // Immobilier
+  city?: string
+  propertyType?: string
+  // Investissement
+  assetName?: string
+  // Emprunt
+  loanAmount?: number
+  loanDurationMonths?: number
+  loanStartDate?: string
+  // Checklist (immobilier, libre)
+  checklist: ChecklistItem[]
+  createdAt: string
 }
