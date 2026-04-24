@@ -1,28 +1,59 @@
 import { useState } from 'react'
 import { useJournalStore } from '../journal.store'
-import type { Project } from '../journal.types'
+import type { Project, ProjectType } from '../journal.types'
 import ProjectEditor from './ProjectEditor'
-import ProjectTimeline from './ProjectTimeline'
-import { formatCurrency, formatDate } from '@/lib/formatting'
+import { formatCurrency } from '@/lib/formatting'
 import { useProfilStore } from '@/features/profil/profil.store'
 import Icon from '@/components/ui/Icon'
+import Button from '@/components/ui/Button'
+
+const TYPE_META: Record<ProjectType, { icon: string; label: string }> = {
+  savings:       { icon: '💰', label: 'Épargne' },
+  'real-estate': { icon: '🏠', label: 'Immobilier' },
+  investment:    { icon: '📈', label: 'Investissement' },
+  loan:          { icon: '🏦', label: 'Emprunt' },
+  free:          { icon: '📋', label: 'Projet libre' },
+}
+
+function calcProgress(p: Project): number {
+  switch (p.type) {
+    case 'savings':
+    case 'investment':
+      if (!p.targetAmount || !p.currentAmount) return 0
+      return Math.min(100, Math.round((p.currentAmount / p.targetAmount) * 100))
+    case 'real-estate':
+    case 'free': {
+      if (p.checklist.length === 0) return 0
+      const done = p.checklist.filter((i) => i.done).length
+      return Math.round((done / p.checklist.length) * 100)
+    }
+    case 'loan': {
+      if (!p.loanStartDate || !p.loanDurationMonths) return 0
+      const start = new Date(p.loanStartDate)
+      const now = new Date()
+      const elapsed = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth())
+      return Math.min(100, Math.round((Math.max(0, elapsed) / p.loanDurationMonths) * 100))
+    }
+  }
+}
+
+function elapsedMonths(loanStartDate: string): number {
+  const start = new Date(loanStartDate)
+  const now = new Date()
+  return Math.max(0, (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth()))
+}
 
 export default function ProjectsTab() {
-  const { projects, addProject, updateProject, removeProject } = useJournalStore()
-  const currency = useProfilStore((s) => s.currency)
+  const { projects, addProject, removeProject } = useJournalStore()
   const [showEditor, setShowEditor] = useState(false)
-  const [selected, setSelected] = useState<Project | null>(null)
+  const [selected, setSelected] = useState<string | null>(null)
 
-  function handleCreate(data: Omit<Project, 'id' | 'milestones' | 'createdAt'>) {
-    addProject({ ...data, id: crypto.randomUUID(), milestones: [], createdAt: new Date().toISOString() })
+  function handleCreate(data: Omit<Project, 'id' | 'createdAt'>) {
+    addProject({ ...data, id: crypto.randomUUID(), createdAt: new Date().toISOString() })
     setShowEditor(false)
   }
 
-  if (selected) {
-    // Toujours lire la version fraîche du store
-    const live = projects.find((p) => p.id === selected.id) ?? selected
-    return <ProjectTimeline project={live} onBack={() => setSelected(null)} />
-  }
+  const selectedProject = selected ? projects.find((p) => p.id === selected) : null
 
   return (
     <div className="relative min-h-full pb-32 lg:pb-8">
@@ -31,49 +62,17 @@ export default function ProjectsTab() {
           <div className="flex flex-col items-center justify-center py-24 gap-3 text-center">
             <span className="text-4xl">🗂️</span>
             <p className="text-sm text-neutral-400 dark:text-neutral-500">Aucun projet pour l'instant.</p>
+            <p className="text-xs text-neutral-400 dark:text-neutral-600">Créez votre premier projet avec le bouton ci-dessous.</p>
           </div>
         ) : (
           <div className="space-y-3">
             {projects.map((project) => (
-              <div
+              <ProjectCard
                 key={project.id}
-                className="group relative bg-white dark:bg-neutral-800 rounded-2xl border border-neutral-200 dark:border-neutral-700 p-4 cursor-pointer hover:border-primary-300 dark:hover:border-primary-700 hover:shadow-md transition-all"
-                onClick={() => setSelected(project)}
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-neutral-900 dark:text-neutral-50 truncate">{project.name}</p>
-                    {project.description && (
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 line-clamp-1">{project.description}</p>
-                    )}
-                  </div>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); removeProject(project.id) }}
-                    className="p-1 opacity-0 group-hover:opacity-100 text-neutral-400 hover:text-red-500 transition-all shrink-0"
-                    aria-label="Supprimer"
-                  >
-                    <Icon name="trash" size={15} />
-                  </button>
-                </div>
-
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {project.targetAmount && (
-                    <span className="text-xs font-semibold text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 px-2 py-0.5 rounded-full">
-                      🎯 {formatCurrency(project.targetAmount, currency)}
-                    </span>
-                  )}
-                  {project.startDate && (
-                    <span className="text-xs text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-700 px-2 py-0.5 rounded-full">
-                      {formatDate(project.startDate)}{project.endDate ? ` → ${formatDate(project.endDate)}` : ''}
-                    </span>
-                  )}
-                  {project.milestones.length > 0 && (
-                    <span className="text-xs text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-700 px-2 py-0.5 rounded-full">
-                      {project.milestones.length} jalon{project.milestones.length > 1 ? 's' : ''}
-                    </span>
-                  )}
-                </div>
-              </div>
+                project={project}
+                onClick={() => setSelected(project.id)}
+                onDelete={() => removeProject(project.id)}
+              />
             ))}
           </div>
         )}
@@ -91,6 +90,306 @@ export default function ProjectsTab() {
       {showEditor && (
         <ProjectEditor onSave={handleCreate} onCancel={() => setShowEditor(false)} />
       )}
+
+      {selectedProject && (
+        <ProjectDetail project={selectedProject} onClose={() => setSelected(null)} />
+      )}
     </div>
   )
+}
+
+function ProjectCard({ project, onClick, onDelete }: {
+  project: Project
+  onClick: () => void
+  onDelete: () => void
+}) {
+  const currency = useProfilStore((s) => s.currency)
+  const meta = TYPE_META[project.type]
+  const progress = calcProgress(project)
+
+  return (
+    <div
+      className="group relative bg-white dark:bg-neutral-800 rounded-2xl border border-neutral-200 dark:border-neutral-700 p-4 cursor-pointer hover:border-primary-300 dark:hover:border-primary-700 hover:shadow-md transition-all"
+      onClick={onClick}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-2.5 flex-1 min-w-0">
+          <span className="text-xl shrink-0">{meta.icon}</span>
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-neutral-900 dark:text-neutral-50 truncate">{project.name}</p>
+            <p className="text-xs text-neutral-400 dark:text-neutral-500">{meta.label}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="text-sm font-bold text-primary-600 dark:text-primary-400">{progress}%</span>
+          <button
+            onClick={(e) => { e.stopPropagation(); onDelete() }}
+            className="p-1 opacity-0 group-hover:opacity-100 text-neutral-400 hover:text-red-500 transition-all"
+            aria-label="Supprimer"
+          >
+            <Icon name="trash" size={15} />
+          </button>
+        </div>
+      </div>
+
+      {/* Barre de progression */}
+      <div className="mt-3 h-1.5 rounded-full bg-neutral-100 dark:bg-neutral-700 overflow-hidden">
+        <div
+          className="h-full rounded-full bg-primary-500 transition-all"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+
+      {/* Métriques spécifiques au type */}
+      <div className="mt-2.5 flex flex-wrap gap-x-3 gap-y-1">
+        <CardMeta project={project} currency={currency} />
+      </div>
+    </div>
+  )
+}
+
+function CardMeta({ project, currency }: { project: Project; currency: string }) {
+  switch (project.type) {
+    case 'savings':
+    case 'investment':
+      return (
+        <>
+          {project.currentAmount !== undefined && (
+            <span className="text-xs text-neutral-500 dark:text-neutral-400">
+              {formatCurrency(project.currentAmount, currency)}
+              {project.targetAmount ? <span className="text-neutral-300 dark:text-neutral-600"> / {formatCurrency(project.targetAmount, currency)}</span> : null}
+            </span>
+          )}
+          {project.type === 'investment' && project.assetName && (
+            <span className="text-xs text-neutral-400 dark:text-neutral-500">{project.assetName}</span>
+          )}
+        </>
+      )
+    case 'real-estate':
+    case 'free': {
+      const done = project.checklist.filter((i) => i.done).length
+      const total = project.checklist.length
+      return (
+        <>
+          {total > 0 && (
+            <span className="text-xs text-neutral-500 dark:text-neutral-400">
+              {done}/{total} étape{total > 1 ? 's' : ''}
+            </span>
+          )}
+          {project.type === 'real-estate' && project.city && (
+            <span className="text-xs text-neutral-400 dark:text-neutral-500">{project.city}</span>
+          )}
+        </>
+      )
+    }
+    case 'loan': {
+      if (!project.loanStartDate || !project.loanDurationMonths) return null
+      const elapsed = elapsedMonths(project.loanStartDate)
+      const remaining = Math.max(0, project.loanDurationMonths - elapsed)
+      return (
+        <>
+          {project.loanAmount && (
+            <span className="text-xs text-neutral-500 dark:text-neutral-400">
+              {formatCurrency(project.loanAmount, currency)}
+            </span>
+          )}
+          <span className="text-xs text-neutral-400 dark:text-neutral-500">
+            {remaining} mois restants
+          </span>
+        </>
+      )
+    }
+  }
+}
+
+function ProjectDetail({ project, onClose }: { project: Project; onClose: () => void }) {
+  const { updateProject, toggleChecklistItem } = useJournalStore()
+  const currency = useProfilStore((s) => s.currency)
+  const [currentInput, setCurrentInput] = useState(project.currentAmount?.toString() ?? '')
+  const meta = TYPE_META[project.type]
+  const progress = calcProgress(project)
+
+  function saveCurrentAmount() {
+    const val = parseFloat(currentInput)
+    if (!isNaN(val)) updateProject(project.id, { currentAmount: val })
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end lg:items-center justify-center bg-black/40 backdrop-blur-sm p-4 lg:p-8">
+      <div className="w-full max-w-lg max-h-[85vh] bg-white dark:bg-neutral-900 rounded-3xl border border-neutral-200 dark:border-neutral-700 shadow-2xl flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 pt-5 pb-4 shrink-0 border-b border-neutral-100 dark:border-neutral-800">
+          <div className="flex items-center gap-2">
+            <span className="text-xl">{meta.icon}</span>
+            <div>
+              <h2 className="text-base font-bold text-neutral-900 dark:text-neutral-50 leading-tight">{project.name}</h2>
+              <p className="text-xs text-neutral-400 dark:text-neutral-500">{meta.label}</p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors text-lg"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+          {/* Barre de progression */}
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-xs font-medium text-neutral-500 dark:text-neutral-400">Progression</span>
+              <span className="text-sm font-bold text-primary-600 dark:text-primary-400">{progress}%</span>
+            </div>
+            <div className="h-2 rounded-full bg-neutral-100 dark:bg-neutral-700 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-primary-500 transition-all"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Description */}
+          {project.description && (
+            <p className="text-sm text-neutral-600 dark:text-neutral-300">{project.description}</p>
+          )}
+
+          {/* Contenu spécifique */}
+          <DetailContent
+            project={project}
+            currency={currency}
+            currentInput={currentInput}
+            setCurrentInput={setCurrentInput}
+            onToggle={(itemId) => toggleChecklistItem(project.id, itemId)}
+          />
+        </div>
+
+        <div className="px-6 py-4 border-t border-neutral-100 dark:border-neutral-800 shrink-0">
+          {(project.type === 'savings' || project.type === 'investment') ? (
+            <div className="flex gap-3">
+              <input
+                type="number"
+                value={currentInput}
+                onChange={(e) => setCurrentInput(e.target.value)}
+                placeholder="Montant actuel (€)"
+                className="flex-1 px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-sm text-neutral-900 dark:text-neutral-50 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-300 dark:focus:ring-primary-700"
+              />
+              <Button variant="primary" size="md" className="rounded-xl" onClick={saveCurrentAmount}>
+                Mettre à jour
+              </Button>
+            </div>
+          ) : (
+            <Button variant="grey-outline" size="lg" className="w-full rounded-2xl" onClick={onClose}>
+              Fermer
+            </Button>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function DetailContent({ project, currency, currentInput, setCurrentInput, onToggle }: {
+  project: Project
+  currency: string
+  currentInput: string
+  setCurrentInput: (v: string) => void
+  onToggle: (itemId: string) => void
+}) {
+  switch (project.type) {
+    case 'savings':
+    case 'investment':
+      return (
+        <div className="space-y-3">
+          {project.targetAmount && (
+            <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-800 rounded-xl">
+              <span className="text-xs text-neutral-500 dark:text-neutral-400">Objectif</span>
+              <span className="text-sm font-semibold text-neutral-900 dark:text-neutral-50">
+                {formatCurrency(project.targetAmount, currency)}
+              </span>
+            </div>
+          )}
+          {project.currentAmount !== undefined && (
+            <div className="flex items-center justify-between p-3 bg-primary-50 dark:bg-primary-900/20 rounded-xl">
+              <span className="text-xs text-primary-700 dark:text-primary-300">Actuel</span>
+              <span className="text-sm font-semibold text-primary-700 dark:text-primary-300">
+                {formatCurrency(project.currentAmount, currency)}
+              </span>
+            </div>
+          )}
+          {project.targetAmount && project.currentAmount !== undefined && (
+            <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-800 rounded-xl">
+              <span className="text-xs text-neutral-500 dark:text-neutral-400">Restant</span>
+              <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+                {formatCurrency(Math.max(0, project.targetAmount - project.currentAmount), currency)}
+              </span>
+            </div>
+          )}
+          {project.type === 'investment' && project.assetName && (
+            <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-800 rounded-xl">
+              <span className="text-xs text-neutral-500 dark:text-neutral-400">Actif</span>
+              <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">{project.assetName}</span>
+            </div>
+          )}
+        </div>
+      )
+
+    case 'real-estate':
+    case 'free': {
+      if (project.checklist.length === 0) {
+        return <p className="text-sm text-neutral-400 dark:text-neutral-500 text-center py-4">Aucune étape définie.</p>
+      }
+      return (
+        <div className="space-y-2">
+          <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
+            {project.type === 'real-estate' ? 'Étapes' : 'Checklist'}
+          </p>
+          {project.checklist.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => onToggle(item.id)}
+              className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors text-left"
+            >
+              <span className={`text-lg ${item.done ? 'text-green-500' : 'text-neutral-300 dark:text-neutral-600'}`}>
+                {item.done ? '✅' : '⬜'}
+              </span>
+              <span className={`text-sm ${item.done ? 'line-through text-neutral-400 dark:text-neutral-500' : 'text-neutral-800 dark:text-neutral-100'}`}>
+                {item.label}
+              </span>
+            </button>
+          ))}
+        </div>
+      )
+    }
+
+    case 'loan': {
+      if (!project.loanStartDate || !project.loanDurationMonths) return null
+      const elapsed = elapsedMonths(project.loanStartDate)
+      const remaining = Math.max(0, project.loanDurationMonths - elapsed)
+      return (
+        <div className="space-y-3">
+          {project.loanAmount && (
+            <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-800 rounded-xl">
+              <span className="text-xs text-neutral-500 dark:text-neutral-400">Montant emprunté</span>
+              <span className="text-sm font-semibold text-neutral-900 dark:text-neutral-50">
+                {formatCurrency(project.loanAmount, currency)}
+              </span>
+            </div>
+          )}
+          <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-800 rounded-xl">
+            <span className="text-xs text-neutral-500 dark:text-neutral-400">Durée totale</span>
+            <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">{project.loanDurationMonths} mois</span>
+          </div>
+          <div className="flex items-center justify-between p-3 bg-primary-50 dark:bg-primary-900/20 rounded-xl">
+            <span className="text-xs text-primary-700 dark:text-primary-300">Écoulé</span>
+            <span className="text-sm font-semibold text-primary-700 dark:text-primary-300">{elapsed} mois</span>
+          </div>
+          <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-800 rounded-xl">
+            <span className="text-xs text-neutral-500 dark:text-neutral-400">Restant</span>
+            <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">{remaining} mois</span>
+          </div>
+        </div>
+      )
+    }
+  }
 }
