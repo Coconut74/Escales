@@ -2,9 +2,9 @@ import type { View } from '@/App'
 
 const TITLES: Record<View, string> = {
   accueil: 'Accueil',
-  journal: 'Journal de bord',
-  planner: 'Planner',
-  profil:  'Profil',
+  journal:   'Journal de bord',
+  education: 'Éducation',
+  profil:    'Profil',
 }
 
 export default function Header({ activeView }: { activeView: View }) {

@@ -1,11 +1,11 @@
 import Icon from '@/components/ui/Icon'
 import type { View } from '@/App'
 
-const NAV_ITEMS: { id: View; label: string; icon: 'accueil' | 'journal' | 'event' | 'profile' }[] = [
-  { id: 'accueil', label: 'Accueil',         icon: 'accueil'  },
-  { id: 'journal', label: 'Journal de bord', icon: 'journal'  },
-  { id: 'planner', label: 'Planner',         icon: 'event'    },
-  { id: 'profil',  label: 'Profil',          icon: 'profile'  },
+const NAV_ITEMS: { id: View; label: string; icon: 'accueil' | 'journal' | 'book' | 'profile' }[] = [
+  { id: 'accueil',   label: 'Accueil',         icon: 'accueil' },
+  { id: 'journal',   label: 'Journal de bord', icon: 'journal' },
+  { id: 'education', label: 'Éducation',        icon: 'book'    },
+  { id: 'profil',    label: 'Profil',           icon: 'profile' },
 ]
 
 const ITEM_SIZE = 50

@@ -3,12 +3,12 @@ import Sidebar from '@/components/layout/Sidebar'
 import BottomNav from '@/components/layout/BottomNav'
 import AccueilView from '@/features/accueil/AccueilView'
 import JournalView from '@/features/journal/JournalView'
-import PlannerView from '@/features/planner/PlannerView'
+import EducationView from '@/features/education/EducationView'
 import ProfilView from '@/features/profil/ProfilView'
 import { useProfilStore } from '@/features/profil/profil.store'
 import { COLOR_THEME_VARS } from '@/features/profil/color-themes'
 
-export type View = 'accueil' | 'journal' | 'planner' | 'profil'
+export type View = 'accueil' | 'journal' | 'education' | 'profil'
 
 export default function App() {
   const [activeView, setActiveView] = useState<View>('accueil')
@@ -29,7 +29,7 @@ export default function App() {
   const views: Record<View, JSX.Element> = {
     accueil: <AccueilView />,
     journal: <JournalView />,
-    planner: <PlannerView />,
+    education: <EducationView />,
     profil: <ProfilView />,
   }
 
