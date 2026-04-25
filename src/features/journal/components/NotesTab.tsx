@@ -37,7 +37,13 @@ export default function NotesTab() {
   }
 
   if (editing) {
-    return <NoteEditor note={editing} onClose={() => setEditing(null)} />
+    return (
+      <NoteEditor
+        note={editing}
+        onClose={() => setEditing(null)}
+        onDelete={() => { removeNote(editing.id); setEditing(null) }}
+      />
+    )
   }
 
   return (
@@ -63,13 +69,6 @@ export default function NotesTab() {
                   {stripHtml(note.content) || <span className="italic">Note vide</span>}
                 </p>
                 <p className="text-xs text-neutral-400 dark:text-neutral-500">{relativeDate(note.updatedAt)}</p>
-                <button
-                  onClick={(e) => { e.stopPropagation(); removeNote(note.id) }}
-                  className="absolute top-3 right-3 p-1 opacity-0 group-hover:opacity-100 text-neutral-400 hover:text-red-500 transition-all"
-                  aria-label="Supprimer"
-                >
-                  <Icon name="trash" size={15} />
-                </button>
               </div>
             ))}
           </div>

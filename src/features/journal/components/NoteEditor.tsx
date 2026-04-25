@@ -6,9 +6,10 @@ import Icon from '@/components/ui/Icon'
 interface Props {
   note: Note
   onClose: () => void
+  onDelete: () => void
 }
 
-export default function NoteEditor({ note, onClose }: Props) {
+export default function NoteEditor({ note, onClose, onDelete }: Props) {
   const updateNote = useJournalStore((s) => s.updateNote)
   const titleRef = useRef<HTMLInputElement>(null)
   const bodyRef = useRef<HTMLDivElement>(null)
@@ -74,7 +75,7 @@ export default function NoteEditor({ note, onClose }: Props) {
         <div className="flex items-center gap-1 px-4 py-3 border-b border-neutral-200 dark:border-neutral-700 shrink-0">
           <button
             onClick={handleClose}
-            className="p-1.5 rounded-lg text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors mr-1"
+            className="p-1.5 rounded-lg text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors mr-1"
             aria-label="Retour"
           >
             <Icon name="arrow" size={18} className="rotate-180" />
@@ -85,6 +86,13 @@ export default function NoteEditor({ note, onClose }: Props) {
           <ToolbarBtn onClick={() => execFmt('insertUnorderedList')} title="Liste à puces"><span className="text-sm">•≡</span></ToolbarBtn>
           <ToolbarBtn onClick={() => execFmt('insertOrderedList')} title="Liste numérotée"><span className="text-sm">1≡</span></ToolbarBtn>
           <ToolbarBtn onClick={insertCheckbox} title="Case à cocher"><span className="text-base leading-none">☑</span></ToolbarBtn>
+          <div className="flex-1" />
+          <button
+            onClick={onDelete}
+            className="px-3 py-1.5 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 text-xs font-semibold transition-colors"
+          >
+            Supprimer
+          </button>
         </div>
 
         {/* Titre */}
