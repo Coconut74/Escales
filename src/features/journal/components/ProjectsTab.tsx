@@ -65,7 +65,7 @@ export default function ProjectsTab() {
             <p className="text-xs text-neutral-400 dark:text-neutral-600">Créez votre premier projet avec le bouton ci-dessous.</p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {projects.map((project) => (
               <ProjectCard
                 key={project.id}
