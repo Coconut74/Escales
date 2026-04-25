@@ -68,8 +68,8 @@ export default function NoteEditor({ note, onClose }: Props) {
   useEffect(() => () => clearTimeout(saveTimer.current), [])
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-white dark:bg-neutral-900 lg:items-center lg:justify-center lg:bg-black/40 lg:backdrop-blur-sm lg:p-8">
-      <div className="flex-1 lg:flex-none w-full lg:max-w-2xl lg:max-h-[85vh] lg:rounded-3xl lg:border lg:border-neutral-200 lg:dark:border-neutral-700 lg:shadow-2xl flex flex-col overflow-hidden bg-white dark:bg-neutral-900">
+    <div className="fixed inset-0 z-50 flex flex-col bg-white dark:bg-neutral-800 lg:items-center lg:justify-center lg:bg-black/40 lg:backdrop-blur-sm lg:p-8">
+      <div className="flex-1 lg:flex-none w-full lg:max-w-2xl lg:max-h-[85vh] lg:rounded-3xl lg:border lg:border-neutral-200 lg:dark:border-neutral-700 lg:shadow-2xl flex flex-col overflow-hidden bg-white dark:bg-neutral-800">
         {/* Toolbar */}
         <div className="flex items-center gap-1 px-4 py-3 border-b border-neutral-200 dark:border-neutral-700 shrink-0">
           <button

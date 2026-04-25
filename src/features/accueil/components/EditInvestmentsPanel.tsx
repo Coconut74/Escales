@@ -202,7 +202,7 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
       <div
         className={`
           lg:hidden fixed inset-0 z-[110] flex flex-col
-          bg-white/80 dark:bg-neutral-900/90 backdrop-blur-xl border-t border-white/40 dark:border-neutral-700/40 shadow-2xl
+          bg-white/80 dark:bg-neutral-800/90 backdrop-blur-xl border-t border-white/40 dark:border-neutral-700/40 shadow-2xl
           transition-transform duration-300 ease-out
           ${open ? 'translate-y-0' : 'translate-y-full'}
         `}
@@ -224,7 +224,7 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
         <div
           className={`
             w-full max-w-lg h-[80vh] flex flex-col
-            bg-white/80 dark:bg-neutral-900/90 backdrop-blur-xl border border-white/40 dark:border-neutral-700/40 shadow-2xl rounded-3xl
+            bg-white/80 dark:bg-neutral-800/90 backdrop-blur-xl border border-white/40 dark:border-neutral-700/40 shadow-2xl rounded-3xl
             transition-transform duration-300 ease-out
             ${open ? 'scale-100' : 'scale-95'}
           `}

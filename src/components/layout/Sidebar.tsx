@@ -19,7 +19,7 @@ export default function Sidebar({ activeView, onNavigate }: SidebarProps) {
 
   return (
     <aside
-      className="hidden lg:flex fixed left-4 top-4 bottom-4 z-40 w-56 flex-col rounded-2xl backdrop-blur-xl bg-white/80 dark:bg-neutral-900/75 border border-neutral-200/70 dark:border-white/10 shadow-xl shadow-neutral-300/40 dark:shadow-black/30"
+      className="hidden lg:flex fixed left-4 top-4 bottom-4 z-40 w-56 flex-col rounded-2xl backdrop-blur-xl bg-white/80 dark:bg-neutral-800/80 border border-neutral-200/70 dark:border-white/10 shadow-xl shadow-neutral-300/40 dark:shadow-black/30"
     >
       {/* Logo */}
       <div className="flex items-center gap-2 px-5 pt-6 pb-5">

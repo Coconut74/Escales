@@ -84,11 +84,11 @@ export default function ProjectEditor({ initial, onSave, onCancel }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end lg:items-center justify-center bg-black/40 backdrop-blur-sm p-4 lg:p-8">
-      <div className="w-full max-w-lg max-h-[90vh] bg-white dark:bg-neutral-900 rounded-3xl border border-neutral-200 dark:border-neutral-700 shadow-2xl flex flex-col overflow-hidden">
+      <div className="w-full max-w-lg max-h-[90vh] bg-white dark:bg-neutral-800 rounded-3xl border border-neutral-200 dark:border-neutral-700 shadow-2xl flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 pt-5 pb-4 shrink-0 border-b border-neutral-100 dark:border-neutral-800">
+        <div className="flex items-center justify-between px-6 pt-5 pb-4 shrink-0 border-b border-neutral-100 dark:border-neutral-700">
           <h2 className="text-base font-bold text-neutral-900 dark:text-neutral-50">{initial ? 'Modifier le projet' : 'Nouveau projet'}</h2>
-          <button onClick={onCancel} className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors text-lg">✕</button>
+          <button onClick={onCancel} className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-700 text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors text-lg">✕</button>
         </div>
 
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">

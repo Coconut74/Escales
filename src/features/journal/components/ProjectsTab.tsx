@@ -221,7 +221,7 @@ function ProjectDetail({ project, onClose, onDelete }: { project: Project; onClo
 
   return (
     <div className="fixed inset-0 z-50 flex items-end lg:items-center justify-center bg-black/40 backdrop-blur-sm p-4 lg:p-8">
-      <div className="w-full max-w-lg max-h-[85vh] bg-white dark:bg-neutral-900 rounded-3xl border border-neutral-200 dark:border-neutral-700 shadow-2xl flex flex-col overflow-hidden">
+      <div className="w-full max-w-lg max-h-[85vh] bg-white dark:bg-neutral-800 rounded-3xl border border-neutral-200 dark:border-neutral-700 shadow-2xl flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-4 shrink-0 border-b border-neutral-100 dark:border-neutral-800">
           <div className="flex items-center gap-2">
@@ -240,7 +240,7 @@ function ProjectDetail({ project, onClose, onDelete }: { project: Project; onClo
             </button>
             <button
               onClick={onClose}
-              className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors text-lg"
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-700 text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors text-lg"
             >
               ✕
             </button>
@@ -319,7 +319,7 @@ function DetailContent({ project, currency, currentInput, setCurrentInput, onTog
       return (
         <div className="space-y-3">
           {project.targetAmount && (
-            <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-800 rounded-xl">
+            <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-xl">
               <span className="text-xs text-neutral-500 dark:text-neutral-400">Objectif</span>
               <span className="text-sm font-semibold text-neutral-900 dark:text-neutral-50">
                 {formatCurrency(project.targetAmount, currency)}
@@ -335,7 +335,7 @@ function DetailContent({ project, currency, currentInput, setCurrentInput, onTog
             </div>
           )}
           {project.targetAmount && project.currentAmount !== undefined && (
-            <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-800 rounded-xl">
+            <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-xl">
               <span className="text-xs text-neutral-500 dark:text-neutral-400">Restant</span>
               <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
                 {formatCurrency(Math.max(0, project.targetAmount - project.currentAmount), currency)}
@@ -343,7 +343,7 @@ function DetailContent({ project, currency, currentInput, setCurrentInput, onTog
             </div>
           )}
           {project.type === 'investment' && project.assetName && (
-            <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-800 rounded-xl">
+            <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-xl">
               <span className="text-xs text-neutral-500 dark:text-neutral-400">Actif</span>
               <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">{project.assetName}</span>
             </div>
@@ -386,14 +386,14 @@ function DetailContent({ project, currency, currentInput, setCurrentInput, onTog
       return (
         <div className="space-y-3">
           {project.loanAmount && (
-            <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-800 rounded-xl">
+            <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-xl">
               <span className="text-xs text-neutral-500 dark:text-neutral-400">Montant emprunté</span>
               <span className="text-sm font-semibold text-neutral-900 dark:text-neutral-50">
                 {formatCurrency(project.loanAmount, currency)}
               </span>
             </div>
           )}
-          <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-800 rounded-xl">
+          <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-xl">
             <span className="text-xs text-neutral-500 dark:text-neutral-400">Durée totale</span>
             <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">{project.loanDurationMonths} mois</span>
           </div>
@@ -401,7 +401,7 @@ function DetailContent({ project, currency, currentInput, setCurrentInput, onTog
             <span className="text-xs text-primary-700 dark:text-primary-300">Écoulé</span>
             <span className="text-sm font-semibold text-primary-700 dark:text-primary-300">{elapsed} mois</span>
           </div>
-          <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-800 rounded-xl">
+          <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-xl">
             <span className="text-xs text-neutral-500 dark:text-neutral-400">Restant</span>
             <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">{remaining} mois</span>
           </div>
