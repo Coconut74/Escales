@@ -6,7 +6,7 @@ import { useT } from '@/lib/i18n'
 import type { TKey } from '@/lib/i18n'
 
 const PROPERTY_TYPE_VALUES = ['Appartement', 'Maison', 'Locatif', 'Commercial', 'Terrain'] as const
-const PROPERTY_TKEYS: Record<string, TKey> = {
+const PROPERTY_TKEYS: Record<typeof PROPERTY_TYPE_VALUES[number], TKey> = {
   'Appartement': 'propertyType.apartment',
   'Maison': 'propertyType.house',
   'Locatif': 'propertyType.rental',
