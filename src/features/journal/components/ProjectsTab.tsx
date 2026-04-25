@@ -287,7 +287,7 @@ function ProjectDetail({ project, onClose, onDelete }: { project: Project; onClo
                 placeholder="Montant actuel (€)"
                 className="flex-1 px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-sm text-neutral-900 dark:text-neutral-50 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-300 dark:focus:ring-primary-700"
               />
-              <Button variant="primary" size="md" className="rounded-xl" onClick={saveCurrentAmount}>
+              <Button variant="grey-outline" size="md" className="rounded-xl" onClick={saveCurrentAmount}>
                 Mettre à jour
               </Button>
             </div>
