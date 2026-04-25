@@ -71,7 +71,6 @@ export default function ProjectsTab() {
                 key={project.id}
                 project={project}
                 onClick={() => setSelected(project.id)}
-                onDelete={() => removeProject(project.id)}
               />
             ))}
           </div>
@@ -92,16 +91,19 @@ export default function ProjectsTab() {
       )}
 
       {selectedProject && (
-        <ProjectDetail project={selectedProject} onClose={() => setSelected(null)} />
+        <ProjectDetail
+          project={selectedProject}
+          onClose={() => setSelected(null)}
+          onDelete={() => { removeProject(selectedProject.id); setSelected(null) }}
+        />
       )}
     </div>
   )
 }
 
-function ProjectCard({ project, onClick, onDelete }: {
+function ProjectCard({ project, onClick }: {
   project: Project
   onClick: () => void
-  onDelete: () => void
 }) {
   const currency = useProfilStore((s) => s.currency)
   const meta = TYPE_META[project.type] ?? { icon: '📋', label: 'Projet' }
@@ -122,13 +124,6 @@ function ProjectCard({ project, onClick, onDelete }: {
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <span className="text-sm font-bold text-primary-600 dark:text-primary-400">{progress}%</span>
-          <button
-            onClick={(e) => { e.stopPropagation(); onDelete() }}
-            className="p-1 opacity-0 group-hover:opacity-100 text-neutral-400 hover:text-red-500 transition-all"
-            aria-label="Supprimer"
-          >
-            <Icon name="trash" size={15} />
-          </button>
         </div>
       </div>
 
@@ -202,7 +197,7 @@ function CardMeta({ project, currency }: { project: Project; currency: string })
   }
 }
 
-function ProjectDetail({ project, onClose }: { project: Project; onClose: () => void }) {
+function ProjectDetail({ project, onClose, onDelete }: { project: Project; onClose: () => void; onDelete: () => void }) {
   const { updateProject, toggleChecklistItem } = useJournalStore()
   const currency = useProfilStore((s) => s.currency)
   const [currentInput, setCurrentInput] = useState(project.currentAmount?.toString() ?? '')
@@ -238,10 +233,10 @@ function ProjectDetail({ project, onClose }: { project: Project; onClose: () => 
           </div>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setEditing(true)}
-              className="px-3 py-1.5 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 text-xs font-semibold transition-colors"
+              onClick={onDelete}
+              className="px-3 py-1.5 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 text-xs font-semibold transition-colors"
             >
-              Modifier
+              Supprimer
             </button>
             <button
               onClick={onClose}
@@ -282,8 +277,8 @@ function ProjectDetail({ project, onClose }: { project: Project; onClose: () => 
           />
         </div>
 
-        <div className="px-6 py-4 border-t border-neutral-100 dark:border-neutral-800 shrink-0">
-          {(project.type === 'savings' || project.type === 'investment') ? (
+        <div className="px-6 py-4 border-t border-neutral-100 dark:border-neutral-800 shrink-0 space-y-3">
+          {(project.type === 'savings' || project.type === 'investment') && (
             <div className="flex gap-3">
               <input
                 type="number"
@@ -296,11 +291,15 @@ function ProjectDetail({ project, onClose }: { project: Project; onClose: () => 
                 Mettre à jour
               </Button>
             </div>
-          ) : (
-            <Button variant="grey-outline" size="lg" className="w-full rounded-2xl" onClick={onClose}>
+          )}
+          <div className="flex gap-3">
+            <Button variant="grey-outline" size="lg" className="flex-1 rounded-2xl" onClick={onClose}>
               Fermer
             </Button>
-          )}
+            <Button variant="primary" size="lg" className="flex-1 rounded-2xl" onClick={() => setEditing(true)}>
+              Modifier
+            </Button>
+          </div>
         </div>
       </div>
     </div>
