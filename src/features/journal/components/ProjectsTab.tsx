@@ -201,7 +201,6 @@ function ProjectDetail({ project, onClose, onDelete }: { project: Project; onClo
   const { updateProject, toggleChecklistItem } = useJournalStore()
   const currency = useProfilStore((s) => s.currency)
   const [currentInput, setCurrentInput] = useState(project.currentAmount?.toString() ?? '')
-  const [editing, setEditing] = useState(false)
   const meta = TYPE_META[project.type] ?? { icon: '📋', label: 'Projet' }
   const progress = calcProgress(project)
 
@@ -210,20 +209,11 @@ function ProjectDetail({ project, onClose, onDelete }: { project: Project; onClo
     if (!isNaN(val)) updateProject(project.id, { currentAmount: val })
   }
 
-  function handleEdit(data: Omit<Project, 'id' | 'createdAt'>) {
-    updateProject(project.id, data)
-    setEditing(false)
-  }
-
-  if (editing) {
-    return <ProjectEditor initial={project} onSave={handleEdit} onCancel={() => setEditing(false)} />
-  }
-
   return (
     <div className="fixed inset-0 z-50 flex items-end lg:items-center justify-center bg-black/40 backdrop-blur-sm p-4 lg:p-8">
       <div className="w-full max-w-lg max-h-[85vh] bg-white dark:bg-neutral-800 rounded-3xl border border-neutral-200 dark:border-neutral-700 shadow-2xl flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 pt-5 pb-4 shrink-0 border-b border-neutral-100 dark:border-neutral-800">
+        <div className="flex items-center justify-between px-6 pt-5 pb-4 shrink-0 border-b border-neutral-100 dark:border-neutral-700">
           <div className="flex items-center gap-2">
             <span className="text-xl">{meta.icon}</span>
             <div>
@@ -274,48 +264,32 @@ function ProjectDetail({ project, onClose, onDelete }: { project: Project; onClo
             currentInput={currentInput}
             setCurrentInput={setCurrentInput}
             onToggle={(itemId) => toggleChecklistItem(project.id, itemId)}
+            onSave={saveCurrentAmount}
           />
         </div>
 
-        <div className="px-6 py-4 border-t border-neutral-100 dark:border-neutral-800 shrink-0 space-y-3">
-          {(project.type === 'savings' || project.type === 'investment') && (
-            <div className="flex gap-3">
-              <input
-                type="number"
-                value={currentInput}
-                onChange={(e) => setCurrentInput(e.target.value)}
-                placeholder="Montant actuel (€)"
-                className="flex-1 px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-sm text-neutral-900 dark:text-neutral-50 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-300 dark:focus:ring-primary-700"
-              />
-              <Button variant="grey-outline" size="md" className="rounded-xl" onClick={saveCurrentAmount}>
-                Mettre à jour
-              </Button>
-            </div>
-          )}
-          <div className="flex gap-3">
-            <Button variant="grey-outline" size="lg" className="flex-1 rounded-2xl" onClick={onClose}>
-              Fermer
-            </Button>
-            <Button variant="primary" size="lg" className="flex-1 rounded-2xl" onClick={() => setEditing(true)}>
-              Modifier
-            </Button>
-          </div>
+        <div className="px-6 py-4 border-t border-neutral-100 dark:border-neutral-700 shrink-0">
+          <Button variant="grey-outline" size="lg" className="w-full rounded-2xl" onClick={onClose}>
+            Fermer
+          </Button>
         </div>
       </div>
     </div>
   )
 }
 
-function DetailContent({ project, currency, currentInput, setCurrentInput, onToggle }: {
+function DetailContent({ project, currency, currentInput, setCurrentInput, onToggle, onSave }: {
   project: Project
   currency: string
   currentInput: string
   setCurrentInput: (v: string) => void
   onToggle: (itemId: string) => void
+  onSave: () => void
 }) {
   switch (project.type) {
     case 'savings':
-    case 'investment':
+    case 'investment': {
+      const isDirty = currentInput !== (project.currentAmount?.toString() ?? '')
       return (
         <div className="space-y-3">
           {project.targetAmount && (
@@ -326,14 +300,34 @@ function DetailContent({ project, currency, currentInput, setCurrentInput, onTog
               </span>
             </div>
           )}
-          {project.currentAmount !== undefined && (
-            <div className="flex items-center justify-between p-3 bg-primary-50 dark:bg-primary-900/20 rounded-xl">
-              <span className="text-xs text-primary-700 dark:text-primary-300">Actuel</span>
-              <span className="text-sm font-semibold text-primary-700 dark:text-primary-300">
-                {formatCurrency(project.currentAmount, currency)}
-              </span>
+          <div className="flex items-center justify-between p-3 bg-primary-50 dark:bg-primary-900/20 rounded-xl gap-2">
+            <span className="text-xs text-primary-700 dark:text-primary-300 shrink-0">Actuel</span>
+            <div className="flex items-center gap-1.5">
+              {isDirty && (
+                <button
+                  onClick={() => setCurrentInput(project.currentAmount?.toString() ?? '')}
+                  className="w-7 h-7 flex items-center justify-center rounded-lg bg-neutral-100 dark:bg-neutral-600 text-neutral-500 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-500 transition-colors"
+                >
+                  <Icon name="x" size={13} />
+                </button>
+              )}
+              <input
+                type="number"
+                value={currentInput}
+                onChange={(e) => setCurrentInput(e.target.value)}
+                placeholder="0"
+                className="w-28 text-right px-2 py-1 rounded-lg border border-primary-200 dark:border-primary-800 bg-transparent text-sm font-semibold text-primary-700 dark:text-primary-300 focus:outline-none focus:ring-1 focus:ring-primary-400 dark:focus:ring-primary-600"
+              />
+              {isDirty && (
+                <button
+                  onClick={onSave}
+                  className="w-7 h-7 flex items-center justify-center rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition-colors"
+                >
+                  <Icon name="check" size={13} />
+                </button>
+              )}
             </div>
-          )}
+          </div>
           {project.targetAmount && project.currentAmount !== undefined && (
             <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-xl">
               <span className="text-xs text-neutral-500 dark:text-neutral-400">Restant</span>
@@ -350,6 +344,7 @@ function DetailContent({ project, currency, currentInput, setCurrentInput, onTog
           )}
         </div>
       )
+    }
 
     case 'real-estate':
     case 'free': {
