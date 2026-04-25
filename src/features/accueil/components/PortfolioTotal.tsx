@@ -1,5 +1,6 @@
 import { formatCurrency } from '@/lib/formatting'
 import { useProfilStore } from '@/features/profil/profil.store'
+import { useT } from '@/lib/i18n'
 
 interface PortfolioTotalProps {
   total: number
@@ -8,7 +9,8 @@ interface PortfolioTotalProps {
 
 export default function PortfolioTotal({ total, monthlyChange }: PortfolioTotalProps) {
   const { currency, theme } = useProfilStore()
-  const formatted = formatCurrency(total, currency).replace(/\u202f/g, '\u00a0')
+  const t = useT()
+  const formatted = formatCurrency(total, currency).replace(/ /g, ' ')
   const bgColor = theme === 'dark' ? 'rgba(20,22,42,0.92)' : 'rgba(242,243,248,0.92)'
 
   return (
@@ -17,7 +19,7 @@ export default function PortfolioTotal({ total, monthlyChange }: PortfolioTotalP
       style={{ background: bgColor }}
     >
       <p className="text-base font-semibold text-neutral-500 dark:text-neutral-400 mb-2">
-        Mes investissements
+        {t('home.myInvestments')}
       </p>
       <p className="text-5xl font-bold text-primary-900 dark:text-primary-300 tracking-tight leading-none mb-3">
         {formatted}

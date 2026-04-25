@@ -10,11 +10,13 @@ import type { Investment } from './accueil.types'
 import Icon from '@/components/ui/Icon'
 import { useProfilStore } from '@/features/profil/profil.store'
 import { useStockPrices } from '@/hooks/useStockPrices'
+import { useT } from '@/lib/i18n'
 
 const VB_Y = 140
 const VB_H = 310
 
 export default function AccueilView() {
+  const t = useT()
   const investments = useAccueilStore((s) => s.investments)
   const finnhubKey = useProfilStore((s) => s.finnhubKey)
   const { prices } = useStockPrices(investments, finnhubKey)
@@ -134,12 +136,12 @@ export default function AccueilView() {
         <Button
           variant="grey-outline"
           size="lg"
-          aria-label="Modifier mes investissements"
+          aria-label={t('home.editInvestments')}
           onClick={() => setEditOpen(true)}
           className="whitespace-nowrap shadow-sm"
         >
           <Icon name="write" size={18} />
-          Modifier mes investissements
+          {t('home.editInvestments')}
         </Button>
       </div>
 

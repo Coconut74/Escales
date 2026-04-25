@@ -10,6 +10,8 @@ import TextField from '@/components/ui/TextField'
 import DropdownField from '@/components/ui/DropdownField'
 import Button from '@/components/ui/Button'
 import Icon from '@/components/ui/Icon'
+import { useT } from '@/lib/i18n'
+import type { TKey } from '@/lib/i18n'
 
 const ChartIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
@@ -17,9 +19,14 @@ const ChartIcon = () => (
   </svg>
 )
 
-const CATEGORY_OPTIONS = (Object.keys(CATEGORY_LABELS) as InvestmentCategory[]).map(
-  (k) => ({ value: k, label: CATEGORY_LABELS[k] })
-)
+const CATEGORY_TKEYS: Record<InvestmentCategory, TKey> = {
+  etf: 'cat.etf',
+  immo: 'cat.immo',
+  crypto: 'cat.crypto',
+  epargne: 'cat.epargne',
+  obligations: 'cat.obligations',
+  autre: 'cat.autre',
+}
 
 interface Props {
   open: boolean
@@ -29,8 +36,13 @@ interface Props {
 export default function EditInvestmentsPanel({ open, onClose }: Props) {
   const { investments, setInvestments } = useAccueilStore()
   const finnhubKey = useProfilStore((s) => s.finnhubKey)
+  const t = useT()
   const [draft, setDraft] = useState<Investment[]>([])
   const [errors, setErrors] = useState<Record<string, string>>({})
+
+  const CATEGORY_OPTIONS = (Object.keys(CATEGORY_LABELS) as InvestmentCategory[]).map(
+    (k) => ({ value: k, label: t(CATEGORY_TKEYS[k]) })
+  )
 
   useEffect(() => {
     if (open) {
@@ -84,11 +96,11 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="flex items-center justify-between px-6 pt-6 pb-4 shrink-0">
-        <h2 className="text-lg font-bold text-neutral-900 dark:text-neutral-50">Mes investissements</h2>
+        <h2 className="text-lg font-bold text-neutral-900 dark:text-neutral-50">{t('edit.title')}</h2>
         <button
           onClick={onClose}
           className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100/80 dark:bg-neutral-700/80 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-200/80 dark:hover:bg-neutral-600/80 transition-colors"
-          aria-label="Fermer"
+          aria-label={t('edit.close')}
         >
           ✕
         </button>
@@ -104,10 +116,10 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
             <div className="flex items-start gap-2">
               <div className="flex-1 space-y-3">
                 <TextField
-                  placeholder="Nom de l'investissement"
+                  placeholder={t('edit.investmentName')}
                   value={inv.label}
                   onChange={(e) => update(inv.id, { label: e.target.value })}
-                  error={errors[inv.id] === 'label' ? 'Nom requis' : undefined}
+                  error={errors[inv.id] === 'label' ? t('edit.nameRequired') : undefined}
                 />
                 <div className="flex gap-2">
                   <div className="flex-1">
@@ -117,22 +129,21 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
                       onChange={(e) => update(inv.id, { category: e.target.value as InvestmentCategory })}
                     />
                   </div>
-                  {/* Valeur manuelle — cachée quand ticker lié */}
                   {!inv.ticker && (
                     <>
                       <div className="w-28">
                         <TextField
                           type="number"
-                          placeholder="Montant"
+                          placeholder={t('edit.amount')}
                           value={inv.value === 0 ? '' : inv.value}
                           onChange={(e) => update(inv.id, { value: parseFloat(e.target.value) || 0 })}
-                          error={errors[inv.id] === 'value' ? 'Valeur > 0' : undefined}
+                          error={errors[inv.id] === 'value' ? t('edit.valueRequired') : undefined}
                         />
                       </div>
                       <div className="w-20">
                         <TextField
                           type="number"
-                          placeholder="Évol. %"
+                          placeholder={t('edit.changePct')}
                           value={inv.change === undefined ? '' : inv.change}
                           onChange={(e) => {
                             const v = e.target.value
@@ -142,21 +153,19 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
                       </div>
                     </>
                   )}
-                  {/* Parts — affichées quand ticker lié */}
                   {inv.ticker && (
                     <div className="w-28">
                       <TextField
                         type="number"
-                        placeholder="Nb parts"
+                        placeholder={t('edit.shares')}
                         value={inv.shares === undefined ? '' : inv.shares}
                         onChange={(e) => update(inv.id, { shares: parseFloat(e.target.value) || undefined })}
-                        error={errors[inv.id] === 'shares' ? 'Parts > 0' : undefined}
+                        error={errors[inv.id] === 'shares' ? t('edit.sharesRequired') : undefined}
                       />
                     </div>
                   )}
                 </div>
 
-                {/* Champ ticker */}
                 <TickerField
                   ticker={inv.ticker}
                   apiKey={finnhubKey}
@@ -180,17 +189,17 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
           className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl border border-dashed border-neutral-300 dark:border-neutral-600 text-neutral-500 dark:text-neutral-400 hover:border-primary-400 hover:text-primary-600 dark:hover:border-primary-500 dark:hover:text-primary-400 transition-colors text-sm font-semibold"
         >
           <Icon name="plus" size={16} />
-          Ajouter un investissement
+          {t('edit.addInvestment')}
         </button>
       </div>
 
       {/* Footer */}
       <div className="px-6 pt-3 pb-6 shrink-0 flex gap-3">
         <Button variant="grey-outline" size="lg" className="flex-1 rounded-2xl" onClick={onClose}>
-          Annuler
+          {t('edit.cancel')}
         </Button>
         <Button variant="primary" size="lg" className="flex-1 rounded-2xl" onClick={save}>
-          Enregistrer
+          {t('edit.save')}
         </Button>
       </div>
     </div>
@@ -244,6 +253,7 @@ function TickerField({ ticker, apiKey, onSelect, onUnlink }: {
   onSelect: (symbol: string) => void
   onUnlink: () => void
 }) {
+  const t = useT()
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<FinnhubSearchResult[]>([])
   const [open, setOpen] = useState(false)
@@ -254,7 +264,6 @@ function TickerField({ ticker, apiKey, onSelect, onUnlink }: {
   const wrapRef = useRef<HTMLDivElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  // Ferme le dropdown si clic en dehors (wrapRef ET dropdownRef portal)
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       const t = e.target as Node
@@ -291,7 +300,7 @@ function TickerField({ ticker, apiKey, onSelect, onUnlink }: {
       <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-primary-300 dark:border-primary-700 bg-primary-50 dark:bg-primary-900/20">
         <ChartIcon />
         <span className="text-sm font-bold text-primary-700 dark:text-primary-300 font-mono">{ticker}</span>
-        <span className="text-xs text-primary-500 dark:text-primary-400">· prix live activé</span>
+        <span className="text-xs text-primary-500 dark:text-primary-400">{t('edit.livePriceEnabled')}</span>
         <button
           onClick={onUnlink}
           onMouseDown={(e) => e.stopPropagation()}
@@ -341,7 +350,7 @@ function TickerField({ ticker, apiKey, onSelect, onUnlink }: {
           value={query}
           onChange={(e) => handleChange(e.target.value)}
           onFocus={() => { if (results.length > 0) openDropdown() }}
-          placeholder={apiKey ? 'Lier à une action (ex: AAPL, BTC…)' : 'Configurez votre clé Finnhub dans le profil'}
+          placeholder={apiKey ? t('edit.linkTicker') : t('edit.configureFinnhub')}
           disabled={!apiKey}
           className="w-full px-3 py-2 pl-8 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-sm placeholder:text-neutral-400 dark:placeholder:text-neutral-500 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
         />

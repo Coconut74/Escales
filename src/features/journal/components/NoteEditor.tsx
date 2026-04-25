@@ -2,6 +2,7 @@ import { useEffect, useRef, useCallback } from 'react'
 import type { Note } from '../journal.types'
 import { useJournalStore } from '../journal.store'
 import Icon from '@/components/ui/Icon'
+import { useT } from '@/lib/i18n'
 
 interface Props {
   note: Note
@@ -11,6 +12,7 @@ interface Props {
 
 export default function NoteEditor({ note, onClose, onDelete }: Props) {
   const updateNote = useJournalStore((s) => s.updateNote)
+  const t = useT()
   const titleRef = useRef<HTMLInputElement>(null)
   const bodyRef = useRef<HTMLDivElement>(null)
   const saveTimer = useRef<ReturnType<typeof setTimeout>>()
@@ -81,17 +83,17 @@ export default function NoteEditor({ note, onClose, onDelete }: Props) {
             <Icon name="arrow" size={18} className="rotate-180" />
           </button>
           <div className="w-px h-5 bg-neutral-200 dark:bg-neutral-700 mx-1" />
-          <ToolbarBtn onClick={() => execFmt('bold')} title="Gras"><strong className="text-sm">G</strong></ToolbarBtn>
-          <ToolbarBtn onClick={() => execFmt('italic')} title="Italique"><em className="text-sm font-serif">I</em></ToolbarBtn>
-          <ToolbarBtn onClick={() => execFmt('insertUnorderedList')} title="Liste à puces"><span className="text-sm">•≡</span></ToolbarBtn>
-          <ToolbarBtn onClick={() => execFmt('insertOrderedList')} title="Liste numérotée"><span className="text-sm">1≡</span></ToolbarBtn>
-          <ToolbarBtn onClick={insertCheckbox} title="Case à cocher"><span className="text-base leading-none">☑</span></ToolbarBtn>
+          <ToolbarBtn onClick={() => execFmt('bold')} title={t('noteEditor.bold')}><strong className="text-sm">G</strong></ToolbarBtn>
+          <ToolbarBtn onClick={() => execFmt('italic')} title={t('noteEditor.italic')}><em className="text-sm font-serif">I</em></ToolbarBtn>
+          <ToolbarBtn onClick={() => execFmt('insertUnorderedList')} title={t('noteEditor.bulletList')}><span className="text-sm">•≡</span></ToolbarBtn>
+          <ToolbarBtn onClick={() => execFmt('insertOrderedList')} title={t('noteEditor.numberedList')}><span className="text-sm">1≡</span></ToolbarBtn>
+          <ToolbarBtn onClick={insertCheckbox} title={t('noteEditor.checkbox')}><span className="text-base leading-none">☑</span></ToolbarBtn>
           <div className="flex-1" />
           <button
             onClick={onDelete}
             className="px-3 py-1.5 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 text-xs font-semibold transition-colors"
           >
-            Supprimer
+            {t('noteEditor.delete')}
           </button>
         </div>
 
@@ -101,7 +103,7 @@ export default function NoteEditor({ note, onClose, onDelete }: Props) {
           type="text"
           defaultValue={note.title}
           onChange={(e) => scheduleSave({ title: e.target.value })}
-          placeholder="Titre"
+          placeholder={t('noteEditor.titlePlaceholder')}
           className="w-full px-6 pt-5 pb-2 text-xl font-bold bg-transparent text-neutral-900 dark:text-neutral-50 placeholder:text-neutral-300 dark:placeholder:text-neutral-600 focus:outline-none shrink-0"
         />
 
@@ -112,7 +114,7 @@ export default function NoteEditor({ note, onClose, onDelete }: Props) {
           suppressContentEditableWarning
           onInput={handleBodyInput}
           onClick={handleBodyClick}
-          data-placeholder="Commencez à écrire…"
+          data-placeholder={t('noteEditor.bodyPlaceholder')}
           className="flex-1 px-6 py-2 pb-6 text-sm text-neutral-800 dark:text-neutral-200 leading-relaxed focus:outline-none overflow-auto
             [&>ul]:list-disc [&>ul]:pl-5 [&>ol]:list-decimal [&>ol]:pl-5
             empty:before:content-[attr(data-placeholder)] empty:before:text-neutral-300 dark:empty:before:text-neutral-600 empty:before:pointer-events-none"

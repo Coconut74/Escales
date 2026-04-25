@@ -1,13 +1,24 @@
 import { useLayoutEffect, useEffect, useRef, useState } from 'react'
-import type { Investment } from '../accueil.types'
+import type { Investment, InvestmentCategory } from '../accueil.types'
 import { CATEGORY_COLORS, CATEGORY_LABELS } from '../accueil.types'
 import { formatCurrency } from '@/lib/formatting'
 import { useProfilStore } from '@/features/profil/profil.store'
+import { useT } from '@/lib/i18n'
+import type { TKey } from '@/lib/i18n'
 
 const SWIPE_THRESHOLD = 50
 const ANIM_DURATION = 280
 
 const CARD_CLASSES = 'fixed w-[calc(100%-32px)] max-w-[600px] bg-white dark:bg-neutral-800 rounded-3xl shadow-2xl'
+
+const CATEGORY_TKEYS: Record<InvestmentCategory, TKey> = {
+  etf: 'cat.etf',
+  immo: 'cat.immo',
+  crypto: 'cat.crypto',
+  epargne: 'cat.epargne',
+  obligations: 'cat.obligations',
+  autre: 'cat.autre',
+}
 
 interface Props {
   investment: Investment | null
@@ -30,24 +41,15 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
   const open = !!investment
   const currency = useProfilStore((s) => s.currency)
 
-  // Chaque transition ajoute une entrée ; chacune se retire après ANIM_DURATION.
-  // Cela évite le flash quand on swipe en sens inverse avant la fin de l'animation :
-  // l'ancienne carte sortante reste vivante jusqu'au bout de sa propre animation.
   const [exitStack, setExitStack] = useState<ExitEntry[]>([])
   const [animDir, setAnimDir] = useState<'left' | 'right'>('left')
   const [isTransitioning, setIsTransitioning] = useState(false)
-  // Snap le div principal hors-écran sans transition pendant l'animation de fermeture,
-  // pour éviter qu'un rectangle vide glisse par-dessus la carte sortante.
   const [isClosing, setIsClosing] = useState(false)
 
   const prevInvRef = useRef<Investment | null>(investment)
-  // Mémorise la position précédente pour que la carte sortante ait la même hauteur
   const prevPositionRef = useRef(position)
-  // Timer du dernier enter (contrôle isTransitioning)
   const enterTimerRef = useRef<ReturnType<typeof setTimeout>>()
 
-  // useEffect (pas useLayoutEffect) : on veut capturer la position AVANT qu'elle change,
-  // donc on la mémorise à chaque render APRÈS que useLayoutEffect a déjà lu prevPositionRef.
   useEffect(() => { prevPositionRef.current = position }, [position])
 
   useLayoutEffect(() => {
@@ -57,7 +59,6 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
 
     if (!prev) return
 
-    // Fermeture : investment est devenu null
     if (!investment) {
       const uid = `${prev.id}-${Date.now()}`
       setIsClosing(true)
@@ -78,12 +79,10 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
     setIsTransitioning(true)
     setExitStack(s => [...s, { uid, inv: prev, dir, position: prevPos }])
 
-    // Chaque carte sortante se retire seule après sa propre animation
     setTimeout(() => {
       setExitStack(s => s.filter(e => e.uid !== uid))
     }, ANIM_DURATION)
 
-    // Réinitialise isTransitioning après la dernière animation en cours
     clearTimeout(enterTimerRef.current)
     enterTimerRef.current = setTimeout(() => setIsTransitioning(false), ANIM_DURATION)
   }, [investment?.id])
@@ -137,7 +136,6 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
 
   return (
     <>
-      {/* Cartes sortantes — chacune vit jusqu'à la fin de sa propre animation */}
       {exitStack.map(({ uid, inv, dir, position: exitPos }) => (
         <div
           key={uid}
@@ -154,11 +152,10 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
         </div>
       ))}
 
-      {/* Carte principale — open/close + drag + enter animation */}
       <div
         role="dialog"
         aria-modal="true"
-        aria-label={investment?.label ?? 'Détail investissement'}
+        aria-label={investment?.label ?? 'Investment'}
         className={`${CARD_CLASSES} lg:left-[calc(50vw+112px)] select-none cursor-grab active:cursor-grabbing`}
         style={{
           ...baseLeft,
@@ -203,10 +200,12 @@ function CardContent({
   onClose: () => void
   position?: { current: number; total: number }
 }) {
+  const t = useT()
   const pct    = ((investment.value / total) * 100).toFixed(1)
   const change = investment.change ?? 0
   const color  = CATEGORY_COLORS[investment.category]
-  const label  = CATEGORY_LABELS[investment.category]
+  // Use translated category label, fall back to CATEGORY_LABELS for safety
+  const label  = t(CATEGORY_TKEYS[investment.category] ?? 'cat.autre' as TKey) || CATEGORY_LABELS[investment.category]
 
   return (
     <div className="px-6 pt-5 pb-6">
@@ -234,14 +233,14 @@ function CardContent({
           onClick={onClose}
           onMouseDown={(e) => e.stopPropagation()}
           className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors shrink-0"
-          aria-label="Fermer"
+          aria-label={t('investment.close')}
         >✕</button>
       </div>
 
       <div className="grid grid-cols-3 gap-3 mb-4">
-        <Metric label="Valeur" value={formatCurrency(investment.value, currency)} highlight />
-        <Metric label="Part" value={`${pct}%`} />
-        <Metric label="Evolution" value={`${change >= 0 ? '+' : ''}${change.toFixed(1)}%`} positive={change >= 0} negative={change < 0} />
+        <Metric label={t('investment.value')} value={formatCurrency(investment.value, currency)} highlight />
+        <Metric label={t('investment.share')} value={`${pct}%`} />
+        <Metric label={t('investment.change')} value={`${change >= 0 ? '+' : ''}${change.toFixed(1)}%`} positive={change >= 0} negative={change < 0} />
       </div>
 
       {position && (

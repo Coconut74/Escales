@@ -1,12 +1,6 @@
 import Icon from '@/components/ui/Icon'
+import { useT } from '@/lib/i18n'
 import type { View } from '@/App'
-
-const NAV_ITEMS: { id: View; label: string; icon: 'accueil' | 'journal' | 'book' | 'profile' }[] = [
-  { id: 'accueil',   label: 'Accueil',         icon: 'accueil' },
-  { id: 'journal',   label: 'Journal de bord', icon: 'journal' },
-  { id: 'education', label: 'Éducation',        icon: 'book'    },
-  { id: 'profil',    label: 'Profil',           icon: 'profile' },
-]
 
 const ITEM_SIZE = 50
 const GAP = 4
@@ -17,6 +11,15 @@ interface BottomNavProps {
 }
 
 export default function BottomNav({ activeView, onNavigate }: BottomNavProps) {
+  const t = useT()
+
+  const NAV_ITEMS: { id: View; label: string; icon: 'accueil' | 'journal' | 'book' | 'profile' }[] = [
+    { id: 'accueil',   label: t('nav.home'),      icon: 'accueil'  },
+    { id: 'journal',   label: t('nav.journal'),   icon: 'journal'  },
+    { id: 'education', label: t('nav.education'), icon: 'book'     },
+    { id: 'profil',    label: t('nav.profile'),   icon: 'profile'  },
+  ]
+
   const activeIndex = NAV_ITEMS.findIndex(i => i.id === activeView)
 
   return (

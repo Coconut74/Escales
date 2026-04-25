@@ -6,13 +6,23 @@ import { formatCurrency } from '@/lib/formatting'
 import { useProfilStore } from '@/features/profil/profil.store'
 import Icon from '@/components/ui/Icon'
 import Button from '@/components/ui/Button'
+import { useT } from '@/lib/i18n'
+import type { TKey } from '@/lib/i18n'
 
-const TYPE_META: Record<ProjectType, { icon: string; label: string }> = {
-  savings:       { icon: '💰', label: 'Épargne' },
-  'real-estate': { icon: '🏠', label: 'Immobilier' },
-  investment:    { icon: '📈', label: 'Investissement' },
-  loan:          { icon: '🏦', label: 'Emprunt' },
-  free:          { icon: '📋', label: 'Projet libre' },
+const TYPE_META: Record<ProjectType, { icon: string }> = {
+  savings:       { icon: '💰' },
+  'real-estate': { icon: '🏠' },
+  investment:    { icon: '📈' },
+  loan:          { icon: '🏦' },
+  free:          { icon: '📋' },
+}
+
+const TYPE_LABEL_KEYS: Record<ProjectType, TKey> = {
+  savings: 'projectType.savings',
+  'real-estate': 'projectType.realEstate',
+  investment: 'projectType.investment',
+  loan: 'projectType.loan',
+  free: 'projectType.free',
 }
 
 function calcProgress(p: Project): number {
@@ -47,6 +57,7 @@ export default function ProjectsTab() {
   const { projects, addProject, removeProject } = useJournalStore()
   const [showEditor, setShowEditor] = useState(false)
   const [selected, setSelected] = useState<string | null>(null)
+  const t = useT()
 
   function handleCreate(data: Omit<Project, 'id' | 'createdAt'>) {
     addProject({ ...data, id: crypto.randomUUID(), createdAt: new Date().toISOString() })
@@ -61,8 +72,8 @@ export default function ProjectsTab() {
         {projects.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 gap-3 text-center">
             <span className="text-4xl">🗂️</span>
-            <p className="text-sm text-neutral-400 dark:text-neutral-500">Aucun projet pour l'instant.</p>
-            <p className="text-xs text-neutral-400 dark:text-neutral-600">Créez votre premier projet avec le bouton ci-dessous.</p>
+            <p className="text-sm text-neutral-400 dark:text-neutral-500">{t('projects.empty')}</p>
+            <p className="text-xs text-neutral-400 dark:text-neutral-600">{t('projects.emptyHint')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
@@ -83,7 +94,7 @@ export default function ProjectsTab() {
         className="fixed bottom-[120px] lg:bottom-8 right-6 flex items-center gap-2 px-4 py-3 rounded-2xl bg-primary-500 text-white text-sm font-semibold shadow-lg shadow-primary-500/30 hover:bg-primary-600 transition-colors z-40"
       >
         <Icon name="plus" size={16} />
-        Nouveau projet
+        {t('projects.new')}
       </button>
 
       {showEditor && (
@@ -106,7 +117,9 @@ function ProjectCard({ project, onClick }: {
   onClick: () => void
 }) {
   const currency = useProfilStore((s) => s.currency)
-  const meta = TYPE_META[project.type] ?? { icon: '📋', label: 'Projet' }
+  const t = useT()
+  const meta = TYPE_META[project.type] ?? { icon: '📋' }
+  const typeLabel = t(TYPE_LABEL_KEYS[project.type] ?? 'projectType.free' as TKey)
   const progress = calcProgress(project)
 
   return (
@@ -119,7 +132,7 @@ function ProjectCard({ project, onClick }: {
           <span className="text-xl shrink-0">{meta.icon}</span>
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-neutral-900 dark:text-neutral-50 truncate">{project.name}</p>
-            <p className="text-xs text-neutral-400 dark:text-neutral-500">{meta.label}</p>
+            <p className="text-xs text-neutral-400 dark:text-neutral-500">{typeLabel}</p>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
@@ -144,6 +157,7 @@ function ProjectCard({ project, onClick }: {
 }
 
 function CardMeta({ project, currency }: { project: Project; currency: string }) {
+  const t = useT()
   switch (project.type) {
     case 'savings':
     case 'investment':
@@ -168,7 +182,7 @@ function CardMeta({ project, currency }: { project: Project; currency: string })
         <>
           {total > 0 && (
             <span className="text-xs text-neutral-500 dark:text-neutral-400">
-              {done}/{total} étape{total > 1 ? 's' : ''}
+              {done}/{total} {t('projects.step')}{total > 1 ? 's' : ''}
             </span>
           )}
           {project.type === 'real-estate' && project.city && (
@@ -189,7 +203,7 @@ function CardMeta({ project, currency }: { project: Project; currency: string })
             </span>
           )}
           <span className="text-xs text-neutral-400 dark:text-neutral-500">
-            {remaining} mois restants
+            {t('projects.monthsRemaining', { n: remaining })}
           </span>
         </>
       )
@@ -200,8 +214,10 @@ function CardMeta({ project, currency }: { project: Project; currency: string })
 function ProjectDetail({ project, onClose, onDelete }: { project: Project; onClose: () => void; onDelete: () => void }) {
   const { updateProject, toggleChecklistItem } = useJournalStore()
   const currency = useProfilStore((s) => s.currency)
+  const t = useT()
   const [currentInput, setCurrentInput] = useState(project.currentAmount?.toString() ?? '')
-  const meta = TYPE_META[project.type] ?? { icon: '📋', label: 'Projet' }
+  const meta = TYPE_META[project.type] ?? { icon: '📋' }
+  const typeLabel = t(TYPE_LABEL_KEYS[project.type] ?? 'projectType.free' as TKey)
   const progress = calcProgress(project)
 
   function saveCurrentAmount() {
@@ -218,7 +234,7 @@ function ProjectDetail({ project, onClose, onDelete }: { project: Project; onClo
             <span className="text-xl">{meta.icon}</span>
             <div>
               <h2 className="text-base font-bold text-neutral-900 dark:text-neutral-50 leading-tight">{project.name}</h2>
-              <p className="text-xs text-neutral-400 dark:text-neutral-500">{meta.label}</p>
+              <p className="text-xs text-neutral-400 dark:text-neutral-500">{typeLabel}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -226,7 +242,7 @@ function ProjectDetail({ project, onClose, onDelete }: { project: Project; onClo
               onClick={onDelete}
               className="px-3 py-1.5 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 text-xs font-semibold transition-colors"
             >
-              Supprimer
+              {t('projects.delete')}
             </button>
             <button
               onClick={onClose}
@@ -241,7 +257,7 @@ function ProjectDetail({ project, onClose, onDelete }: { project: Project; onClo
           {/* Barre de progression */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <span className="text-xs font-medium text-neutral-500 dark:text-neutral-400">Progression</span>
+              <span className="text-xs font-medium text-neutral-500 dark:text-neutral-400">{t('projects.progress')}</span>
               <span className="text-sm font-bold text-primary-600 dark:text-primary-400">{progress}%</span>
             </div>
             <div className="h-2 rounded-full bg-neutral-100 dark:bg-neutral-700 overflow-hidden">
@@ -270,7 +286,7 @@ function ProjectDetail({ project, onClose, onDelete }: { project: Project; onClo
 
         <div className="px-6 py-4 border-t border-neutral-100 dark:border-neutral-700 shrink-0">
           <Button variant="grey-outline" size="lg" className="w-full rounded-2xl" onClick={onClose}>
-            Fermer
+            {t('projects.close')}
           </Button>
         </div>
       </div>
@@ -286,6 +302,7 @@ function DetailContent({ project, currency, currentInput, setCurrentInput, onTog
   onToggle: (itemId: string) => void
   onSave: () => void
 }) {
+  const t = useT()
   switch (project.type) {
     case 'savings':
     case 'investment': {
@@ -294,14 +311,14 @@ function DetailContent({ project, currency, currentInput, setCurrentInput, onTog
         <div className="space-y-3">
           {project.targetAmount && (
             <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-xl">
-              <span className="text-xs text-neutral-500 dark:text-neutral-400">Objectif</span>
+              <span className="text-xs text-neutral-500 dark:text-neutral-400">{t('projects.target')}</span>
               <span className="text-sm font-semibold text-neutral-900 dark:text-neutral-50">
                 {formatCurrency(project.targetAmount, currency)}
               </span>
             </div>
           )}
           <div className="flex items-center justify-between p-3 bg-primary-50 dark:bg-primary-900/20 rounded-xl gap-2">
-            <span className="text-xs text-primary-700 dark:text-primary-300 shrink-0">Actuel</span>
+            <span className="text-xs text-primary-700 dark:text-primary-300 shrink-0">{t('projects.current')}</span>
             <div className="flex items-center gap-1.5">
               <input
                 type="number"
@@ -330,7 +347,7 @@ function DetailContent({ project, currency, currentInput, setCurrentInput, onTog
           </div>
           {project.targetAmount && project.currentAmount !== undefined && (
             <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-xl">
-              <span className="text-xs text-neutral-500 dark:text-neutral-400">Restant</span>
+              <span className="text-xs text-neutral-500 dark:text-neutral-400">{t('projects.remaining')}</span>
               <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
                 {formatCurrency(Math.max(0, project.targetAmount - project.currentAmount), currency)}
               </span>
@@ -338,7 +355,7 @@ function DetailContent({ project, currency, currentInput, setCurrentInput, onTog
           )}
           {project.type === 'investment' && project.assetName && (
             <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-xl">
-              <span className="text-xs text-neutral-500 dark:text-neutral-400">Actif</span>
+              <span className="text-xs text-neutral-500 dark:text-neutral-400">{t('projects.asset')}</span>
               <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">{project.assetName}</span>
             </div>
           )}
@@ -349,12 +366,12 @@ function DetailContent({ project, currency, currentInput, setCurrentInput, onTog
     case 'real-estate':
     case 'free': {
       if (project.checklist.length === 0) {
-        return <p className="text-sm text-neutral-400 dark:text-neutral-500 text-center py-4">Aucune étape définie.</p>
+        return <p className="text-sm text-neutral-400 dark:text-neutral-500 text-center py-4">{t('projects.noSteps')}</p>
       }
       return (
         <div className="space-y-2">
           <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
-            {project.type === 'real-estate' ? 'Étapes' : 'Checklist'}
+            {project.type === 'real-estate' ? t('projects.steps') : t('projects.checklist')}
           </p>
           {project.checklist.map((item) => (
             <button
@@ -382,23 +399,23 @@ function DetailContent({ project, currency, currentInput, setCurrentInput, onTog
         <div className="space-y-3">
           {project.loanAmount && (
             <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-xl">
-              <span className="text-xs text-neutral-500 dark:text-neutral-400">Montant emprunté</span>
+              <span className="text-xs text-neutral-500 dark:text-neutral-400">{t('projects.loanAmount')}</span>
               <span className="text-sm font-semibold text-neutral-900 dark:text-neutral-50">
                 {formatCurrency(project.loanAmount, currency)}
               </span>
             </div>
           )}
           <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-xl">
-            <span className="text-xs text-neutral-500 dark:text-neutral-400">Durée totale</span>
-            <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">{project.loanDurationMonths} mois</span>
+            <span className="text-xs text-neutral-500 dark:text-neutral-400">{t('projects.totalDuration')}</span>
+            <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">{project.loanDurationMonths} {t('projects.months')}</span>
           </div>
           <div className="flex items-center justify-between p-3 bg-primary-50 dark:bg-primary-900/20 rounded-xl">
-            <span className="text-xs text-primary-700 dark:text-primary-300">Écoulé</span>
-            <span className="text-sm font-semibold text-primary-700 dark:text-primary-300">{elapsed} mois</span>
+            <span className="text-xs text-primary-700 dark:text-primary-300">{t('projects.elapsed')}</span>
+            <span className="text-sm font-semibold text-primary-700 dark:text-primary-300">{elapsed} {t('projects.months')}</span>
           </div>
           <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-xl">
-            <span className="text-xs text-neutral-500 dark:text-neutral-400">Restant</span>
-            <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">{remaining} mois</span>
+            <span className="text-xs text-neutral-500 dark:text-neutral-400">{t('projects.remaining')}</span>
+            <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">{remaining} {t('projects.months')}</span>
           </div>
         </div>
       )

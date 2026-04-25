@@ -1,19 +1,24 @@
 import { useState } from 'react'
 import { useJournalStore } from '../journal.store'
+import { useProfilStore } from '@/features/profil/profil.store'
 import type { Note } from '../journal.types'
 import NoteEditor from './NoteEditor'
 import Icon from '@/components/ui/Icon'
+import { useT } from '@/lib/i18n'
+import type { TKey } from '@/lib/i18n'
 
-function relativeDate(iso: string): string {
+type TFunc = ReturnType<typeof useT>
+
+function relativeDate(iso: string, t: TFunc, lang: string): string {
   const diff = Date.now() - new Date(iso).getTime()
   const min = Math.floor(diff / 60000)
-  if (min < 1) return "à l'instant"
-  if (min < 60) return `il y a ${min} min`
+  if (min < 1) return t('notes.justNow')
+  if (min < 60) return t('notes.minutesAgo' as TKey, { n: min })
   const h = Math.floor(min / 60)
-  if (h < 24) return `il y a ${h} h`
+  if (h < 24) return t('notes.hoursAgo' as TKey, { n: h })
   const d = Math.floor(h / 24)
-  if (d < 7) return `il y a ${d} j`
-  return new Intl.DateTimeFormat('fr-FR').format(new Date(iso))
+  if (d < 7) return t('notes.daysAgo' as TKey, { n: d })
+  return new Intl.DateTimeFormat(lang === 'en' ? 'en-US' : 'fr-FR').format(new Date(iso))
 }
 
 function stripHtml(html: string): string {
@@ -23,6 +28,8 @@ function stripHtml(html: string): string {
 export default function NotesTab() {
   const { notes, addNote, removeNote } = useJournalStore()
   const [editing, setEditing] = useState<Note | null>(null)
+  const t = useT()
+  const lang = useProfilStore((s) => s.language)
 
   function createNote() {
     const note: Note = {
@@ -52,7 +59,7 @@ export default function NotesTab() {
         {notes.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 gap-3 text-center">
             <span className="text-4xl">📝</span>
-            <p className="text-sm text-neutral-400 dark:text-neutral-500">Aucune note pour l'instant.</p>
+            <p className="text-sm text-neutral-400 dark:text-neutral-500">{t('notes.empty')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -63,12 +70,12 @@ export default function NotesTab() {
                 onClick={() => setEditing(note)}
               >
                 <p className="font-semibold text-neutral-900 dark:text-neutral-50 truncate mb-1">
-                  {note.title || <span className="italic text-neutral-400">Sans titre</span>}
+                  {note.title || <span className="italic text-neutral-400">{t('notes.noTitle')}</span>}
                 </p>
                 <p className="text-xs text-neutral-500 dark:text-neutral-400 line-clamp-2 mb-3">
-                  {stripHtml(note.content) || <span className="italic">Note vide</span>}
+                  {stripHtml(note.content) || <span className="italic">{t('notes.emptyNote')}</span>}
                 </p>
-                <p className="text-xs text-neutral-400 dark:text-neutral-500">{relativeDate(note.updatedAt)}</p>
+                <p className="text-xs text-neutral-400 dark:text-neutral-500">{relativeDate(note.updatedAt, t, lang)}</p>
               </div>
             ))}
           </div>
@@ -81,7 +88,7 @@ export default function NotesTab() {
         className="fixed bottom-[120px] lg:bottom-8 right-6 flex items-center gap-2 px-4 py-3 rounded-2xl bg-primary-500 text-white text-sm font-semibold shadow-lg shadow-primary-500/30 hover:bg-primary-600 transition-colors z-40"
       >
         <Icon name="plus" size={16} />
-        Nouvelle note
+        {t('notes.newNote')}
       </button>
     </div>
   )

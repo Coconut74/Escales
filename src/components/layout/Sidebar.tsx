@@ -1,12 +1,7 @@
 import Icon from '@/components/ui/Icon'
 import { useProfilStore } from '@/features/profil/profil.store'
+import { useT } from '@/lib/i18n'
 import type { View } from '@/App'
-
-const NAV_ITEMS: { id: View; label: string; icon: 'accueil' | 'journal' | 'book' }[] = [
-  { id: 'accueil',   label: 'Accueil',         icon: 'accueil' },
-  { id: 'journal',   label: 'Journal de bord', icon: 'journal' },
-  { id: 'education', label: 'Éducation',        icon: 'book'    },
-]
 
 interface SidebarProps {
   activeView: View
@@ -14,8 +9,15 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ activeView, onNavigate }: SidebarProps) {
+  const t = useT()
   const { firstName, lastName, avatarEmoji } = useProfilStore()
   const displayName = [firstName, lastName].filter(Boolean).join(' ') || 'Utilisateur'
+
+  const NAV_ITEMS: { id: View; label: string; icon: 'accueil' | 'journal' | 'book' }[] = [
+    { id: 'accueil',   label: t('nav.home'),      icon: 'accueil' },
+    { id: 'journal',   label: t('nav.journal'),   icon: 'journal' },
+    { id: 'education', label: t('nav.education'), icon: 'book'    },
+  ]
 
   return (
     <aside

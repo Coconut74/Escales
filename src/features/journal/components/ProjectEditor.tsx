@@ -2,21 +2,17 @@ import { useState } from 'react'
 import type { Project, ProjectType, ChecklistItem } from '../journal.types'
 import Button from '@/components/ui/Button'
 import Icon from '@/components/ui/Icon'
+import { useT } from '@/lib/i18n'
+import type { TKey } from '@/lib/i18n'
 
-const PROJECT_TYPES: { value: ProjectType; label: string; icon: string; description: string }[] = [
-  { value: 'savings',     icon: '💰', label: 'Objectif épargne',  description: 'Montant cible à atteindre' },
-  { value: 'real-estate', icon: '🏠', label: 'Immobilier',        description: 'Achat, location, investissement locatif' },
-  { value: 'investment',  icon: '📈', label: 'Investissement',    description: 'Actions, ETF, crypto, etc.' },
-  { value: 'loan',        icon: '🏦', label: 'Emprunt',           description: 'Suivi de remboursement' },
-  { value: 'free',        icon: '📋', label: 'Projet libre',      description: 'Checklist personnalisée' },
-]
-
-const PROPERTY_TYPES = ['Appartement', 'Maison', 'Locatif', 'Commercial', 'Terrain']
-
-const DEFAULT_REAL_ESTATE_CHECKLIST = [
-  'Définir le budget', 'Rechercher des biens', 'Organiser des visites',
-  'Faire une offre', 'Signer le compromis', 'Obtenir le financement', 'Signature notaire',
-]
+const PROPERTY_TYPE_VALUES = ['Appartement', 'Maison', 'Locatif', 'Commercial', 'Terrain'] as const
+const PROPERTY_TKEYS: Record<string, TKey> = {
+  'Appartement': 'propertyType.apartment',
+  'Maison': 'propertyType.house',
+  'Locatif': 'propertyType.rental',
+  'Commercial': 'propertyType.commercial',
+  'Terrain': 'propertyType.land',
+}
 
 interface Props {
   initial?: Project
@@ -25,13 +21,23 @@ interface Props {
 }
 
 export default function ProjectEditor({ initial, onSave, onCancel }: Props) {
+  const t = useT()
+
+  const PROJECT_TYPES: { value: ProjectType; label: string; icon: string; description: string }[] = [
+    { value: 'savings',     icon: '💰', label: t('projectEditor.savings.label'),    description: t('projectEditor.savings.desc') },
+    { value: 'real-estate', icon: '🏠', label: t('projectEditor.realEstate.label'), description: t('projectEditor.realEstate.desc') },
+    { value: 'investment',  icon: '📈', label: t('projectEditor.investment.label'), description: t('projectEditor.investment.desc') },
+    { value: 'loan',        icon: '🏦', label: t('projectEditor.loan.label'),       description: t('projectEditor.loan.desc') },
+    { value: 'free',        icon: '📋', label: t('projectEditor.free.label'),       description: t('projectEditor.free.desc') },
+  ]
+
   const [type, setType] = useState<ProjectType>(initial?.type ?? 'savings')
   const [name, setName] = useState(initial?.name ?? '')
   const [description, setDescription] = useState(initial?.description ?? '')
   const [targetAmount, setTargetAmount] = useState(initial?.targetAmount?.toString() ?? '')
   const [currentAmount, setCurrentAmount] = useState(initial?.currentAmount?.toString() ?? '')
   const [city, setCity] = useState(initial?.city ?? '')
-  const [propertyType, setPropertyType] = useState(initial?.propertyType ?? PROPERTY_TYPES[0])
+  const [propertyType, setPropertyType] = useState(initial?.propertyType ?? PROPERTY_TYPE_VALUES[0])
   const [assetName, setAssetName] = useState(initial?.assetName ?? '')
   const [loanAmount, setLoanAmount] = useState(initial?.loanAmount?.toString() ?? '')
   const [loanDurationMonths, setLoanDurationMonths] = useState(initial?.loanDurationMonths?.toString() ?? '')
@@ -40,12 +46,18 @@ export default function ProjectEditor({ initial, onSave, onCancel }: Props) {
   const [newItem, setNewItem] = useState('')
   const [error, setError] = useState('')
 
-  function handleTypeChange(t: ProjectType) {
-    setType(t)
+  function handleTypeChange(newType: ProjectType) {
+    setType(newType)
     setError('')
-    if (t === 'real-estate' && checklist.length === 0) {
-      setChecklist(DEFAULT_REAL_ESTATE_CHECKLIST.map((label) => ({ id: crypto.randomUUID(), label, done: false })))
-    } else if (t !== 'real-estate' && t !== 'free') {
+    if (newType === 'real-estate' && checklist.length === 0) {
+      setChecklist(
+        Array.from({ length: 7 }, (_, i) => ({
+          id: crypto.randomUUID(),
+          label: t(`reChecklist.${i}` as TKey),
+          done: false,
+        }))
+      )
+    } else if (newType !== 'real-estate' && newType !== 'free') {
       setChecklist([])
     }
   }
@@ -61,10 +73,10 @@ export default function ProjectEditor({ initial, onSave, onCancel }: Props) {
   }
 
   function handleSave() {
-    if (!name.trim()) { setError('Le nom du projet est requis.'); return }
-    if (type === 'savings' && !targetAmount) { setError('Montant cible requis.'); return }
-    if (type === 'investment' && !targetAmount) { setError('Montant cible requis.'); return }
-    if (type === 'loan' && (!loanAmount || !loanDurationMonths)) { setError('Montant et durée requis.'); return }
+    if (!name.trim()) { setError(t('projectEditor.errorName')); return }
+    if (type === 'savings' && !targetAmount) { setError(t('projectEditor.errorTarget')); return }
+    if (type === 'investment' && !targetAmount) { setError(t('projectEditor.errorTarget')); return }
+    if (type === 'loan' && (!loanAmount || !loanDurationMonths)) { setError(t('projectEditor.errorLoan')); return }
 
     onSave({
       type,
@@ -87,34 +99,36 @@ export default function ProjectEditor({ initial, onSave, onCancel }: Props) {
       <div className="w-full max-w-lg max-h-[90vh] bg-white dark:bg-neutral-800 rounded-3xl border border-neutral-200 dark:border-neutral-700 shadow-2xl flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-4 shrink-0 border-b border-neutral-100 dark:border-neutral-700">
-          <h2 className="text-base font-bold text-neutral-900 dark:text-neutral-50">{initial ? 'Modifier le projet' : 'Nouveau projet'}</h2>
+          <h2 className="text-base font-bold text-neutral-900 dark:text-neutral-50">
+            {initial ? t('projectEditor.editTitle') : t('projectEditor.newTitle')}
+          </h2>
           <button onClick={onCancel} className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-700 text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors text-lg">✕</button>
         </div>
 
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
           {/* Nom */}
           <div className="space-y-1">
-            <label className={labelCls}>Nom du projet *</label>
+            <label className={labelCls}>{t('projectEditor.nameLabel')}</label>
             <input type="text" value={name} onChange={(e) => { setName(e.target.value); setError('') }}
-              placeholder="Ex: Apport appartement Lyon" className={inputCls(!!error && !name)} />
+              placeholder={t('projectEditor.namePlaceholder')} className={inputCls(!!error && !name)} />
           </div>
 
           {/* Type */}
           <div className="space-y-2">
-            <label className={labelCls}>Type de projet</label>
+            <label className={labelCls}>{t('projectEditor.typeLabel')}</label>
             <div className="grid grid-cols-1 gap-2">
-              {PROJECT_TYPES.map((t) => (
-                <button key={t.value} onClick={() => handleTypeChange(t.value)}
+              {PROJECT_TYPES.map((pt) => (
+                <button key={pt.value} onClick={() => handleTypeChange(pt.value)}
                   className={`flex items-center gap-3 px-4 py-3 rounded-2xl border text-left transition-all ${
-                    type === t.value
+                    type === pt.value
                       ? 'border-primary-400 bg-primary-50 dark:bg-primary-900/20 dark:border-primary-600'
                       : 'border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600'
                   }`}
                 >
-                  <span className="text-xl">{t.icon}</span>
+                  <span className="text-xl">{pt.icon}</span>
                   <div>
-                    <p className={`text-sm font-semibold ${type === t.value ? 'text-primary-700 dark:text-primary-300' : 'text-neutral-800 dark:text-neutral-100'}`}>{t.label}</p>
-                    <p className="text-xs text-neutral-400 dark:text-neutral-500">{t.description}</p>
+                    <p className={`text-sm font-semibold ${type === pt.value ? 'text-primary-700 dark:text-primary-300' : 'text-neutral-800 dark:text-neutral-100'}`}>{pt.label}</p>
+                    <p className="text-xs text-neutral-400 dark:text-neutral-500">{pt.description}</p>
                   </div>
                 </button>
               ))}
@@ -124,16 +138,16 @@ export default function ProjectEditor({ initial, onSave, onCancel }: Props) {
           {/* Champs spécifiques par type */}
           {(type === 'savings' || type === 'investment') && (
             <div className="grid grid-cols-2 gap-3">
-              <Field label="Montant cible (€) *">
+              <Field label={t('projectEditor.targetAmount')}>
                 <input type="number" value={targetAmount} onChange={(e) => setTargetAmount(e.target.value)} placeholder="50 000" className={inputCls(false)} />
               </Field>
-              <Field label="Montant actuel (€)">
+              <Field label={t('projectEditor.currentAmount')}>
                 <input type="number" value={currentAmount} onChange={(e) => setCurrentAmount(e.target.value)} placeholder="0" className={inputCls(false)} />
               </Field>
               {type === 'investment' && (
                 <div className="col-span-2">
-                  <Field label="Nom de l'actif">
-                    <input type="text" value={assetName} onChange={(e) => setAssetName(e.target.value)} placeholder="Ex: MSCI World ETF" className={inputCls(false)} />
+                  <Field label={t('projectEditor.assetName')}>
+                    <input type="text" value={assetName} onChange={(e) => setAssetName(e.target.value)} placeholder={t('projectEditor.assetPlaceholder')} className={inputCls(false)} />
                   </Field>
                 </div>
               )}
@@ -142,16 +156,18 @@ export default function ProjectEditor({ initial, onSave, onCancel }: Props) {
 
           {type === 'real-estate' && (
             <div className="grid grid-cols-2 gap-3">
-              <Field label="Ville">
-                <input type="text" value={city} onChange={(e) => setCity(e.target.value)} placeholder="Lyon" className={inputCls(false)} />
+              <Field label={t('projectEditor.city')}>
+                <input type="text" value={city} onChange={(e) => setCity(e.target.value)} placeholder={t('projectEditor.cityPlaceholder')} className={inputCls(false)} />
               </Field>
-              <Field label="Type de bien">
+              <Field label={t('projectEditor.propertyType')}>
                 <select value={propertyType} onChange={(e) => setPropertyType(e.target.value)} className={inputCls(false)}>
-                  {PROPERTY_TYPES.map((p) => <option key={p} value={p}>{p}</option>)}
+                  {PROPERTY_TYPE_VALUES.map((p) => (
+                    <option key={p} value={p}>{t(PROPERTY_TKEYS[p])}</option>
+                  ))}
                 </select>
               </Field>
               <div className="col-span-2">
-                <Field label="Budget (€)">
+                <Field label={t('projectEditor.budget')}>
                   <input type="number" value={targetAmount} onChange={(e) => setTargetAmount(e.target.value)} placeholder="200 000" className={inputCls(false)} />
                 </Field>
               </div>
@@ -160,14 +176,14 @@ export default function ProjectEditor({ initial, onSave, onCancel }: Props) {
 
           {type === 'loan' && (
             <div className="grid grid-cols-2 gap-3">
-              <Field label="Montant emprunté (€) *">
+              <Field label={t('projectEditor.loanAmount')}>
                 <input type="number" value={loanAmount} onChange={(e) => setLoanAmount(e.target.value)} placeholder="150 000" className={inputCls(false)} />
               </Field>
-              <Field label="Durée (mois) *">
+              <Field label={t('projectEditor.loanDuration')}>
                 <input type="number" value={loanDurationMonths} onChange={(e) => setLoanDurationMonths(e.target.value)} placeholder="240" className={inputCls(false)} />
               </Field>
               <div className="col-span-2">
-                <Field label="Date de début">
+                <Field label={t('projectEditor.loanStart')}>
                   <input type="date" value={loanStartDate} onChange={(e) => setLoanStartDate(e.target.value)} className={inputCls(false)} />
                 </Field>
               </div>
@@ -176,16 +192,16 @@ export default function ProjectEditor({ initial, onSave, onCancel }: Props) {
 
           {/* Description */}
           {(type === 'free' || type === 'investment' || type === 'savings') && (
-            <Field label="Description (optionnel)">
+            <Field label={t('projectEditor.description')}>
               <textarea value={description} onChange={(e) => setDescription(e.target.value)}
-                placeholder="Décrivez votre projet…" rows={2} className={`${inputCls(false)} resize-none`} />
+                placeholder={t('projectEditor.descPlaceholder')} rows={2} className={`${inputCls(false)} resize-none`} />
             </Field>
           )}
 
           {/* Checklist */}
           {(type === 'real-estate' || type === 'free') && (
             <div className="space-y-2">
-              <label className={labelCls}>{type === 'real-estate' ? 'Étapes' : 'Checklist'}</label>
+              <label className={labelCls}>{type === 'real-estate' ? t('projectEditor.steps') : t('projects.checklist')}</label>
               <div className="space-y-1.5">
                 {checklist.map((item) => (
                   <div key={item.id} className="flex items-center gap-2 group">
@@ -200,7 +216,7 @@ export default function ProjectEditor({ initial, onSave, onCancel }: Props) {
               <div className="flex gap-2 mt-2">
                 <input type="text" value={newItem} onChange={(e) => setNewItem(e.target.value)}
                   onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addItem() } }}
-                  placeholder="Ajouter une étape…" className={`${inputCls(false)} flex-1`} />
+                  placeholder={t('projectEditor.addStep')} className={`${inputCls(false)} flex-1`} />
                 <button onClick={addItem} className="px-3 py-2 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                   <Icon name="plus" size={15} />
                 </button>
@@ -213,8 +229,8 @@ export default function ProjectEditor({ initial, onSave, onCancel }: Props) {
 
         {/* Footer */}
         <div className="px-6 py-4 border-t border-neutral-100 dark:border-neutral-800 shrink-0 flex gap-3">
-          <Button variant="grey-outline" size="lg" className="flex-1 rounded-2xl" onClick={onCancel}>Annuler</Button>
-          <Button variant="primary" size="lg" className="flex-1 rounded-2xl" onClick={handleSave}>{initial ? 'Enregistrer' : 'Créer le projet'}</Button>
+          <Button variant="grey-outline" size="lg" className="flex-1 rounded-2xl" onClick={onCancel}>{t('projectEditor.cancel')}</Button>
+          <Button variant="primary" size="lg" className="flex-1 rounded-2xl" onClick={handleSave}>{initial ? t('projectEditor.save') : t('projectEditor.create')}</Button>
         </div>
       </div>
     </div>

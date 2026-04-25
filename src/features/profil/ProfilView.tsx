@@ -5,15 +5,9 @@ import { formatDate } from '@/lib/formatting'
 import Icon from '@/components/ui/Icon'
 import type { Currency, Language, Theme } from './profil.types'
 import { COLOR_THEMES } from './color-themes'
+import { useT } from '@/lib/i18n'
 
 const AVATAR_OPTIONS = ['🧑', '👩', '👨', '🧑‍💼', '👩‍💼', '👨‍💼', '🦊', '🐻', '🐼', '🦁', '🐯', '🦝']
-
-const CURRENCY_OPTIONS: { value: Currency; label: string; symbol: string }[] = [
-  { value: 'EUR', label: 'Euro', symbol: '€' },
-  { value: 'USD', label: 'Dollar US', symbol: '$' },
-  { value: 'GBP', label: 'Livre sterling', symbol: '£' },
-  { value: 'CHF', label: 'Franc suisse', symbol: 'CHF' },
-]
 
 const LANGUAGE_OPTIONS: { value: Language; label: string }[] = [
   { value: 'fr', label: 'Français' },
@@ -21,6 +15,7 @@ const LANGUAGE_OPTIONS: { value: Language; label: string }[] = [
 ]
 
 export default function ProfilView() {
+  const t = useT()
   const {
     firstName, lastName, avatarEmoji, currency, language, theme, colorTheme, finnhubKey, memberSince,
     setFirstName, setLastName, setAvatarEmoji, setCurrency, setLanguage, setTheme, setColorTheme, setFinnhubKey,
@@ -34,6 +29,13 @@ export default function ProfilView() {
   const [showKey, setShowKey] = useState(false)
 
   const displayName = [firstName, lastName].filter(Boolean).join(' ') || 'Mon profil'
+
+  const CURRENCY_OPTIONS: { value: Currency; label: string; symbol: string }[] = [
+    { value: 'EUR', label: t('currency.EUR'), symbol: '€' },
+    { value: 'USD', label: t('currency.USD'), symbol: '$' },
+    { value: 'GBP', label: t('currency.GBP'), symbol: '£' },
+    { value: 'CHF', label: t('currency.CHF'), symbol: 'CHF' },
+  ]
 
   function handleReset() {
     resetInvestments()
@@ -56,32 +58,32 @@ export default function ProfilView() {
             <div>
               <p className="text-xl font-semibold text-neutral-900 dark:text-neutral-50">{displayName}</p>
               <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
-                Membre depuis {formatDate(memberSince)}
+                {t('profil.memberSince')} {formatDate(memberSince)}
               </p>
             </div>
           </div>
 
           {/* Colonne gauche */}
-          <Section title="Mes informations">
-            <Field label="Prénom">
+          <Section title={t('profil.myInfo')}>
+            <Field label={t('profil.firstName')}>
               <input
                 type="text"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
-                placeholder="Votre prénom"
+                placeholder={t('profil.firstNamePlaceholder')}
                 className="w-full px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-sm placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
               />
             </Field>
-            <Field label="Nom">
+            <Field label={t('profil.lastName')}>
               <input
                 type="text"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
-                placeholder="Votre nom"
+                placeholder={t('profil.lastNamePlaceholder')}
                 className="w-full px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-sm placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
               />
             </Field>
-            <Field label="Avatar">
+            <Field label={t('profil.avatar')}>
               <div className="flex flex-wrap gap-2 mt-1">
                 {AVATAR_OPTIONS.map((emoji) => (
                   <button
@@ -102,16 +104,16 @@ export default function ProfilView() {
 
           {/* Colonne droite — sections empilées */}
           <div className="space-y-6">
-            <Section title="Apparence">
+            <Section title={t('profil.appearance')}>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-neutral-700 dark:text-neutral-200">Mode d'affichage</span>
+                <span className="text-sm font-medium text-neutral-700 dark:text-neutral-200">{t('profil.displayMode')}</span>
                 <div className="flex gap-2">
-                  <ThemeButton active={theme === 'light'} onClick={() => setTheme('light')} icon="sun" label="Clair" />
-                  <ThemeButton active={theme === 'dark'} onClick={() => setTheme('dark')} icon="moon" label="Sombre" />
+                  <ThemeButton active={theme === 'light'} onClick={() => setTheme('light')} icon="sun" label={t('profil.light')} />
+                  <ThemeButton active={theme === 'dark'} onClick={() => setTheme('dark')} icon="moon" label={t('profil.dark')} />
                 </div>
               </div>
               <div className="space-y-2">
-                <span className="text-sm font-medium text-neutral-700 dark:text-neutral-200">Couleur d'accentuation</span>
+                <span className="text-sm font-medium text-neutral-700 dark:text-neutral-200">{t('profil.accentColor')}</span>
                 <div className="flex gap-3">
                   {COLOR_THEMES.map((ct) => (
                     <button
@@ -133,8 +135,8 @@ export default function ProfilView() {
               </div>
             </Section>
 
-            <Section title="Préférences">
-              <Field label="Devise">
+            <Section title={t('profil.preferences')}>
+              <Field label={t('profil.currency')}>
                 <select
                   value={currency}
                   onChange={(e) => setCurrency(e.target.value as Currency)}
@@ -145,7 +147,7 @@ export default function ProfilView() {
                   ))}
                 </select>
               </Field>
-              <Field label="Langue">
+              <Field label={t('profil.language')}>
                 <select
                   value={language}
                   onChange={(e) => setLanguage(e.target.value as Language)}
@@ -159,12 +161,12 @@ export default function ProfilView() {
               <Field
                 label={
                   <span className="flex items-center gap-1.5">
-                    Clé API Finnhub
+                    {t('profil.finnhubKey')}
                     <button
                       type="button"
                       onClick={() => setShowKey(!showKey)}
                       className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors p-0.5 rounded focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
-                      title={showKey ? 'Masquer la clé' : 'Afficher la clé'}
+                      title={showKey ? t('profil.hideKey') : t('profil.showKey')}
                     >
                       <Icon name={showKey ? 'eye-off' : 'eye'} size={16} />
                     </button>
@@ -176,7 +178,7 @@ export default function ProfilView() {
                     type={showKey ? 'text' : 'password'}
                     value={finnhubKey}
                     onChange={(e) => setFinnhubKey(e.target.value)}
-                    placeholder="Clé Finnhub"
+                    placeholder={t('profil.finnhubPlaceholder')}
                     className="flex-1 px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-sm placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
                   />
                   <a
@@ -186,26 +188,26 @@ export default function ProfilView() {
                     className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-sm font-medium hover:bg-primary-200 dark:hover:bg-primary-900/50 transition-colors whitespace-nowrap"
                   >
                     <Icon name="external-link" size={14} />
-                    Obtenir une clé
+                    {t('profil.getKey')}
                   </a>
                 </div>
                 {finnhubKey && (
-                  <p className="text-xs text-green-600 dark:text-green-400 mt-1">✓ Prix live activés</p>
+                  <p className="text-xs text-green-600 dark:text-green-400 mt-1">{t('profil.livePricesEnabled')}</p>
                 )}
               </Field>
             </Section>
 
-            <Section title="Mes statistiques">
-              <StatRow label="Membre depuis" value={formatDate(memberSince)} />
-              <StatRow label="Investissements suivis" value={String(investments.length)} />
+            <Section title={t('profil.myStats')}>
+              <StatRow label={t('profil.memberSince')} value={formatDate(memberSince)} />
+              <StatRow label={t('profil.trackedInvestments')} value={String(investments.length)} />
             </Section>
           </div>
 
           {/* Zone danger — pleine largeur */}
           <div className="lg:col-span-2 bg-red-50 dark:bg-red-950/30 rounded-2xl p-5 border border-red-200 dark:border-red-900">
-            <p className="text-sm font-semibold text-red-700 dark:text-red-400 mb-1">Zone de danger</p>
+            <p className="text-sm font-semibold text-red-700 dark:text-red-400 mb-1">{t('profil.dangerZone')}</p>
             <p className="text-xs text-red-500 dark:text-red-500 mb-4">
-              Ces actions sont irréversibles. Les données démo seront restaurées.
+              {t('profil.dangerDesc')}
             </p>
 
             {!showResetConfirm ? (
@@ -214,25 +216,25 @@ export default function ProfilView() {
                 className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-neutral-800 border border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 text-sm font-semibold hover:bg-red-50 dark:hover:bg-red-950/50 transition-colors"
               >
                 <Icon name="reset" size={16} />
-                Réinitialiser mes données
+                {t('profil.resetData')}
               </button>
             ) : (
               <div className="space-y-3">
                 <p className="text-sm font-semibold text-red-700 dark:text-red-300">
-                  Confirmer la réinitialisation ?
+                  {t('profil.confirmReset')}
                 </p>
                 <div className="flex gap-3">
                   <button
                     onClick={handleReset}
                     className="px-4 py-2 rounded-xl bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition-colors"
                   >
-                    Oui, réinitialiser
+                    {t('profil.yesReset')}
                   </button>
                   <button
                     onClick={() => setShowResetConfirm(false)}
                     className="px-4 py-2 rounded-xl border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 text-sm font-semibold hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
                   >
-                    Annuler
+                    {t('profil.cancel')}
                   </button>
                 </div>
               </div>
