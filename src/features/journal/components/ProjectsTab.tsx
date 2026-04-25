@@ -303,14 +303,6 @@ function DetailContent({ project, currency, currentInput, setCurrentInput, onTog
           <div className="flex items-center justify-between p-3 bg-primary-50 dark:bg-primary-900/20 rounded-xl gap-2">
             <span className="text-xs text-primary-700 dark:text-primary-300 shrink-0">Actuel</span>
             <div className="flex items-center gap-1.5">
-              {isDirty && (
-                <button
-                  onClick={() => setCurrentInput(project.currentAmount?.toString() ?? '')}
-                  className="w-7 h-7 flex items-center justify-center rounded-lg bg-neutral-100 dark:bg-neutral-600 text-neutral-500 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-500 transition-colors"
-                >
-                  <Icon name="x" size={13} />
-                </button>
-              )}
               <input
                 type="number"
                 value={currentInput}
@@ -319,12 +311,20 @@ function DetailContent({ project, currency, currentInput, setCurrentInput, onTog
                 className="w-28 text-right px-2 py-1 rounded-lg border border-primary-200 dark:border-primary-800 bg-transparent text-sm font-semibold text-primary-700 dark:text-primary-300 focus:outline-none focus:ring-1 focus:ring-primary-400 dark:focus:ring-primary-600"
               />
               {isDirty && (
-                <button
-                  onClick={onSave}
-                  className="w-7 h-7 flex items-center justify-center rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition-colors"
-                >
-                  <Icon name="check" size={13} />
-                </button>
+                <>
+                  <button
+                    onClick={() => setCurrentInput(project.currentAmount?.toString() ?? '')}
+                    className="w-7 h-7 flex items-center justify-center rounded-lg bg-neutral-100 dark:bg-neutral-600 text-neutral-500 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-500 transition-colors"
+                  >
+                    <Icon name="x" size={13} />
+                  </button>
+                  <button
+                    onClick={onSave}
+                    className="w-7 h-7 flex items-center justify-center rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition-colors"
+                  >
+                    <Icon name="check" size={13} />
+                  </button>
+                </>
               )}
             </div>
           </div>
