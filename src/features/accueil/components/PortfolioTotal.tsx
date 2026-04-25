@@ -9,7 +9,7 @@ interface PortfolioTotalProps {
 export default function PortfolioTotal({ total, monthlyChange }: PortfolioTotalProps) {
   const { currency, theme } = useProfilStore()
   const formatted = formatCurrency(total, currency).replace(/\u202f/g, '\u00a0')
-  const bgColor = theme === 'dark' ? 'rgba(34,37,59,0.92)' : 'rgba(242,243,248,0.92)'
+  const bgColor = theme === 'dark' ? 'rgba(20,22,42,0.92)' : 'rgba(242,243,248,0.92)'
 
   return (
     <div
