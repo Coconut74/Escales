@@ -19,23 +19,24 @@ const DEFAULT_REAL_ESTATE_CHECKLIST = [
 ]
 
 interface Props {
+  initial?: Project
   onSave: (project: Omit<Project, 'id' | 'createdAt'>) => void
   onCancel: () => void
 }
 
-export default function ProjectEditor({ onSave, onCancel }: Props) {
-  const [type, setType] = useState<ProjectType>('savings')
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
-  const [targetAmount, setTargetAmount] = useState('')
-  const [currentAmount, setCurrentAmount] = useState('')
-  const [city, setCity] = useState('')
-  const [propertyType, setPropertyType] = useState(PROPERTY_TYPES[0])
-  const [assetName, setAssetName] = useState('')
-  const [loanAmount, setLoanAmount] = useState('')
-  const [loanDurationMonths, setLoanDurationMonths] = useState('')
-  const [loanStartDate, setLoanStartDate] = useState('')
-  const [checklist, setChecklist] = useState<ChecklistItem[]>([])
+export default function ProjectEditor({ initial, onSave, onCancel }: Props) {
+  const [type, setType] = useState<ProjectType>(initial?.type ?? 'savings')
+  const [name, setName] = useState(initial?.name ?? '')
+  const [description, setDescription] = useState(initial?.description ?? '')
+  const [targetAmount, setTargetAmount] = useState(initial?.targetAmount?.toString() ?? '')
+  const [currentAmount, setCurrentAmount] = useState(initial?.currentAmount?.toString() ?? '')
+  const [city, setCity] = useState(initial?.city ?? '')
+  const [propertyType, setPropertyType] = useState(initial?.propertyType ?? PROPERTY_TYPES[0])
+  const [assetName, setAssetName] = useState(initial?.assetName ?? '')
+  const [loanAmount, setLoanAmount] = useState(initial?.loanAmount?.toString() ?? '')
+  const [loanDurationMonths, setLoanDurationMonths] = useState(initial?.loanDurationMonths?.toString() ?? '')
+  const [loanStartDate, setLoanStartDate] = useState(initial?.loanStartDate ?? '')
+  const [checklist, setChecklist] = useState<ChecklistItem[]>(initial?.checklist ?? [])
   const [newItem, setNewItem] = useState('')
   const [error, setError] = useState('')
 
@@ -86,7 +87,7 @@ export default function ProjectEditor({ onSave, onCancel }: Props) {
       <div className="w-full max-w-lg max-h-[90vh] bg-white dark:bg-neutral-900 rounded-3xl border border-neutral-200 dark:border-neutral-700 shadow-2xl flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-4 shrink-0 border-b border-neutral-100 dark:border-neutral-800">
-          <h2 className="text-base font-bold text-neutral-900 dark:text-neutral-50">Nouveau projet</h2>
+          <h2 className="text-base font-bold text-neutral-900 dark:text-neutral-50">{initial ? 'Modifier le projet' : 'Nouveau projet'}</h2>
           <button onClick={onCancel} className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors text-lg">✕</button>
         </div>
 
@@ -213,7 +214,7 @@ export default function ProjectEditor({ onSave, onCancel }: Props) {
         {/* Footer */}
         <div className="px-6 py-4 border-t border-neutral-100 dark:border-neutral-800 shrink-0 flex gap-3">
           <Button variant="grey-outline" size="lg" className="flex-1 rounded-2xl" onClick={onCancel}>Annuler</Button>
-          <Button variant="primary" size="lg" className="flex-1 rounded-2xl" onClick={handleSave}>Créer le projet</Button>
+          <Button variant="primary" size="lg" className="flex-1 rounded-2xl" onClick={handleSave}>{initial ? 'Enregistrer' : 'Créer le projet'}</Button>
         </div>
       </div>
     </div>

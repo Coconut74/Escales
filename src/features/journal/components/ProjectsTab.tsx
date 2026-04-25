@@ -206,12 +206,22 @@ function ProjectDetail({ project, onClose }: { project: Project; onClose: () => 
   const { updateProject, toggleChecklistItem } = useJournalStore()
   const currency = useProfilStore((s) => s.currency)
   const [currentInput, setCurrentInput] = useState(project.currentAmount?.toString() ?? '')
+  const [editing, setEditing] = useState(false)
   const meta = TYPE_META[project.type] ?? { icon: '📋', label: 'Projet' }
   const progress = calcProgress(project)
 
   function saveCurrentAmount() {
     const val = parseFloat(currentInput)
     if (!isNaN(val)) updateProject(project.id, { currentAmount: val })
+  }
+
+  function handleEdit(data: Omit<Project, 'id' | 'createdAt'>) {
+    updateProject(project.id, data)
+    setEditing(false)
+  }
+
+  if (editing) {
+    return <ProjectEditor initial={project} onSave={handleEdit} onCancel={() => setEditing(false)} />
   }
 
   return (
@@ -226,12 +236,20 @@ function ProjectDetail({ project, onClose }: { project: Project; onClose: () => 
               <p className="text-xs text-neutral-400 dark:text-neutral-500">{meta.label}</p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors text-lg"
-          >
-            ✕
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setEditing(true)}
+              className="px-3 py-1.5 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 text-xs font-semibold transition-colors"
+            >
+              Modifier
+            </button>
+            <button
+              onClick={onClose}
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors text-lg"
+            >
+              ✕
+            </button>
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
