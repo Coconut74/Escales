@@ -73,13 +73,6 @@ export default function ProfilView() {
                 <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5">{displayIdentifier}</p>
               )}
             </div>
-            <button
-              onClick={() => signOut()}
-              className="lg:hidden flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold text-neutral-500 dark:text-neutral-400 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-500 dark:hover:text-red-400 transition-colors"
-            >
-              <Icon name="logout" size={16} />
-              Déconnexion
-            </button>
           </div>
 
           {/* Colonne gauche */}
@@ -156,26 +149,36 @@ export default function ProfilView() {
 
             <Section title={t('profil.preferences')}>
               <Field label={t('profil.currency')}>
-                <select
-                  value={currency}
-                  onChange={(e) => setCurrency(e.target.value as Currency)}
-                  className="w-full px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
-                >
-                  {CURRENCY_OPTIONS.map((c) => (
-                    <option key={c.value} value={c.value}>{c.symbol} — {c.label}</option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select
+                    value={currency}
+                    onChange={(e) => setCurrency(e.target.value as Currency)}
+                    className="w-full appearance-none px-3 py-2 pr-10 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
+                  >
+                    {CURRENCY_OPTIONS.map((c) => (
+                      <option key={c.value} value={c.value}>{c.symbol} — {c.label}</option>
+                    ))}
+                  </select>
+                  <span className="absolute right-5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none">
+                    <Icon name="arrow" size={16} className="rotate-90" />
+                  </span>
+                </div>
               </Field>
               <Field label={t('profil.language')}>
-                <select
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value as Language)}
-                  className="w-full px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
-                >
-                  {LANGUAGE_OPTIONS.map((l) => (
-                    <option key={l.value} value={l.value}>{l.label}</option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select
+                    value={language}
+                    onChange={(e) => setLanguage(e.target.value as Language)}
+                    className="w-full appearance-none px-3 py-2 pr-10 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
+                  >
+                    {LANGUAGE_OPTIONS.map((l) => (
+                      <option key={l.value} value={l.value}>{l.label}</option>
+                    ))}
+                  </select>
+                  <span className="absolute right-5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none">
+                    <Icon name="arrow" size={16} className="rotate-90" />
+                  </span>
+                </div>
               </Field>
               <Field
                 label={
@@ -261,6 +264,18 @@ export default function ProfilView() {
           </div>
 
         </div>
+
+        {/* Déconnexion mobile — tout en bas */}
+        <div className="lg:hidden mt-6">
+          <button
+            onClick={() => signOut()}
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl border border-neutral-200 dark:border-neutral-700 text-sm font-semibold text-neutral-500 dark:text-neutral-400 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-500 dark:hover:text-red-400 hover:border-red-200 dark:hover:border-red-900 transition-colors"
+          >
+            <Icon name="logout" size={16} />
+            Déconnexion
+          </button>
+        </div>
+
       </div>
     </div>
   )
