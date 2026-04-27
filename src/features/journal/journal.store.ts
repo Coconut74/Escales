@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 import { supabase } from '@/lib/supabase'
 import type { Note, Project, ChecklistItem } from './journal.types'
 
@@ -89,105 +90,117 @@ function projectFromRow(row: Record<string, unknown>): Project {
   }
 }
 
-export const useJournalStore = create<JournalStore>((set, get) => ({
-  notes: [],
-  projects: [],
-  loading: false,
-
-  loadFromCloud: async (userId) => {
-    set({ loading: true })
-    const [notesRes, projectsRes] = await Promise.all([
-      supabase.from('notes').select('*').eq('user_id', userId).order('created_at', { ascending: false }),
-      supabase.from('projects').select('*').eq('user_id', userId).order('created_at', { ascending: false }),
-    ])
-    set({
-      notes: notesRes.data ? notesRes.data.map(noteFromRow) : [],
-      projects: projectsRes.data ? projectsRes.data.map(projectFromRow) : [],
+export const useJournalStore = create<JournalStore>()(
+  persist(
+    (set, get) => ({
+      notes: [],
+      projects: [],
       loading: false,
-    })
-  },
 
-  resetData: () => set({ notes: [], projects: [], loading: false }),
+      loadFromCloud: async (userId) => {
+        set({ loading: true })
+        const [notesRes, projectsRes] = await Promise.all([
+          supabase.from('notes').select('*').eq('user_id', userId).order('created_at', { ascending: false }),
+          supabase.from('projects').select('*').eq('user_id', userId).order('created_at', { ascending: false }),
+        ])
+        set({
+          notes: notesRes.data ? notesRes.data.map(noteFromRow) : [],
+          projects: projectsRes.data ? projectsRes.data.map(projectFromRow) : [],
+          loading: false,
+        })
+      },
 
-  addNote: async (note) => {
-    const userId = await currentUserId()
-    if (!userId) return
-    set((s) => ({ notes: [note, ...s.notes] }))
-    await supabase.from('notes').insert(noteToRow(note, userId))
-  },
+      resetData: () => set({ notes: [], projects: [], loading: false }),
 
-  updateNote: async (id, patch) => {
-    const userId = await currentUserId()
-    set((s) => ({
-      notes: s.notes.map((n) => n.id === id ? { ...n, ...patch } : n),
-    }))
-    if (!userId) return
-    const updated = get().notes.find((n) => n.id === id)
-    if (updated) await supabase.from('notes').update(noteToRow(updated, userId)).eq('id', id)
-  },
+      addNote: async (note) => {
+        set((s) => ({ notes: [note, ...s.notes] }))
+        const userId = await currentUserId()
+        if (!userId) return
+        await supabase.from('notes').insert(noteToRow(note, userId))
+      },
 
-  removeNote: async (id) => {
-    set((s) => ({ notes: s.notes.filter((n) => n.id !== id) }))
-    await supabase.from('notes').delete().eq('id', id)
-  },
+      updateNote: async (id, patch) => {
+        const userId = await currentUserId()
+        set((s) => ({
+          notes: s.notes.map((n) => n.id === id ? { ...n, ...patch } : n),
+        }))
+        if (!userId) return
+        const updated = get().notes.find((n) => n.id === id)
+        if (updated) await supabase.from('notes').update(noteToRow(updated, userId)).eq('id', id)
+      },
 
-  addProject: async (project) => {
-    const userId = await currentUserId()
-    if (!userId) return
-    set((s) => ({ projects: [project, ...s.projects] }))
-    await supabase.from('projects').insert(projectToRow(project, userId))
-  },
+      removeNote: async (id) => {
+        set((s) => ({ notes: s.notes.filter((n) => n.id !== id) }))
+        const userId = await currentUserId()
+        if (!userId) return
+        await supabase.from('notes').delete().eq('id', id)
+      },
 
-  updateProject: async (id, patch) => {
-    const userId = await currentUserId()
-    set((s) => ({
-      projects: s.projects.map((p) => p.id === id ? { ...p, ...patch } : p),
-    }))
-    if (!userId) return
-    const updated = get().projects.find((p) => p.id === id)
-    if (updated) await supabase.from('projects').update(projectToRow(updated, userId)).eq('id', id)
-  },
+      addProject: async (project) => {
+        set((s) => ({ projects: [project, ...s.projects] }))
+        const userId = await currentUserId()
+        if (!userId) return
+        await supabase.from('projects').insert(projectToRow(project, userId))
+      },
 
-  removeProject: async (id) => {
-    set((s) => ({ projects: s.projects.filter((p) => p.id !== id) }))
-    await supabase.from('projects').delete().eq('id', id)
-  },
+      updateProject: async (id, patch) => {
+        const userId = await currentUserId()
+        set((s) => ({
+          projects: s.projects.map((p) => p.id === id ? { ...p, ...patch } : p),
+        }))
+        if (!userId) return
+        const updated = get().projects.find((p) => p.id === id)
+        if (updated) await supabase.from('projects').update(projectToRow(updated, userId)).eq('id', id)
+      },
 
-  toggleChecklistItem: async (projectId, itemId) => {
-    const userId = await currentUserId()
-    set((s) => ({
-      projects: s.projects.map((p) =>
-        p.id === projectId
-          ? { ...p, checklist: p.checklist.map((i) => i.id === itemId ? { ...i, done: !i.done } : i) }
-          : p
-      ),
-    }))
-    if (!userId) return
-    const updated = get().projects.find((p) => p.id === projectId)
-    if (updated) await supabase.from('projects').update({ checklist: JSON.stringify(updated.checklist) }).eq('id', projectId)
-  },
+      removeProject: async (id) => {
+        set((s) => ({ projects: s.projects.filter((p) => p.id !== id) }))
+        const userId = await currentUserId()
+        if (!userId) return
+        await supabase.from('projects').delete().eq('id', id)
+      },
 
-  addChecklistItem: async (projectId, item) => {
-    const userId = await currentUserId()
-    set((s) => ({
-      projects: s.projects.map((p) =>
-        p.id === projectId ? { ...p, checklist: [...p.checklist, item] } : p
-      ),
-    }))
-    if (!userId) return
-    const updated = get().projects.find((p) => p.id === projectId)
-    if (updated) await supabase.from('projects').update({ checklist: JSON.stringify(updated.checklist) }).eq('id', projectId)
-  },
+      toggleChecklistItem: async (projectId, itemId) => {
+        const userId = await currentUserId()
+        set((s) => ({
+          projects: s.projects.map((p) =>
+            p.id === projectId
+              ? { ...p, checklist: p.checklist.map((i) => i.id === itemId ? { ...i, done: !i.done } : i) }
+              : p
+          ),
+        }))
+        if (!userId) return
+        const updated = get().projects.find((p) => p.id === projectId)
+        if (updated) await supabase.from('projects').update({ checklist: JSON.stringify(updated.checklist) }).eq('id', projectId)
+      },
 
-  removeChecklistItem: async (projectId, itemId) => {
-    const userId = await currentUserId()
-    set((s) => ({
-      projects: s.projects.map((p) =>
-        p.id === projectId ? { ...p, checklist: p.checklist.filter((i) => i.id !== itemId) } : p
-      ),
-    }))
-    if (!userId) return
-    const updated = get().projects.find((p) => p.id === projectId)
-    if (updated) await supabase.from('projects').update({ checklist: JSON.stringify(updated.checklist) }).eq('id', projectId)
-  },
-}))
+      addChecklistItem: async (projectId, item) => {
+        const userId = await currentUserId()
+        set((s) => ({
+          projects: s.projects.map((p) =>
+            p.id === projectId ? { ...p, checklist: [...p.checklist, item] } : p
+          ),
+        }))
+        if (!userId) return
+        const updated = get().projects.find((p) => p.id === projectId)
+        if (updated) await supabase.from('projects').update({ checklist: JSON.stringify(updated.checklist) }).eq('id', projectId)
+      },
+
+      removeChecklistItem: async (projectId, itemId) => {
+        const userId = await currentUserId()
+        set((s) => ({
+          projects: s.projects.map((p) =>
+            p.id === projectId ? { ...p, checklist: p.checklist.filter((i) => i.id !== itemId) } : p
+          ),
+        }))
+        if (!userId) return
+        const updated = get().projects.find((p) => p.id === projectId)
+        if (updated) await supabase.from('projects').update({ checklist: JSON.stringify(updated.checklist) }).eq('id', projectId)
+      },
+    }),
+    {
+      name: 'escales-journal-data',
+      partialize: (state) => ({ notes: state.notes, projects: state.projects }),
+    }
+  )
+)

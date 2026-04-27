@@ -11,7 +11,7 @@ interface Props {
 }
 
 export default function AuthGate({ children }: Props) {
-  const { user, loading, init } = useAuthStore()
+  const { user, loading, init, isGuest, signInAsGuest } = useAuthStore()
   const loadAccueil = useAccueilStore((s) => s.loadFromCloud)
   const loadJournal = useJournalStore((s) => s.loadFromCloud)
   const loadProfil = useProfilStore((s) => s.loadFromCloud)
@@ -29,12 +29,12 @@ export default function AuthGate({ children }: Props) {
       loadAccueil(user.id)
       loadJournal(user.id)
       loadProfil(user.id)
-    } else {
+    } else if (!isGuest) {
       resetAccueil()
       resetJournal()
       resetProfil()
     }
-  }, [user?.id])
+  }, [user?.id, isGuest])
 
   if (loading) {
     return (
@@ -50,7 +50,7 @@ export default function AuthGate({ children }: Props) {
     )
   }
 
-  if (!user) {
+  if (!user && !isGuest) {
     return (
       <div className="flex h-screen bg-neutral-100 dark:bg-neutral-900">
         {/* Panneau gauche — branding (desktop uniquement) */}
@@ -83,8 +83,8 @@ export default function AuthGate({ children }: Props) {
         {/* Panneau droit — formulaire */}
         <div className="flex-1 flex items-center justify-center p-6">
           {mode === 'login'
-            ? <LoginView onSwitchToSignup={() => setMode('signup')} />
-            : <SignupView onSwitchToLogin={() => setMode('login')} />
+            ? <LoginView onSwitchToSignup={() => setMode('signup')} onContinueAsGuest={signInAsGuest} />
+            : <SignupView onSwitchToLogin={() => setMode('login')} onContinueAsGuest={signInAsGuest} />
           }
         </div>
       </div>

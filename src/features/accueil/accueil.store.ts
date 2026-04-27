@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 import { supabase } from '@/lib/supabase'
 import type { Investment } from './accueil.types'
 
@@ -44,67 +45,77 @@ async function currentUserId(): Promise<string | null> {
   return data.session?.user.id ?? null
 }
 
-export const useAccueilStore = create<AccueilStore>((set, get) => ({
-  investments: [],
-  loading: false,
+export const useAccueilStore = create<AccueilStore>()(
+  persist(
+    (set, get) => ({
+      investments: [],
+      loading: false,
 
-  loadFromCloud: async (userId) => {
-    set({ loading: true })
-    const { data, error } = await supabase
-      .from('investments')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: true })
-    if (!error && data) {
-      set({ investments: data.map(fromRow) })
+      loadFromCloud: async (userId) => {
+        set({ loading: true })
+        const { data, error } = await supabase
+          .from('investments')
+          .select('*')
+          .eq('user_id', userId)
+          .order('created_at', { ascending: true })
+        if (!error && data) {
+          set({ investments: data.map(fromRow) })
+        }
+        set({ loading: false })
+      },
+
+      resetData: () => set({ investments: [], loading: false }),
+
+      setInvestments: async (investments) => {
+        set({ investments })
+        const userId = await currentUserId()
+        if (!userId) return
+        await supabase.from('investments').delete().eq('user_id', userId)
+        if (investments.length > 0) {
+          await supabase.from('investments').insert(investments.map((inv) => toRow(inv, userId)))
+        }
+      },
+
+      addInvestment: async (inv) => {
+        set((s) => ({ investments: [...s.investments, inv] }))
+        const userId = await currentUserId()
+        if (!userId) return
+        await supabase.from('investments').insert(toRow(inv, userId))
+      },
+
+      updateInvestment: async (id, patch) => {
+        const userId = await currentUserId()
+        set((s) => ({
+          investments: s.investments.map((inv) =>
+            inv.id === id ? { ...inv, ...patch } : inv
+          ),
+        }))
+        if (!userId) return
+        const updated = get().investments.find((i) => i.id === id)
+        if (updated) {
+          await supabase.from('investments').update(toRow(updated, userId)).eq('id', id)
+        }
+      },
+
+      removeInvestment: async (id) => {
+        set((s) => ({ investments: s.investments.filter((i) => i.id !== id) }))
+        const userId = await currentUserId()
+        if (!userId) return
+        await supabase.from('investments').delete().eq('id', id)
+      },
+
+      resetInvestments: async () => {
+        const userId = await currentUserId()
+        set({ investments: [] })
+        if (userId) await supabase.from('investments').delete().eq('user_id', userId)
+      },
+    }),
+    {
+      name: 'escales-investments',
+      partialize: (state) => ({ investments: state.investments }),
     }
-    set({ loading: false })
-  },
-
-  resetData: () => set({ investments: [], loading: false }),
-
-  setInvestments: async (investments) => {
-    const userId = await currentUserId()
-    if (!userId) return
-    set({ investments })
-    await supabase.from('investments').delete().eq('user_id', userId)
-    if (investments.length > 0) {
-      await supabase.from('investments').insert(investments.map((inv) => toRow(inv, userId)))
-    }
-  },
-
-  addInvestment: async (inv) => {
-    const userId = await currentUserId()
-    if (!userId) return
-    set((s) => ({ investments: [...s.investments, inv] }))
-    await supabase.from('investments').insert(toRow(inv, userId))
-  },
-
-  updateInvestment: async (id, patch) => {
-    const userId = await currentUserId()
-    set((s) => ({
-      investments: s.investments.map((inv) =>
-        inv.id === id ? { ...inv, ...patch } : inv
-      ),
-    }))
-    if (!userId) return
-    const updated = get().investments.find((i) => i.id === id)
-    if (updated) {
-      await supabase.from('investments').update(toRow(updated, userId)).eq('id', id)
-    }
-  },
-
-  removeInvestment: async (id) => {
-    set((s) => ({ investments: s.investments.filter((i) => i.id !== id) }))
-    await supabase.from('investments').delete().eq('id', id)
-  },
-
-  resetInvestments: async () => {
-    const userId = await currentUserId()
-    set({ investments: [] })
-    if (userId) await supabase.from('investments').delete().eq('user_id', userId)
-  },
-}))
+  )
+)
 
 export function selectTotal(investments: Investment[]): number {
   return investments.reduce((sum, inv) => sum + inv.value, 0)

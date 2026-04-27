@@ -3,8 +3,6 @@ import { persist } from 'zustand/middleware'
 import { supabase } from '@/lib/supabase'
 import type { ColorTheme, Currency, Language, ProfilState, Theme } from './profil.types'
 
-type LocalPrefs = Pick<ProfilState, 'theme' | 'colorTheme'>
-
 export const useProfilStore = create<ProfilState>()(
   persist(
     (set, get) => ({
@@ -111,9 +109,16 @@ export const useProfilStore = create<ProfilState>()(
     }),
     {
       name: 'escales-profil-ui',
-      partialize: (state): LocalPrefs => ({
+      partialize: (state) => ({
         theme: state.theme,
         colorTheme: state.colorTheme,
+        firstName: state.firstName,
+        lastName: state.lastName,
+        avatarId: state.avatarId,
+        currency: state.currency,
+        language: state.language,
+        finnhubKey: state.finnhubKey,
+        memberSince: state.memberSince,
       }),
     }
   )
