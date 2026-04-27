@@ -5,7 +5,6 @@ import type { Investment, InvestmentCategory } from '../accueil.types'
 import { CATEGORY_LABELS } from '../accueil.types'
 import { searchSymbol } from '@/services/finnhub'
 import type { FinnhubSearchResult } from '@/services/finnhub'
-import { useProfilStore } from '@/features/profil/profil.store'
 import TextField from '@/components/ui/TextField'
 import DropdownField from '@/components/ui/DropdownField'
 import Button from '@/components/ui/Button'
@@ -35,7 +34,6 @@ interface Props {
 
 export default function EditInvestmentsPanel({ open, onClose }: Props) {
   const { investments, setInvestments } = useAccueilStore()
-  const finnhubKey = useProfilStore((s) => s.finnhubKey)
   const t = useT()
   const [draft, setDraft] = useState<Investment[]>([])
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -168,7 +166,7 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
 
                 <TickerField
                   ticker={inv.ticker}
-                  apiKey={finnhubKey}
+                  apiKey={import.meta.env.VITE_FINNHUB_KEY ?? ''}
                   onSelect={(ticker) => update(inv.id, { ticker, shares: inv.shares ?? 1 })}
                   onUnlink={() => update(inv.id, { ticker: undefined, shares: undefined })}
                 />

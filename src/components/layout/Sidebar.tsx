@@ -11,9 +11,11 @@ interface SidebarProps {
 
 export default function Sidebar({ activeView, onNavigate }: SidebarProps) {
   const t = useT()
-  const { firstName, lastName, avatarId } = useProfilStore()
-  const { signOut, user } = useAuthStore()
-  const displayName = [firstName, lastName].filter(Boolean).join(' ') || user?.email?.split('@')[0] || 'Utilisateur'
+  const { pseudonyme, avatarId } = useProfilStore()
+  const { user } = useAuthStore()
+  const rawEmail = user?.email ?? ''
+  const identifier = rawEmail.endsWith('@escales.app') ? rawEmail.split('@')[0] : rawEmail
+  const displayName = pseudonyme || identifier || 'Utilisateur'
 
   const NAV_ITEMS: { id: View; label: string; icon: 'accueil' | 'journal' | 'book' }[] = [
     { id: 'accueil',   label: t('nav.home'),      icon: 'accueil' },
