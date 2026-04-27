@@ -27,6 +27,7 @@ export default function ProfilView() {
   const { pseudonyme, avatarId } = useProfilStore()
   const { signOut, user } = useAuthStore()
   const [openModal, setOpenModal] = useState<ModalType>(null)
+  const [showSignOutConfirm, setShowSignOutConfirm] = useState(false)
 
   const displayIdentifier = user?.email
     ? (user.email.endsWith('@escales.app') ? user.email.split('@')[0] : user.email)
@@ -71,7 +72,7 @@ export default function ProfilView() {
 
         {/* Déconnexion */}
         <button
-          onClick={() => signOut()}
+          onClick={() => setShowSignOutConfirm(true)}
           className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-950/50 transition-colors"
         >
           <Icon name="logout" size={16} />
@@ -83,6 +84,17 @@ export default function ProfilView() {
       {openModal === 'account'     && <AccountModal     onClose={() => setOpenModal(null)} />}
       {openModal === 'preferences' && <PreferencesModal onClose={() => setOpenModal(null)} />}
       {openModal === 'security'    && <SecurityModal    onClose={() => setOpenModal(null)} user={user} signOut={signOut} />}
+
+      {showSignOutConfirm && (
+        <ConfirmDialog
+          title={t('profil.signOutConfirmTitle')}
+          message={t('profil.signOutConfirmMsg')}
+          confirmLabel={t('profil.signOutConfirmAction')}
+          onCancel={() => setShowSignOutConfirm(false)}
+          onConfirm={signOut}
+          dangerous
+        />
+      )}
     </div>
   )
 }
@@ -124,6 +136,48 @@ function SettingsModal({ title, children, onClose, onConfirm, saving }: {
               {saving ? t('profil.saving') : t('profil.confirm')}
             </button>
           )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ─── Confirm dialog ─────────────────────────────────────── */
+
+function ConfirmDialog({
+  title, message, confirmLabel, onCancel, onConfirm, loading, dangerous,
+}: {
+  title: string
+  message: string
+  confirmLabel: string
+  onCancel: () => void
+  onConfirm: () => void
+  loading?: boolean
+  dangerous?: boolean
+}) {
+  const t = useT()
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onCancel} />
+      <div className="relative w-full max-w-sm bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl p-6 space-y-4">
+        <h3 className="text-base font-semibold text-neutral-900 dark:text-neutral-50">{title}</h3>
+        <p className="text-sm text-neutral-600 dark:text-neutral-400">{message}</p>
+        <div className="flex gap-3 pt-1">
+          <button
+            onClick={onCancel}
+            className="flex-1 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 text-sm font-medium text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
+          >
+            {t('profil.cancel')}
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={loading}
+            className={`flex-1 py-2.5 rounded-xl text-white text-sm font-semibold disabled:opacity-50 transition-colors ${
+              dangerous ? 'bg-red-600 hover:bg-red-700' : 'bg-primary-600 hover:bg-primary-700'
+            }`}
+          >
+            {loading ? '…' : confirmLabel}
+          </button>
         </div>
       </div>
     </div>
@@ -312,7 +366,7 @@ function SecurityModal({ onClose, user, signOut }: {
   const [pwMsg, setPwMsg] = useState<{ text: string; ok: boolean } | null>(null)
   const [savingPw, setSavingPw] = useState(false)
 
-  const [deleteStep, setDeleteStep] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
   async function handleChangeId() {
@@ -405,27 +459,25 @@ function SecurityModal({ onClose, user, signOut }: {
       {/* Supprimer le compte */}
       <div className="pt-2 border-t border-neutral-100 dark:border-neutral-700 space-y-3">
         <p className="text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">{t('profil.dangerZone')}</p>
-        {!deleteStep ? (
-          <button
-            onClick={() => setDeleteStep(true)}
-            className="w-full py-2.5 rounded-xl border border-red-200 dark:border-red-900 text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
-          >
-            {t('profil.deleteAccount')}
-          </button>
-        ) : (
-          <div className="space-y-2">
-            <p className="text-sm text-red-600 dark:text-red-400 font-medium">{t('profil.deleteWarning')}</p>
-            <div className="flex gap-2">
-              <button onClick={() => setDeleteStep(false)} className="flex-1 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600 text-sm font-medium text-neutral-600 dark:text-neutral-300">
-                {t('profil.cancel')}
-              </button>
-              <button onClick={handleDeleteAccount} disabled={deleting} className="flex-1 py-2 rounded-xl bg-red-600 text-white text-sm font-semibold hover:bg-red-700 disabled:opacity-50">
-                {deleting ? t('profil.deleting') : t('profil.confirm')}
-              </button>
-            </div>
-          </div>
-        )}
+        <button
+          onClick={() => setShowDeleteConfirm(true)}
+          className="w-full py-2.5 rounded-xl border border-red-200 dark:border-red-900 text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+        >
+          {t('profil.deleteAccount')}
+        </button>
       </div>
+
+      {showDeleteConfirm && (
+        <ConfirmDialog
+          title={t('profil.deleteConfirmTitle')}
+          message={t('profil.deleteWarning')}
+          confirmLabel={deleting ? t('profil.deleting') : t('profil.deleteConfirmAction')}
+          onCancel={() => setShowDeleteConfirm(false)}
+          onConfirm={handleDeleteAccount}
+          loading={deleting}
+          dangerous
+        />
+      )}
     </SettingsModal>
   )
 }

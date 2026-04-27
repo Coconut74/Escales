@@ -189,6 +189,11 @@ const fr = {
   'profil.deleteAccount': 'Supprimer mon compte',
   'profil.deleteWarning': 'Cette action est irréversible. Toutes vos données seront supprimées.',
   'profil.deleting': 'Suppression…',
+  'profil.signOutConfirmTitle': 'Se déconnecter ?',
+  'profil.signOutConfirmMsg': 'Voulez-vous vraiment vous déconnecter ?',
+  'profil.signOutConfirmAction': 'Se déconnecter',
+  'profil.deleteConfirmTitle': 'Supprimer le compte ?',
+  'profil.deleteConfirmAction': 'Supprimer',
 
   // Education
   'education.title': 'Éducation financière',
@@ -375,6 +380,11 @@ const en: typeof fr = {
   'profil.deleteAccount': 'Delete my account',
   'profil.deleteWarning': 'This action is irreversible. All your data will be deleted.',
   'profil.deleting': 'Deleting…',
+  'profil.signOutConfirmTitle': 'Sign out?',
+  'profil.signOutConfirmMsg': 'Are you sure you want to sign out?',
+  'profil.signOutConfirmAction': 'Sign out',
+  'profil.deleteConfirmTitle': 'Delete account?',
+  'profil.deleteConfirmAction': 'Delete',
 
   'education.title': 'Financial education',
   'education.wip': 'This section is under development.',
