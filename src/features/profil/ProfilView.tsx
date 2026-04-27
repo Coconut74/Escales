@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { supabase } from '@/lib/supabase'
 import { useProfilStore } from './profil.store'
 import { useAuthStore, normalizeIdentifier } from '@/features/auth/auth.store'
@@ -156,8 +157,8 @@ function ConfirmDialog({
   dangerous?: boolean
 }) {
   const t = useT()
-  return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onCancel} />
       <div className="relative w-full max-w-sm bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl p-6 space-y-4">
         <h3 className="text-base font-semibold text-neutral-900 dark:text-neutral-50">{title}</h3>
@@ -180,7 +181,8 @@ function ConfirmDialog({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
 
