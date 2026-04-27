@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 import { supabase } from '@/lib/supabase'
 import type { User, Session } from '@supabase/supabase-js'
 
@@ -29,64 +30,86 @@ function friendlyError(msg: string): string {
 interface AuthStore {
   user: User | null
   session: Session | null
+  isGuest: boolean
   loading: boolean
   error: string | null
   signIn: (email: string, password: string) => Promise<void>
   signUp: (email: string, password: string) => Promise<boolean>
   signOut: () => Promise<void>
+  signInAsGuest: () => void
   clearError: () => void
   init: () => Promise<void>
 }
 
-export const useAuthStore = create<AuthStore>()((set) => ({
-  user: null,
-  session: null,
-  loading: true,
-  error: null,
+export const useAuthStore = create<AuthStore>()(
+  persist(
+    (set, get) => ({
+      user: null,
+      session: null,
+      isGuest: false,
+      loading: true,
+      error: null,
 
-  signIn: async (identifier, password) => {
-    set({ loading: true, error: null })
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email: normalizeIdentifier(identifier), password })
-      if (error) {
-        let msg = friendlyError(error.message)
-        if (error.message.includes('Email not confirmed') && !isEmail(identifier)) {
-          msg = 'Connexion impossible : la confirmation e-mail est activée sur Supabase. Désactivez-la dans Authentication → Settings → Email.'
+      signIn: async (identifier, password) => {
+        set({ loading: true, error: null, isGuest: false })
+        try {
+          const { data, error } = await supabase.auth.signInWithPassword({ email: normalizeIdentifier(identifier), password })
+          if (error) {
+            let msg = friendlyError(error.message)
+            if (error.message.includes('Email not confirmed') && !isEmail(identifier)) {
+              msg = 'Connexion impossible : la confirmation e-mail est activée sur Supabase. Désactivez-la dans Authentication → Settings → Email.'
+            }
+            set({ loading: false, error: msg })
+            return
+          }
+          set({ user: data.user, session: data.session, loading: false })
+        } catch (e) {
+          set({ loading: false, error: friendlyError((e as Error).message) })
         }
-        set({ loading: false, error: msg })
-        return
-      }
-      set({ user: data.user, session: data.session, loading: false })
-    } catch (e) {
-      set({ loading: false, error: friendlyError((e as Error).message) })
+      },
+
+      signUp: async (identifier, password) => {
+        set({ loading: true, error: null, isGuest: false })
+        try {
+          const { data, error } = await supabase.auth.signUp({ email: normalizeIdentifier(identifier), password })
+          if (error) { set({ loading: false, error: friendlyError(error.message) }); return false }
+          set({ user: data.user, session: data.session, loading: false })
+          return true
+        } catch (e) {
+          set({ loading: false, error: friendlyError((e as Error).message) })
+          return false
+        }
+      },
+
+      signOut: async () => {
+        if (!get().isGuest) {
+          await supabase.auth.signOut()
+        }
+        set({ user: null, session: null, isGuest: false })
+      },
+
+      signInAsGuest: () => {
+        set({ isGuest: true, loading: false, error: null })
+      },
+
+      clearError: () => set({ error: null }),
+
+      init: async () => {
+        const { data } = await supabase.auth.getSession()
+        set((s) => ({
+          user: data.session?.user ?? null,
+          session: data.session,
+          loading: false,
+          isGuest: data.session ? false : s.isGuest,
+        }))
+        supabase.auth.onAuthStateChange((_event, session) => {
+          set({ user: session?.user ?? null, session, ...(session ? { isGuest: false } : {}) })
+        })
+      },
+    }),
+    {
+      name: 'escales-auth',
+      partialize: (state) => ({ isGuest: state.isGuest }),
     }
-  },
-
-  signUp: async (identifier, password) => {
-    set({ loading: true, error: null })
-    try {
-      const { data, error } = await supabase.auth.signUp({ email: normalizeIdentifier(identifier), password })
-      if (error) { set({ loading: false, error: friendlyError(error.message) }); return false }
-      set({ user: data.user, session: data.session, loading: false })
-      return true
-    } catch (e) {
-      set({ loading: false, error: friendlyError((e as Error).message) })
-      return false
-    }
-  },
-
-  signOut: async () => {
-    await supabase.auth.signOut()
-    set({ user: null, session: null })
-  },
-
-  clearError: () => set({ error: null }),
-
-  init: async () => {
-    const { data } = await supabase.auth.getSession()
-    set({ user: data.session?.user ?? null, session: data.session, loading: false })
-    supabase.auth.onAuthStateChange((_event, session) => {
-      set({ user: session?.user ?? null, session })
-    })
-  },
-}))
+  )
+)
