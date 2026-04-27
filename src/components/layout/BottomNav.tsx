@@ -1,4 +1,5 @@
 import Icon from '@/components/ui/Icon'
+import { useProfilStore } from '@/features/profil/profil.store'
 import { useT } from '@/lib/i18n'
 import type { View } from '@/App'
 
@@ -12,6 +13,7 @@ interface BottomNavProps {
 
 export default function BottomNav({ activeView, onNavigate }: BottomNavProps) {
   const t = useT()
+  const avatarId = useProfilStore((s) => s.avatarId)
 
   const NAV_ITEMS: { id: View; label: string; icon: 'accueil' | 'journal' | 'book' | 'profile' }[] = [
     { id: 'accueil',   label: t('nav.home'),      icon: 'accueil'  },
@@ -49,11 +51,19 @@ export default function BottomNav({ activeView, onNavigate }: BottomNavProps) {
               className="relative z-10 flex items-center justify-center"
               style={{ width: ITEM_SIZE, height: ITEM_SIZE }}
             >
-              <Icon
-                name={item.icon}
-                size={22}
-                className={isActive ? 'text-white' : 'text-neutral-400 dark:text-neutral-500'}
-              />
+              {item.id === 'profil' ? (
+                <img
+                  src={`/avatars/${avatarId || 'avatar-1'}.png`}
+                  alt="avatar"
+                  className={`w-7 h-7 rounded-full object-cover ${isActive ? 'ring-2 ring-white' : 'opacity-70'}`}
+                />
+              ) : (
+                <Icon
+                  name={item.icon}
+                  size={22}
+                  className={isActive ? 'text-white' : 'text-neutral-400 dark:text-neutral-500'}
+                />
+              )}
             </button>
           )
         })}

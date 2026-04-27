@@ -66,7 +66,7 @@ export default function Sidebar({ activeView, onNavigate }: SidebarProps) {
               : 'text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100/80 dark:hover:bg-neutral-800/60 hover:text-neutral-700'
             }`}
         >
-          <img src={`/avatars/${avatarId || 'avatar-1'}.png`} alt="avatar" className="w-6 h-6 rounded-full object-cover shrink-0" />
+          <img src={`/avatars/${avatarId || 'avatar-1'}.png`} alt="avatar" className="w-8 h-8 rounded-full object-cover shrink-0" />
           <span className="truncate">{displayName}</span>
         </button>
       </div>
