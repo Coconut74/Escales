@@ -132,7 +132,7 @@ export default function AccueilView() {
       </div>
 
       {/* Bouton modifier */}
-      <div className="fixed bottom-[120px] lg:bottom-8 left-1/2 lg:left-[calc(50vw+112px)] -translate-x-1/2 z-[45]">
+      <div className="fixed bottom-[120px] lg:bottom-8 left-1/2 lg:left-[calc(50vw+156px)] -translate-x-1/2 z-[45]">
         <Button
           variant="grey-outline"
           size="lg"
