@@ -7,7 +7,11 @@ import type { Currency, Language, Theme } from './profil.types'
 import { COLOR_THEMES } from './color-themes'
 import { useT } from '@/lib/i18n'
 
-const AVATAR_OPTIONS = ['🧑', '👩', '👨', '🧑‍💼', '👩‍💼', '👨‍💼', '🦊', '🐻', '🐼', '🦁', '🐯', '🦝']
+const AVATAR_OPTIONS = [
+  'avatar-1',  'avatar-2',  'avatar-3',  'avatar-4',  'avatar-5',
+  'avatar-6',  'avatar-7',  'avatar-8',  'avatar-9',  'avatar-10',
+  'avatar-11', 'avatar-12', 'avatar-13', 'avatar-14', 'avatar-15',
+]
 
 const LANGUAGE_OPTIONS: { value: Language; label: string }[] = [
   { value: 'fr', label: 'Français' },
@@ -17,8 +21,8 @@ const LANGUAGE_OPTIONS: { value: Language; label: string }[] = [
 export default function ProfilView() {
   const t = useT()
   const {
-    firstName, lastName, avatarEmoji, currency, language, theme, colorTheme, finnhubKey, memberSince,
-    setFirstName, setLastName, setAvatarEmoji, setCurrency, setLanguage, setTheme, setColorTheme, setFinnhubKey,
+    firstName, lastName, avatarId, currency, language, theme, colorTheme, finnhubKey, memberSince,
+    setFirstName, setLastName, setAvatarId, setCurrency, setLanguage, setTheme, setColorTheme, setFinnhubKey,
     resetProfil,
   } = useProfilStore()
 
@@ -52,8 +56,8 @@ export default function ProfilView() {
 
           {/* Header profil — pleine largeur */}
           <div className="lg:col-span-2 bg-white dark:bg-neutral-800 rounded-2xl p-6 flex items-center gap-5 border border-neutral-200 dark:border-neutral-700">
-            <div className="flex-shrink-0 w-20 h-20 rounded-2xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center text-4xl select-none">
-              {avatarEmoji}
+            <div className="flex-shrink-0 w-20 h-20 rounded-2xl bg-primary-100 dark:bg-primary-900/30 overflow-hidden">
+              <img src={`/avatars/${avatarId}.png`} alt="avatar" className="w-full h-full object-cover" />
             </div>
             <div>
               <p className="text-xl font-semibold text-neutral-900 dark:text-neutral-50">{displayName}</p>
@@ -84,18 +88,18 @@ export default function ProfilView() {
               />
             </Field>
             <Field label={t('profil.avatar')}>
-              <div className="flex flex-wrap gap-2 mt-1">
-                {AVATAR_OPTIONS.map((emoji) => (
+              <div className="grid grid-cols-5 gap-2 mt-1">
+                {AVATAR_OPTIONS.map((id) => (
                   <button
-                    key={emoji}
-                    onClick={() => setAvatarEmoji(emoji)}
-                    className={`w-10 h-10 rounded-xl text-xl transition-all
-                      ${avatarEmoji === emoji
-                        ? 'bg-primary-100 dark:bg-primary-900/50 ring-2 ring-primary-500'
-                        : 'bg-neutral-100 dark:bg-neutral-700 hover:bg-primary-50 dark:hover:bg-neutral-600'
-                      }`}
+                    key={id}
+                    onClick={() => setAvatarId(id)}
+                    className={`w-full aspect-square rounded-xl overflow-hidden transition-all ${
+                      avatarId === id
+                        ? 'ring-2 ring-primary-500 ring-offset-2 ring-offset-white dark:ring-offset-neutral-800'
+                        : 'opacity-60 hover:opacity-100'
+                    }`}
                   >
-                    {emoji}
+                    <img src={`/avatars/${id}.png`} alt={id} className="w-full h-full object-cover" />
                   </button>
                 ))}
               </div>

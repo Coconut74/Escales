@@ -10,7 +10,7 @@ interface SidebarProps {
 
 export default function Sidebar({ activeView, onNavigate }: SidebarProps) {
   const t = useT()
-  const { firstName, lastName, avatarEmoji } = useProfilStore()
+  const { firstName, lastName, avatarId } = useProfilStore()
   const displayName = [firstName, lastName].filter(Boolean).join(' ') || 'Utilisateur'
 
   const NAV_ITEMS: { id: View; label: string; icon: 'accueil' | 'journal' | 'book' }[] = [
@@ -64,7 +64,7 @@ export default function Sidebar({ activeView, onNavigate }: SidebarProps) {
               : 'text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100/80 dark:hover:bg-neutral-800/60 hover:text-neutral-700'
             }`}
         >
-          <span className="text-base leading-none">{avatarEmoji || '👤'}</span>
+          <img src={`/avatars/${avatarId || 'avatar-1'}.png`} alt="avatar" className="w-6 h-6 rounded-full object-cover shrink-0" />
           <span className="truncate">{displayName}</span>
         </button>
       </div>

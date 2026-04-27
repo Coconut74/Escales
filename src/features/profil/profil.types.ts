@@ -7,7 +7,7 @@ export type Theme = 'light' | 'dark'
 export interface ProfilState {
   firstName: string
   lastName: string
-  avatarEmoji: string
+  avatarId: string
   currency: Currency
   language: Language
   theme: Theme
@@ -15,7 +15,7 @@ export interface ProfilState {
   memberSince: string
   setFirstName: (v: string) => void
   setLastName: (v: string) => void
-  setAvatarEmoji: (v: string) => void
+  setAvatarId: (v: string) => void
   setCurrency: (v: Currency) => void
   setLanguage: (v: Language) => void
   setTheme: (v: Theme) => void

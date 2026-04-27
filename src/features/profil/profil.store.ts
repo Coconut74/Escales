@@ -7,7 +7,7 @@ export const useProfilStore = create<ProfilState>()(
     (set) => ({
       firstName: '',
       lastName: '',
-      avatarEmoji: '🧑',
+      avatarId: 'avatar-1',
       currency: 'EUR' as Currency,
       language: 'fr' as Language,
       theme: 'light' as Theme,
@@ -16,7 +16,7 @@ export const useProfilStore = create<ProfilState>()(
       memberSince: new Date().toISOString(),
       setFirstName: (firstName) => set({ firstName }),
       setLastName: (lastName) => set({ lastName }),
-      setAvatarEmoji: (avatarEmoji) => set({ avatarEmoji }),
+      setAvatarId: (avatarId) => set({ avatarId }),
       setCurrency: (currency) => set({ currency }),
       setLanguage: (language) => set({ language }),
       setTheme: (theme) => set({ theme }),
@@ -25,7 +25,7 @@ export const useProfilStore = create<ProfilState>()(
       resetProfil: () => set({
         firstName: '',
         lastName: '',
-        avatarEmoji: '🧑',
+        avatarId: 'avatar-1',
         currency: 'EUR' as Currency,
         language: 'fr' as Language,
         theme: 'light' as Theme,
@@ -36,17 +36,17 @@ export const useProfilStore = create<ProfilState>()(
     }),
     {
       name: 'escales-profil',
-      version: 1,
-      migrate: (persisted: any) => {
-        if (!persisted.finnhubKey) {
-          persisted.finnhubKey = 'd7iv50hr01qn2qavhu30d7iv50hr01qn2qavhu3g'
-        }
-        return persisted
+      version: 2,
+      migrate: (persisted: unknown) => {
+        const s = persisted as Record<string, unknown>
+        if (!s.finnhubKey) s.finnhubKey = 'd7iv50hr01qn2qavhu30d7iv50hr01qn2qavhu3g'
+        if (!s.avatarId) s.avatarId = 'avatar-1'
+        return s
       },
       partialize: (state) => ({
         firstName: state.firstName,
         lastName: state.lastName,
-        avatarEmoji: state.avatarEmoji,
+        avatarId: state.avatarId,
         currency: state.currency,
         language: state.language,
         theme: state.theme,
