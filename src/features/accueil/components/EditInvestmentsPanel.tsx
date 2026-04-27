@@ -266,10 +266,10 @@ function TickerField({ ticker, apiKey, onSelect, onUnlink }: {
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
-      const t = e.target as Node
+      const node = e.target as Node
       if (
-        wrapRef.current && !wrapRef.current.contains(t) &&
-        dropdownRef.current && !dropdownRef.current.contains(t)
+        wrapRef.current && !wrapRef.current.contains(node) &&
+        dropdownRef.current && !dropdownRef.current.contains(node)
       ) setOpen(false)
     }
     document.addEventListener('mousedown', handleClick)

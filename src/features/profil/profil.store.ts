@@ -38,9 +38,10 @@ export const useProfilStore = create<ProfilState>()(
       name: 'escales-profil',
       version: 2,
       migrate: (persisted: unknown) => {
-        const s = persisted as Record<string, unknown>
+        const s = { ...(persisted as Record<string, unknown>) }
         if (!s.finnhubKey) s.finnhubKey = 'd7iv50hr01qn2qavhu30d7iv50hr01qn2qavhu3g'
         if (!s.avatarId) s.avatarId = 'avatar-1'
+        if (!s.memberSince) s.memberSince = new Date().toISOString()
         return s
       },
       partialize: (state) => ({

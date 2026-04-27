@@ -29,7 +29,7 @@ export const useAccueilStore = create<AccueilStore>()(
         set((s) => ({ investments: s.investments.filter((i) => i.id !== id) })),
       resetInvestments: () => set({ investments: [] }),
     }),
-    { name: 'escales-accueil' }
+    { name: 'escales-accueil', version: 1 }
   )
 )
 
