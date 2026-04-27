@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useAuthStore } from './auth.store'
+import { useAuthStore, isEmail } from './auth.store'
 import Button from '@/components/ui/Button'
 
 interface Props {
@@ -33,16 +33,21 @@ export default function SignupView({ onSwitchToLogin, onContinueAsGuest }: Props
   const displayError = localError || error
 
   if (emailSent && !error) {
+    const isEmailBased = isEmail(email)
     return (
       <div className="w-full max-w-sm space-y-6 text-center">
         <div className="w-16 h-16 mx-auto rounded-2xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-3xl">
-          ✉️
+          {isEmailBased ? '✉️' : '✅'}
         </div>
         <div className="space-y-2">
-          <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-50">Vérifiez vos e-mails</h1>
+          <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-50">
+            {isEmailBased ? 'Vérifiez vos e-mails' : 'Compte créé !'}
+          </h1>
           <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Un lien de confirmation a été envoyé à <span className="font-semibold text-neutral-700 dark:text-neutral-200">{email}</span>.
-            Cliquez sur ce lien pour activer votre compte.
+            {isEmailBased
+              ? <>Un lien de confirmation a été envoyé à <span className="font-semibold text-neutral-700 dark:text-neutral-200">{email}</span>. Cliquez sur ce lien pour activer votre compte.</>
+              : <>Votre compte <span className="font-semibold text-neutral-700 dark:text-neutral-200">{email.trim()}</span> est prêt. Vous pouvez maintenant vous connecter.</>
+            }
           </p>
         </div>
         <button
@@ -50,7 +55,7 @@ export default function SignupView({ onSwitchToLogin, onContinueAsGuest }: Props
           onClick={onSwitchToLogin}
           className="text-sm font-semibold text-primary-600 dark:text-primary-400 hover:underline"
         >
-          Retour à la connexion
+          {isEmailBased ? 'Retour à la connexion' : 'Se connecter'}
         </button>
       </div>
     )
@@ -72,14 +77,14 @@ export default function SignupView({ onSwitchToLogin, onContinueAsGuest }: Props
         )}
 
         <div className="space-y-1.5">
-          <label className="text-sm font-medium text-neutral-700 dark:text-neutral-200">Adresse e-mail</label>
+          <label className="text-sm font-medium text-neutral-700 dark:text-neutral-200">E-mail ou identifiant</label>
           <input
-            type="email"
+            type="text"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="vous@exemple.com"
+            placeholder="identifiant ou vous@exemple.com"
             required
-            autoComplete="email"
+            autoComplete="username"
             className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-sm placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
           />
         </div>

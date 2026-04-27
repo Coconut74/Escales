@@ -3,6 +3,16 @@ import { persist } from 'zustand/middleware'
 import { supabase } from '@/lib/supabase'
 import type { User, Session } from '@supabase/supabase-js'
 
+// Converts a plain username to a valid email for Supabase auth
+export function normalizeIdentifier(id: string): string {
+  const t = id.trim().toLowerCase()
+  return t.includes('@') ? t : `${t}@escales.app`
+}
+
+export function isEmail(id: string): boolean {
+  return id.trim().includes('@')
+}
+
 interface AuthStore {
   user: User | null
   session: Session | null
@@ -28,7 +38,7 @@ export const useAuthStore = create<AuthStore>()(
 
       signIn: async (email, password) => {
         set({ loading: true, error: null, isGuest: false })
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+        const { data, error } = await supabase.auth.signInWithPassword({ email: normalizeIdentifier(email), password })
         if (error) {
           set({ loading: false, error: error.message })
           return
@@ -38,7 +48,7 @@ export const useAuthStore = create<AuthStore>()(
 
       signUp: async (email, password) => {
         set({ loading: true, error: null, isGuest: false })
-        const { data, error } = await supabase.auth.signUp({ email, password })
+        const { data, error } = await supabase.auth.signUp({ email: normalizeIdentifier(email), password })
         if (error) {
           set({ loading: false, error: error.message })
           return

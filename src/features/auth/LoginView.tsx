@@ -33,14 +33,14 @@ export default function LoginView({ onSwitchToSignup, onContinueAsGuest }: Props
         )}
 
         <div className="space-y-1.5">
-          <label className="text-sm font-medium text-neutral-700 dark:text-neutral-200">Adresse e-mail</label>
+          <label className="text-sm font-medium text-neutral-700 dark:text-neutral-200">E-mail ou identifiant</label>
           <input
-            type="email"
+            type="text"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="vous@exemple.com"
+            placeholder="identifiant ou vous@exemple.com"
             required
-            autoComplete="email"
+            autoComplete="username"
             className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-sm placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
           />
         </div>
