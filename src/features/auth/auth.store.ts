@@ -13,6 +13,20 @@ export function isEmail(id: string): boolean {
   return id.trim().includes('@')
 }
 
+function friendlyError(msg: string): string {
+  if (!msg || msg.toLowerCase().includes('failed to fetch') || msg.toLowerCase().includes('networkerror')) {
+    return 'Impossible de contacter le serveur. Vérifiez votre connexion internet.'
+  }
+  if (msg.includes('Invalid login credentials')) return 'Identifiant ou mot de passe incorrect.'
+  if (msg.includes('Email not confirmed')) return 'Compte non confirmé. Cliquez sur le lien reçu par e-mail.'
+  if (msg.includes('User already registered')) return 'Cet identifiant est déjà utilisé.'
+  if (msg.includes('Password should be at least')) return 'Le mot de passe doit contenir au moins 8 caractères.'
+  if (msg.includes('Unable to validate email address')) return 'Identifiant invalide. Utilisez uniquement des lettres, chiffres et tirets.'
+  if (msg.includes('signup is disabled')) return 'La création de compte est temporairement désactivée.'
+  if (msg.includes('too many requests') || msg.includes('rate limit')) return 'Trop de tentatives. Réessayez dans quelques secondes.'
+  return msg
+}
+
 interface AuthStore {
   user: User | null
   session: Session | null
@@ -38,22 +52,24 @@ export const useAuthStore = create<AuthStore>()(
 
       signIn: async (email, password) => {
         set({ loading: true, error: null, isGuest: false })
-        const { data, error } = await supabase.auth.signInWithPassword({ email: normalizeIdentifier(email), password })
-        if (error) {
-          set({ loading: false, error: error.message })
-          return
+        try {
+          const { data, error } = await supabase.auth.signInWithPassword({ email: normalizeIdentifier(email), password })
+          if (error) { set({ loading: false, error: friendlyError(error.message) }); return }
+          set({ user: data.user, session: data.session, loading: false })
+        } catch (e) {
+          set({ loading: false, error: friendlyError((e as Error).message) })
         }
-        set({ user: data.user, session: data.session, loading: false })
       },
 
       signUp: async (email, password) => {
         set({ loading: true, error: null, isGuest: false })
-        const { data, error } = await supabase.auth.signUp({ email: normalizeIdentifier(email), password })
-        if (error) {
-          set({ loading: false, error: error.message })
-          return
+        try {
+          const { data, error } = await supabase.auth.signUp({ email: normalizeIdentifier(email), password })
+          if (error) { set({ loading: false, error: friendlyError(error.message) }); return }
+          set({ user: data.user, session: data.session, loading: false })
+        } catch (e) {
+          set({ loading: false, error: friendlyError((e as Error).message) })
         }
-        set({ user: data.user, session: data.session, loading: false })
       },
 
       signOut: async () => {
