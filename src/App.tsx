@@ -5,12 +5,14 @@ import AccueilView from '@/features/accueil/AccueilView'
 import JournalView from '@/features/journal/JournalView'
 import EducationView from '@/features/education/EducationView'
 import ProfilView from '@/features/profil/ProfilView'
+import AuthGate from '@/features/auth/AuthGate'
+import MigrationBanner from '@/features/auth/MigrationBanner'
 import { useProfilStore } from '@/features/profil/profil.store'
 import { COLOR_THEME_VARS } from '@/features/profil/color-themes'
 
 export type View = 'accueil' | 'journal' | 'education' | 'profil'
 
-export default function App() {
+function AppShell() {
   const [activeView, setActiveView] = useState<View>('accueil')
   const theme = useProfilStore((s) => s.theme)
   const colorTheme = useProfilStore((s) => s.colorTheme)
@@ -37,11 +39,20 @@ export default function App() {
     <div className="flex h-screen bg-neutral-100 dark:bg-neutral-800 font-sans text-neutral-900 dark:text-neutral-50">
       <Sidebar activeView={activeView} onNavigate={setActiveView} />
       <div className="flex flex-col flex-1 overflow-hidden lg:pl-[248px]">
+        <MigrationBanner />
         <main className="flex-1 overflow-auto">
           {views[activeView]}
         </main>
       </div>
       <BottomNav activeView={activeView} onNavigate={setActiveView} />
     </div>
+  )
+}
+
+export default function App() {
+  return (
+    <AuthGate>
+      <AppShell />
+    </AuthGate>
   )
 }
