@@ -33,7 +33,7 @@ export default function DropdownField({ label, options, error, className = '', i
             <option key={opt.value} value={opt.value}>{opt.label}</option>
           ))}
         </select>
-        <span className="absolute right-5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none">
+        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none">
           <Icon name="arrow" size={16} className="rotate-90" />
         </span>
       </div>

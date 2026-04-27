@@ -69,13 +69,6 @@ export default function Sidebar({ activeView, onNavigate }: SidebarProps) {
           <img src={`/avatars/${avatarId || 'avatar-1'}.png`} alt="avatar" className="w-6 h-6 rounded-full object-cover shrink-0" />
           <span className="truncate">{displayName}</span>
         </button>
-        <button
-          onClick={() => signOut()}
-          className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 w-full text-left text-neutral-400 dark:text-neutral-500 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-500 dark:hover:text-red-400"
-        >
-          <Icon name="logout" size={16} />
-          <span>Déconnexion</span>
-        </button>
       </div>
     </aside>
   )

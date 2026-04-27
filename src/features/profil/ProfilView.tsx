@@ -159,7 +159,7 @@ export default function ProfilView() {
                       <option key={c.value} value={c.value}>{c.symbol} — {c.label}</option>
                     ))}
                   </select>
-                  <span className="absolute right-5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none">
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none">
                     <Icon name="arrow" size={16} className="rotate-90" />
                   </span>
                 </div>
@@ -175,7 +175,7 @@ export default function ProfilView() {
                       <option key={l.value} value={l.value}>{l.label}</option>
                     ))}
                   </select>
-                  <span className="absolute right-5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none">
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none">
                     <Icon name="arrow" size={16} className="rotate-90" />
                   </span>
                 </div>
@@ -265,11 +265,11 @@ export default function ProfilView() {
 
         </div>
 
-        {/* Déconnexion mobile — tout en bas */}
-        <div className="lg:hidden mt-6">
+        {/* Déconnexion — tout en bas */}
+        <div className="mt-6">
           <button
             onClick={() => signOut()}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl border border-neutral-200 dark:border-neutral-700 text-sm font-semibold text-neutral-500 dark:text-neutral-400 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-500 dark:hover:text-red-400 hover:border-red-200 dark:hover:border-red-900 transition-colors"
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-950/50 transition-colors"
           >
             <Icon name="logout" size={16} />
             Déconnexion
