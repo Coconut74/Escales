@@ -56,8 +56,8 @@ export default function AuthGate({ children }: Props) {
         {/* Panneau gauche — branding (desktop uniquement) */}
         <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-600 to-primary-800 items-center justify-center p-12">
           <div className="max-w-sm text-white space-y-6">
-            <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-3xl font-bold text-white">
-              E
+            <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+              <img src="/logo.png" alt="Escales" className="w-10 h-10 object-contain" />
             </div>
             <div className="space-y-3">
               <h2 className="text-4xl font-bold">Escales</h2>
