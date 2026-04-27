@@ -38,7 +38,7 @@ function AppShell() {
   return (
     <div className="flex h-screen bg-neutral-100 dark:bg-neutral-900 font-sans text-neutral-900 dark:text-neutral-50">
       <Sidebar activeView={activeView} onNavigate={setActiveView} />
-      <div className="flex flex-col flex-1 overflow-hidden lg:pl-[248px]">
+      <div className="flex flex-col flex-1 overflow-hidden lg:pl-[280px]">
         <MigrationBanner />
         <main className="flex-1 overflow-auto">
           {views[activeView]}
