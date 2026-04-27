@@ -12,6 +12,7 @@ export interface ProfilState {
   language: Language
   theme: Theme
   colorTheme: ColorTheme
+  finnhubKey: string
   memberSince: string
   setFirstName: (v: string) => void
   setLastName: (v: string) => void
@@ -20,7 +21,8 @@ export interface ProfilState {
   setLanguage: (v: Language) => void
   setTheme: (v: Theme) => void
   setColorTheme: (v: ColorTheme) => void
-  finnhubKey: string
   setFinnhubKey: (v: string) => void
+  loadFromCloud: (userId: string) => Promise<void>
+  resetData: () => void
   resetProfil: () => void
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useProfilStore } from './profil.store'
 import { useAccueilStore } from '@/features/accueil/accueil.store'
+import { useAuthStore } from '@/features/auth/auth.store'
 import { formatDate } from '@/lib/formatting'
 import Icon from '@/components/ui/Icon'
 import type { Currency, Language, Theme } from './profil.types'
@@ -28,11 +29,12 @@ export default function ProfilView() {
 
   const investments = useAccueilStore((s) => s.investments)
   const resetInvestments = useAccueilStore((s) => s.resetInvestments)
+  const { signOut, user } = useAuthStore()
 
   const [showResetConfirm, setShowResetConfirm] = useState(false)
   const [showKey, setShowKey] = useState(false)
 
-  const displayName = [firstName, lastName].filter(Boolean).join(' ') || 'Mon profil'
+  const displayName = [firstName, lastName].filter(Boolean).join(' ') || user?.email?.split('@')[0] || 'Mon profil'
 
   const CURRENCY_OPTIONS: { value: Currency; label: string; symbol: string }[] = [
     { value: 'EUR', label: t('currency.EUR'), symbol: '€' },
@@ -59,12 +61,22 @@ export default function ProfilView() {
             <div className="flex-shrink-0 w-20 h-20 rounded-2xl bg-primary-100 dark:bg-primary-900/30 overflow-hidden">
               <img src={`/avatars/${avatarId}.png`} alt="avatar" className="w-full h-full object-cover" />
             </div>
-            <div>
+            <div className="flex-1">
               <p className="text-xl font-semibold text-neutral-900 dark:text-neutral-50">{displayName}</p>
               <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
                 {t('profil.memberSince')} {formatDate(memberSince)}
               </p>
+              {user?.email && (
+                <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5">{user.email}</p>
+              )}
             </div>
+            <button
+              onClick={() => signOut()}
+              className="lg:hidden flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold text-neutral-500 dark:text-neutral-400 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+            >
+              <Icon name="logout" size={16} />
+              Déconnexion
+            </button>
           </div>
 
           {/* Colonne gauche */}

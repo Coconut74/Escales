@@ -1,5 +1,6 @@
 import Icon from '@/components/ui/Icon'
 import { useProfilStore } from '@/features/profil/profil.store'
+import { useAuthStore } from '@/features/auth/auth.store'
 import { useT } from '@/lib/i18n'
 import type { View } from '@/App'
 
@@ -11,7 +12,8 @@ interface SidebarProps {
 export default function Sidebar({ activeView, onNavigate }: SidebarProps) {
   const t = useT()
   const { firstName, lastName, avatarId } = useProfilStore()
-  const displayName = [firstName, lastName].filter(Boolean).join(' ') || 'Utilisateur'
+  const { signOut, user } = useAuthStore()
+  const displayName = [firstName, lastName].filter(Boolean).join(' ') || user?.email?.split('@')[0] || 'Utilisateur'
 
   const NAV_ITEMS: { id: View; label: string; icon: 'accueil' | 'journal' | 'book' }[] = [
     { id: 'accueil',   label: t('nav.home'),      icon: 'accueil' },
@@ -55,7 +57,7 @@ export default function Sidebar({ activeView, onNavigate }: SidebarProps) {
       <div className="flex-1" />
 
       {/* User */}
-      <div className="px-3 pb-5">
+      <div className="px-3 pb-5 space-y-1">
         <button
           onClick={() => onNavigate('profil')}
           className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 w-full text-left
@@ -66,6 +68,13 @@ export default function Sidebar({ activeView, onNavigate }: SidebarProps) {
         >
           <img src={`/avatars/${avatarId || 'avatar-1'}.png`} alt="avatar" className="w-6 h-6 rounded-full object-cover shrink-0" />
           <span className="truncate">{displayName}</span>
+        </button>
+        <button
+          onClick={() => signOut()}
+          className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 w-full text-left text-neutral-400 dark:text-neutral-500 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-500 dark:hover:text-red-400"
+        >
+          <Icon name="logout" size={16} />
+          <span>Déconnexion</span>
         </button>
       </div>
     </aside>
