@@ -24,14 +24,11 @@ export default function ProfilView() {
   const {
     firstName, lastName, avatarId, currency, language, theme, colorTheme, finnhubKey, memberSince,
     setFirstName, setLastName, setAvatarId, setCurrency, setLanguage, setTheme, setColorTheme, setFinnhubKey,
-    resetProfil,
   } = useProfilStore()
 
   const investments = useAccueilStore((s) => s.investments)
-  const resetInvestments = useAccueilStore((s) => s.resetInvestments)
   const { signOut, user } = useAuthStore()
 
-  const [showResetConfirm, setShowResetConfirm] = useState(false)
   const [showKey, setShowKey] = useState(false)
 
   const displayIdentifier = user?.email
@@ -45,12 +42,6 @@ export default function ProfilView() {
     { value: 'GBP', label: t('currency.GBP'), symbol: '£' },
     { value: 'CHF', label: t('currency.CHF'), symbol: 'CHF' },
   ]
-
-  function handleReset() {
-    resetInvestments()
-    resetProfil()
-    setShowResetConfirm(false)
-  }
 
   return (
     <div className="min-h-full pb-32 lg:pb-8">
@@ -223,44 +214,6 @@ export default function ProfilView() {
               <StatRow label={t('profil.memberSince')} value={formatDate(memberSince)} />
               <StatRow label={t('profil.trackedInvestments')} value={String(investments.length)} />
             </Section>
-          </div>
-
-          {/* Zone danger — pleine largeur */}
-          <div className="lg:col-span-2 bg-red-50 dark:bg-red-950/30 rounded-2xl p-5 border border-red-200 dark:border-red-900">
-            <p className="text-sm font-semibold text-red-700 dark:text-red-400 mb-1">{t('profil.dangerZone')}</p>
-            <p className="text-xs text-red-500 dark:text-red-500 mb-4">
-              {t('profil.dangerDesc')}
-            </p>
-
-            {!showResetConfirm ? (
-              <button
-                onClick={() => setShowResetConfirm(true)}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-neutral-800 border border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 text-sm font-semibold hover:bg-red-50 dark:hover:bg-red-950/50 transition-colors"
-              >
-                <Icon name="reset" size={16} />
-                {t('profil.resetData')}
-              </button>
-            ) : (
-              <div className="space-y-3">
-                <p className="text-sm font-semibold text-red-700 dark:text-red-300">
-                  {t('profil.confirmReset')}
-                </p>
-                <div className="flex gap-3">
-                  <button
-                    onClick={handleReset}
-                    className="px-4 py-2 rounded-xl bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition-colors"
-                  >
-                    {t('profil.yesReset')}
-                  </button>
-                  <button
-                    onClick={() => setShowResetConfirm(false)}
-                    className="px-4 py-2 rounded-xl border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 text-sm font-semibold hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-                  >
-                    {t('profil.cancel')}
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
 
         </div>

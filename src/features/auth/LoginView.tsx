@@ -4,10 +4,9 @@ import Button from '@/components/ui/Button'
 
 interface Props {
   onSwitchToSignup: () => void
-  onContinueAsGuest: () => void
 }
 
-export default function LoginView({ onSwitchToSignup, onContinueAsGuest }: Props) {
+export default function LoginView({ onSwitchToSignup }: Props) {
   const { signIn, loading, error, clearError } = useAuthStore()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -95,23 +94,6 @@ export default function LoginView({ onSwitchToSignup, onContinueAsGuest }: Props
         </button>
       </p>
 
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-neutral-200 dark:border-neutral-700" />
-        </div>
-        <div className="relative flex justify-center">
-          <span className="px-3 text-xs text-neutral-400 dark:text-neutral-500 bg-neutral-100 dark:bg-neutral-900">ou</span>
-        </div>
-      </div>
-
-      <button
-        type="button"
-        onClick={onContinueAsGuest}
-        className="w-full py-2.5 rounded-2xl border border-neutral-200 dark:border-neutral-700 text-sm text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
-      >
-        Continuer en tant qu'invité
-        <span className="block text-xs text-neutral-400 dark:text-neutral-500 mt-0.5">Données sauvegardées localement</span>
-      </button>
     </div>
   )
 }
