@@ -26,8 +26,8 @@ export default function SignupView({ onSwitchToLogin, onContinueAsGuest }: Props
       return
     }
     setLocalError('')
-    await signUp(email, password)
-    setEmailSent(true)
+    const ok = await signUp(email, password)
+    if (ok) setEmailSent(true)
   }
 
   const displayError = localError || error

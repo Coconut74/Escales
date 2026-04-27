@@ -34,7 +34,7 @@ interface AuthStore {
   loading: boolean
   error: string | null
   signIn: (email: string, password: string) => Promise<void>
-  signUp: (email: string, password: string) => Promise<void>
+  signUp: (email: string, password: string) => Promise<boolean>
   signOut: () => Promise<void>
   signInAsGuest: () => void
   clearError: () => void
@@ -50,25 +50,34 @@ export const useAuthStore = create<AuthStore>()(
       loading: true,
       error: null,
 
-      signIn: async (email, password) => {
+      signIn: async (identifier, password) => {
         set({ loading: true, error: null, isGuest: false })
         try {
-          const { data, error } = await supabase.auth.signInWithPassword({ email: normalizeIdentifier(email), password })
-          if (error) { set({ loading: false, error: friendlyError(error.message) }); return }
+          const { data, error } = await supabase.auth.signInWithPassword({ email: normalizeIdentifier(identifier), password })
+          if (error) {
+            let msg = friendlyError(error.message)
+            if (error.message.includes('Email not confirmed') && !isEmail(identifier)) {
+              msg = 'Connexion impossible : la confirmation e-mail est activée sur Supabase. Désactivez-la dans Authentication → Settings → Email.'
+            }
+            set({ loading: false, error: msg })
+            return
+          }
           set({ user: data.user, session: data.session, loading: false })
         } catch (e) {
           set({ loading: false, error: friendlyError((e as Error).message) })
         }
       },
 
-      signUp: async (email, password) => {
+      signUp: async (identifier, password) => {
         set({ loading: true, error: null, isGuest: false })
         try {
-          const { data, error } = await supabase.auth.signUp({ email: normalizeIdentifier(email), password })
-          if (error) { set({ loading: false, error: friendlyError(error.message) }); return }
+          const { data, error } = await supabase.auth.signUp({ email: normalizeIdentifier(identifier), password })
+          if (error) { set({ loading: false, error: friendlyError(error.message) }); return false }
           set({ user: data.user, session: data.session, loading: false })
+          return true
         } catch (e) {
           set({ loading: false, error: friendlyError((e as Error).message) })
+          return false
         }
       },
 
