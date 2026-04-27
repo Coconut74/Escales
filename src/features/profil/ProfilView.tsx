@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useProfilStore } from './profil.store'
 import { useAccueilStore } from '@/features/accueil/accueil.store'
-import { useAuthStore, isEmail } from '@/features/auth/auth.store'
+import { useAuthStore } from '@/features/auth/auth.store'
 import { formatDate } from '@/lib/formatting'
 import Icon from '@/components/ui/Icon'
 import type { Currency, Language, Theme } from './profil.types'
@@ -35,7 +35,7 @@ export default function ProfilView() {
   const [showKey, setShowKey] = useState(false)
 
   const displayIdentifier = user?.email
-    ? (isEmail(user.email) ? user.email : user.email.split('@')[0])
+    ? (user.email.endsWith('@escales.app') ? user.email.split('@')[0] : user.email)
     : null
   const displayName = [firstName, lastName].filter(Boolean).join(' ') || displayIdentifier || 'Mon profil'
 
