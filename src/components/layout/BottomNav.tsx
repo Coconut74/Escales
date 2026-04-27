@@ -55,7 +55,7 @@ export default function BottomNav({ activeView, onNavigate }: BottomNavProps) {
                 <img
                   src={`/avatars/${avatarId || 'avatar-1'}.png`}
                   alt="avatar"
-                  className={`w-7 h-7 rounded-full object-cover ${isActive ? 'ring-2 ring-white' : 'opacity-70'}`}
+                  className={`w-9 h-9 rounded-full object-cover ${isActive ? '' : 'opacity-60'}`}
                 />
               ) : (
                 <Icon
