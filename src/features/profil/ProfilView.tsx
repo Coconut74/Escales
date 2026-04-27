@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useProfilStore } from './profil.store'
 import { useAccueilStore } from '@/features/accueil/accueil.store'
-import { useAuthStore } from '@/features/auth/auth.store'
+import { useAuthStore, isEmail } from '@/features/auth/auth.store'
 import { formatDate } from '@/lib/formatting'
 import Icon from '@/components/ui/Icon'
 import type { Currency, Language, Theme } from './profil.types'
@@ -34,7 +34,10 @@ export default function ProfilView() {
   const [showResetConfirm, setShowResetConfirm] = useState(false)
   const [showKey, setShowKey] = useState(false)
 
-  const displayName = [firstName, lastName].filter(Boolean).join(' ') || user?.email?.split('@')[0] || 'Mon profil'
+  const displayIdentifier = user?.email
+    ? (isEmail(user.email) ? user.email : user.email.split('@')[0])
+    : null
+  const displayName = [firstName, lastName].filter(Boolean).join(' ') || displayIdentifier || 'Mon profil'
 
   const CURRENCY_OPTIONS: { value: Currency; label: string; symbol: string }[] = [
     { value: 'EUR', label: t('currency.EUR'), symbol: '€' },
@@ -66,8 +69,8 @@ export default function ProfilView() {
               <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
                 {t('profil.memberSince')} {formatDate(memberSince)}
               </p>
-              {user?.email && (
-                <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5">{user.email}</p>
+              {displayIdentifier && (
+                <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5">{displayIdentifier}</p>
               )}
             </div>
             <button
