@@ -5,7 +5,7 @@ import { useAuthStore, normalizeIdentifier } from '@/features/auth/auth.store'
 import Icon from '@/components/ui/Icon'
 import type { Currency, Language, Theme } from './profil.types'
 import { COLOR_THEMES } from './color-themes'
-import { useT } from '@/lib/i18n'
+import { useT, type TKey } from '@/lib/i18n'
 
 const AVATAR_OPTIONS = [
   'avatar-1',  'avatar-2',  'avatar-3',  'avatar-4',  'avatar-5',
@@ -13,14 +13,9 @@ const AVATAR_OPTIONS = [
   'avatar-11', 'avatar-12', 'avatar-13', 'avatar-14', 'avatar-15',
 ]
 
-const CURRENCY_OPTIONS: { value: Currency; label: string }[] = [
-  { value: 'EUR', label: '€ — Euro' },
-  { value: 'USD', label: '$ — Dollar US' },
-  { value: 'GBP', label: '£ — Livre sterling' },
-  { value: 'CHF', label: 'CHF — Franc suisse' },
-]
-
-const LANGUAGE_OPTIONS: { value: Language; label: string }[] = [
+const CURRENCY_SYMBOLS: Record<Currency, string> = { EUR: '€', USD: '$', GBP: '£', CHF: 'CHF' }
+const CURRENCIES: Currency[] = ['EUR', 'USD', 'GBP', 'CHF']
+const LANGUAGES: { value: Language; label: string }[] = [
   { value: 'fr', label: 'Français' },
   { value: 'en', label: 'English' },
 ]
@@ -28,6 +23,7 @@ const LANGUAGE_OPTIONS: { value: Language; label: string }[] = [
 type ModalType = 'account' | 'preferences' | 'security' | null
 
 export default function ProfilView() {
+  const t = useT()
   const { pseudonyme, avatarId } = useProfilStore()
   const { signOut, user } = useAuthStore()
   const [openModal, setOpenModal] = useState<ModalType>(null)
@@ -35,12 +31,12 @@ export default function ProfilView() {
   const displayIdentifier = user?.email
     ? (user.email.endsWith('@escales.app') ? user.email.split('@')[0] : user.email)
     : null
-  const displayName = pseudonyme || displayIdentifier || 'Mon profil'
+  const displayName = pseudonyme || displayIdentifier || t('nav.profile')
 
-  const MENU_ITEMS = [
-    { id: 'account' as ModalType,     icon: 'profile' as const,     label: 'Informations du compte' },
-    { id: 'preferences' as ModalType, icon: 'preferences' as const, label: 'Préférences' },
-    { id: 'security' as ModalType,    icon: 'coffre' as const,      label: 'Identifiant & mot de passe' },
+  const MENU_ITEMS: { id: ModalType; icon: 'profile' | 'preferences' | 'coffre'; labelKey: TKey }[] = [
+    { id: 'account',     icon: 'profile',     labelKey: 'profil.accountInfo'   },
+    { id: 'preferences', icon: 'preferences', labelKey: 'profil.preferences'   },
+    { id: 'security',    icon: 'coffre',      labelKey: 'profil.securityTitle' },
   ]
 
   return (
@@ -67,7 +63,7 @@ export default function ProfilView() {
               className="w-full flex items-center gap-4 px-5 py-4 bg-white dark:bg-neutral-800 rounded-2xl border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700/60 transition-colors"
             >
               <Icon name={item.icon} size={20} className="text-neutral-500 dark:text-neutral-400 shrink-0" />
-              <span className="flex-1 text-left text-sm font-medium text-neutral-800 dark:text-neutral-100">{item.label}</span>
+              <span className="flex-1 text-left text-sm font-medium text-neutral-800 dark:text-neutral-100">{t(item.labelKey)}</span>
               <Icon name="arrow" size={16} className="text-neutral-400 shrink-0" />
             </button>
           ))}
@@ -79,7 +75,7 @@ export default function ProfilView() {
           className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-950/50 transition-colors"
         >
           <Icon name="logout" size={16} />
-          Déconnexion
+          {t('profil.signOut')}
         </button>
 
       </div>
@@ -100,6 +96,7 @@ function SettingsModal({ title, children, onClose, onConfirm, saving }: {
   onConfirm?: () => Promise<void>
   saving?: boolean
 }) {
+  const t = useT()
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 sm:p-6">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
@@ -116,7 +113,7 @@ function SettingsModal({ title, children, onClose, onConfirm, saving }: {
             onClick={onClose}
             className="flex-1 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 text-sm font-medium text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
           >
-            {onConfirm ? 'Abandonner' : 'Fermer'}
+            {onConfirm ? t('profil.abandon') : t('profil.close')}
           </button>
           {onConfirm && (
             <button
@@ -124,7 +121,7 @@ function SettingsModal({ title, children, onClose, onConfirm, saving }: {
               disabled={saving}
               className="flex-1 py-2.5 rounded-xl bg-primary-600 text-white text-sm font-semibold hover:bg-primary-700 disabled:opacity-50 transition-colors"
             >
-              {saving ? 'Enregistrement…' : 'Confirmer'}
+              {saving ? t('profil.saving') : t('profil.confirm')}
             </button>
           )}
         </div>
@@ -136,6 +133,7 @@ function SettingsModal({ title, children, onClose, onConfirm, saving }: {
 /* ─── Account modal ──────────────────────────────────────── */
 
 function AccountModal({ onClose }: { onClose: () => void }) {
+  const t = useT()
   const { pseudonyme, avatarId, setPseudonyme, setAvatarId } = useProfilStore()
   const [localPseudonyme, setLocalPseudonyme] = useState(pseudonyme)
   const [localAvatarId, setLocalAvatarId] = useState(avatarId)
@@ -150,20 +148,20 @@ function AccountModal({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <SettingsModal title="Informations du compte" onClose={onClose} onConfirm={handleConfirm} saving={saving}>
+    <SettingsModal title={t('profil.accountInfo')} onClose={onClose} onConfirm={handleConfirm} saving={saving}>
       <div className="space-y-1.5">
-        <label className="text-sm font-medium text-neutral-700 dark:text-neutral-200">Pseudonyme</label>
+        <label className="text-sm font-medium text-neutral-700 dark:text-neutral-200">{t('profil.pseudonyme')}</label>
         <input
           type="text"
           value={localPseudonyme}
           onChange={(e) => setLocalPseudonyme(e.target.value)}
-          placeholder="Votre pseudonyme"
+          placeholder={t('profil.pseudonymePlaceholder')}
           className={inputCls}
         />
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium text-neutral-700 dark:text-neutral-200">Avatar</label>
+        <label className="text-sm font-medium text-neutral-700 dark:text-neutral-200">{t('profil.avatar')}</label>
         <div className="grid grid-cols-5 gap-2">
           {AVATAR_OPTIONS.map((id) => (
             <button
@@ -188,13 +186,13 @@ function AccountModal({ onClose }: { onClose: () => void }) {
 /* ─── Preferences modal ──────────────────────────────────── */
 
 function PreferencesModal({ onClose }: { onClose: () => void }) {
+  const t = useT()
   const { currency, language, theme, colorTheme, setCurrency, setLanguage, setTheme, setColorTheme } = useProfilStore()
   const [localCurrency, setLocalCurrency] = useState<Currency>(currency)
   const [localLanguage, setLocalLanguage] = useState<Language>(language)
   const [localTheme, setLocalTheme] = useState<Theme>(theme)
   const [localColorTheme, setLocalColorTheme] = useState(colorTheme)
   const [saving, setSaving] = useState(false)
-  const t = useT()
 
   async function handleConfirm() {
     setSaving(true)
@@ -207,7 +205,7 @@ function PreferencesModal({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <SettingsModal title="Préférences" onClose={onClose} onConfirm={handleConfirm} saving={saving}>
+    <SettingsModal title={t('profil.preferences')} onClose={onClose} onConfirm={handleConfirm} saving={saving}>
       <div className="space-y-1.5">
         <label className="text-sm font-medium text-neutral-700 dark:text-neutral-200">{t('profil.currency')}</label>
         <div className="relative">
@@ -216,8 +214,8 @@ function PreferencesModal({ onClose }: { onClose: () => void }) {
             onChange={(e) => setLocalCurrency(e.target.value as Currency)}
             className={`${inputCls} appearance-none pr-10`}
           >
-            {CURRENCY_OPTIONS.map((c) => (
-              <option key={c.value} value={c.value}>{c.label}</option>
+            {CURRENCIES.map((c) => (
+              <option key={c} value={c}>{CURRENCY_SYMBOLS[c]} — {t(`currency.${c}` as TKey)}</option>
             ))}
           </select>
           <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none">
@@ -234,7 +232,7 @@ function PreferencesModal({ onClose }: { onClose: () => void }) {
             onChange={(e) => setLocalLanguage(e.target.value as Language)}
             className={`${inputCls} appearance-none pr-10`}
           >
-            {LANGUAGE_OPTIONS.map((l) => (
+            {LANGUAGES.map((l) => (
               <option key={l.value} value={l.value}>{l.label}</option>
             ))}
           </select>
@@ -247,19 +245,19 @@ function PreferencesModal({ onClose }: { onClose: () => void }) {
       <div className="space-y-2">
         <label className="text-sm font-medium text-neutral-700 dark:text-neutral-200">{t('profil.displayMode')}</label>
         <div className="flex gap-2">
-          {(['light', 'dark'] as Theme[]).map((t) => (
+          {(['light', 'dark'] as Theme[]).map((th) => (
             <button
-              key={t}
+              key={th}
               type="button"
-              onClick={() => setLocalTheme(t)}
+              onClick={() => setLocalTheme(th)}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                localTheme === t
+                localTheme === th
                   ? 'bg-primary-600 text-white shadow-sm'
                   : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-600'
               }`}
             >
-              <Icon name={t === 'light' ? 'sun' : 'moon'} size={15} />
-              {t === 'light' ? 'Clair' : 'Sombre'}
+              <Icon name={th === 'light' ? 'sun' : 'moon'} size={15} />
+              {t(th === 'light' ? 'profil.light' : 'profil.dark')}
             </button>
           ))}
         </div>
@@ -298,6 +296,8 @@ function SecurityModal({ onClose, user, signOut }: {
   user: { id: string; email?: string } | null
   signOut: () => Promise<void>
 }) {
+  const t = useT()
+
   const displayIdentifier = user?.email
     ? (user.email.endsWith('@escales.app') ? user.email.split('@')[0] : user.email)
     : '—'
@@ -322,18 +322,18 @@ function SecurityModal({ onClose, user, signOut }: {
     const { error } = await supabase.auth.updateUser({ email: normalizeIdentifier(newId.trim()) })
     setSavingId(false)
     if (error) setIdMsg({ text: error.message, ok: false })
-    else { setIdMsg({ text: 'Identifiant mis à jour.', ok: true }); setNewId('') }
+    else { setIdMsg({ text: t('profil.idUpdated'), ok: true }); setNewId('') }
   }
 
   async function handleChangePassword() {
-    if (newPassword.length < 8) { setPwMsg({ text: 'Minimum 8 caractères.', ok: false }); return }
-    if (newPassword !== confirmPassword) { setPwMsg({ text: 'Les mots de passe ne correspondent pas.', ok: false }); return }
+    if (newPassword.length < 8) { setPwMsg({ text: t('profil.passwordMin'), ok: false }); return }
+    if (newPassword !== confirmPassword) { setPwMsg({ text: t('profil.passwordMismatch'), ok: false }); return }
     setSavingPw(true)
     setPwMsg(null)
     const { error } = await supabase.auth.updateUser({ password: newPassword })
     setSavingPw(false)
     if (error) setPwMsg({ text: error.message, ok: false })
-    else { setPwMsg({ text: 'Mot de passe mis à jour.', ok: true }); setNewPassword(''); setConfirmPassword('') }
+    else { setPwMsg({ text: t('profil.passwordUpdated'), ok: true }); setNewPassword(''); setConfirmPassword('') }
   }
 
   async function handleDeleteAccount() {
@@ -343,21 +343,21 @@ function SecurityModal({ onClose, user, signOut }: {
   }
 
   return (
-    <SettingsModal title="Identifiant & mot de passe" onClose={onClose}>
+    <SettingsModal title={t('profil.securityTitle')} onClose={onClose}>
       {/* Identifiant actuel */}
       <div className="space-y-1.5">
-        <p className="text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">Identifiant actuel</p>
+        <p className="text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">{t('profil.currentId')}</p>
         <div className={`${inputCls} text-neutral-500 dark:text-neutral-400 select-all`}>{displayIdentifier}</div>
       </div>
 
       {/* Changer identifiant */}
       <div className="space-y-2">
-        <p className="text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">Changer d'identifiant ou d'e-mail</p>
+        <p className="text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">{t('profil.changeId')}</p>
         <input
           type="text"
           value={newId}
           onChange={(e) => setNewId(e.target.value)}
-          placeholder="Nouvel identifiant ou e-mail"
+          placeholder={t('profil.newIdPlaceholder')}
           className={inputCls}
         />
         {idMsg && <p className={`text-xs ${idMsg.ok ? 'text-green-600 dark:text-green-400' : 'text-red-500'}`}>{idMsg.text}</p>}
@@ -366,19 +366,19 @@ function SecurityModal({ onClose, user, signOut }: {
           disabled={savingId || !newId.trim()}
           className="w-full py-2.5 rounded-xl bg-primary-600 text-white text-sm font-semibold hover:bg-primary-700 disabled:opacity-40 transition-colors"
         >
-          {savingId ? 'Mise à jour…' : 'Mettre à jour'}
+          {savingId ? t('profil.updating') : t('profil.update')}
         </button>
       </div>
 
       {/* Changer mot de passe */}
       <div className="space-y-2">
-        <p className="text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">Changer de mot de passe</p>
+        <p className="text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">{t('profil.changePassword')}</p>
         <div className="relative">
           <input
             type={showNewPw ? 'text' : 'password'}
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            placeholder="Nouveau mot de passe"
+            placeholder={t('profil.newPasswordPlaceholder')}
             className={`${inputCls} pr-10`}
           />
           <button type="button" onClick={() => setShowNewPw(v => !v)} tabIndex={-1} className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200">
@@ -389,7 +389,7 @@ function SecurityModal({ onClose, user, signOut }: {
           type={showNewPw ? 'text' : 'password'}
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
-          placeholder="Confirmer le mot de passe"
+          placeholder={t('profil.confirmPasswordPlaceholder')}
           className={inputCls}
         />
         {pwMsg && <p className={`text-xs ${pwMsg.ok ? 'text-green-600 dark:text-green-400' : 'text-red-500'}`}>{pwMsg.text}</p>}
@@ -398,29 +398,29 @@ function SecurityModal({ onClose, user, signOut }: {
           disabled={savingPw || !newPassword}
           className="w-full py-2.5 rounded-xl bg-primary-600 text-white text-sm font-semibold hover:bg-primary-700 disabled:opacity-40 transition-colors"
         >
-          {savingPw ? 'Mise à jour…' : 'Mettre à jour'}
+          {savingPw ? t('profil.updating') : t('profil.update')}
         </button>
       </div>
 
       {/* Supprimer le compte */}
       <div className="pt-2 border-t border-neutral-100 dark:border-neutral-700 space-y-3">
-        <p className="text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">Zone de danger</p>
+        <p className="text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">{t('profil.dangerZone')}</p>
         {!deleteStep ? (
           <button
             onClick={() => setDeleteStep(true)}
             className="w-full py-2.5 rounded-xl border border-red-200 dark:border-red-900 text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
           >
-            Supprimer mon compte
+            {t('profil.deleteAccount')}
           </button>
         ) : (
           <div className="space-y-2">
-            <p className="text-sm text-red-600 dark:text-red-400 font-medium">Cette action est irréversible. Toutes vos données seront supprimées.</p>
+            <p className="text-sm text-red-600 dark:text-red-400 font-medium">{t('profil.deleteWarning')}</p>
             <div className="flex gap-2">
               <button onClick={() => setDeleteStep(false)} className="flex-1 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600 text-sm font-medium text-neutral-600 dark:text-neutral-300">
-                Annuler
+                {t('profil.cancel')}
               </button>
               <button onClick={handleDeleteAccount} disabled={deleting} className="flex-1 py-2 rounded-xl bg-red-600 text-white text-sm font-semibold hover:bg-red-700 disabled:opacity-50">
-                {deleting ? 'Suppression…' : 'Confirmer'}
+                {deleting ? t('profil.deleting') : t('profil.confirm')}
               </button>
             </div>
           </div>

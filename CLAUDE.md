@@ -58,6 +58,7 @@ Ce fichier fournit le contexte et les directives pour Claude Code sur le projet 
 - Commenter en **français** pour les commentaires métier, anglais acceptable pour les commentaires techniques
 - Nommer les variables et fonctions en **anglais** (camelCase pour JS/TS, snake_case pour Python)
 - Préférer la lisibilité à la concision
+- **Tout texte visible par l'utilisateur doit passer par `t()` (i18n)** : ajouter la clé dans `src/lib/i18n.ts` en français ET en anglais. Ne jamais écrire de texte UI en dur dans les composants.
 
 ### Architecture
 - Séparer clairement la logique métier (investissements, calculs) des composants UI
