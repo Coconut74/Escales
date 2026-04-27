@@ -24,7 +24,7 @@ export default function MigrationBanner() {
   const { user } = useAuthStore()
   const { setInvestments, investments } = useAccueilStore()
   const { addNote, addProject } = useJournalStore()
-  const [dismissed, setDismissed] = useState(false)
+  const [dismissed, setDismissed] = useState(() => localStorage.getItem('escales-migration-dismissed') === '1')
   const [importing, setImporting] = useState(false)
   const [done, setDone] = useState(false)
 
@@ -65,7 +65,7 @@ export default function MigrationBanner() {
       </p>
       <div className="flex items-center gap-2 shrink-0">
         <button
-          onClick={() => setDismissed(true)}
+          onClick={() => { localStorage.setItem('escales-migration-dismissed', '1'); setDismissed(true) }}
           className="text-sm text-primary-500 hover:text-primary-700 dark:hover:text-primary-300 px-2 py-1"
         >
           Ignorer
