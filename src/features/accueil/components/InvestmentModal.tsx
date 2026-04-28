@@ -132,17 +132,14 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
 
   const clampedDrag = Math.max(-18, Math.min(18, dragDelta * 0.35))
 
-  const baseLeft = { left: '50%' } as const
-
   return (
     <>
       {exitStack.map(({ uid, inv, dir, position: exitPos }) => (
         <div
           key={uid}
           aria-hidden="true"
-          className={`${CARD_CLASSES} lg:left-[calc(50vw+156px)] pointer-events-none`}
+          className={`${CARD_CLASSES} left-1/2 lg:left-[calc(312px+(100vw-312px)/2)] pointer-events-none`}
           style={{
-            ...baseLeft,
             bottom: '16px',
             zIndex: 99,
             animation: `${dir === 'left' ? 'card-exit-left' : dir === 'right' ? 'card-exit-right' : 'card-exit-down'} ${ANIM_DURATION}ms ease-out forwards`,
@@ -156,9 +153,8 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
         role="dialog"
         aria-modal="true"
         aria-label={investment?.label ?? 'Investment'}
-        className={`${CARD_CLASSES} lg:left-[calc(50vw+156px)] select-none cursor-grab active:cursor-grabbing`}
+        className={`${CARD_CLASSES} left-1/2 lg:left-[calc(312px+(100vw-312px)/2)] select-none cursor-grab active:cursor-grabbing`}
         style={{
-          ...baseLeft,
           bottom: '16px',
           zIndex: 100,
           transform: open
