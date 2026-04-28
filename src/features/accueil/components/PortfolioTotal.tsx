@@ -1,5 +1,6 @@
 import { formatCurrency } from '@/lib/formatting'
 import { useProfilStore } from '@/features/profil/profil.store'
+import { useIsDark } from '@/features/profil/useIsDark'
 import { useT } from '@/lib/i18n'
 
 interface PortfolioTotalProps {
@@ -8,10 +9,11 @@ interface PortfolioTotalProps {
 }
 
 export default function PortfolioTotal({ total, monthlyChange }: PortfolioTotalProps) {
-  const { currency, theme } = useProfilStore()
+  const { currency } = useProfilStore()
+  const isDark = useIsDark()
   const t = useT()
   const formatted = formatCurrency(total, currency).replace(/ /g, ' ')
-  const bgColor = theme === 'dark' ? 'rgba(20,22,42,0.92)' : 'rgba(242,243,248,0.92)'
+  const bgColor = isDark ? 'rgba(20,22,42,0.92)' : 'rgba(242,243,248,0.92)'
 
   return (
     <div

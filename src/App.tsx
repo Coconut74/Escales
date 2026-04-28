@@ -8,6 +8,7 @@ import ProfilView from '@/features/profil/ProfilView'
 import AuthGate from '@/features/auth/AuthGate'
 import { useProfilStore } from '@/features/profil/profil.store'
 import { useAuthStore } from '@/features/auth/auth.store'
+import { useIsDark } from '@/features/profil/useIsDark'
 import { COLOR_THEME_VARS } from '@/features/profil/color-themes'
 
 export type View = 'accueil' | 'journal' | 'education' | 'profil'
@@ -38,26 +39,28 @@ function AppShell() {
 export default function App() {
   const user = useAuthStore((s) => s.user)
   const isGuest = useAuthStore((s) => s.isGuest)
-  const theme = useProfilStore((s) => s.theme)
   const colorTheme = useProfilStore((s) => s.colorTheme)
+  const isDark = useIsDark()
 
   const isAuthenticated = !!user || isGuest
 
+  // Page de connexion : suit la préférence OS (reactive)
+  const [systemDark, setSystemDark] = useState(() => window.matchMedia('(prefers-color-scheme: dark)').matches)
   useEffect(() => {
-    if (!isAuthenticated || theme === 'system') {
-      // Pas connecté ou mode système : suit prefers-color-scheme en temps réel
-      const mq = window.matchMedia('(prefers-color-scheme: dark)')
-      const apply = () => {
-        if (mq.matches) document.documentElement.classList.add('dark')
-        else document.documentElement.classList.remove('dark')
-      }
-      apply()
-      mq.addEventListener('change', apply)
-      return () => mq.removeEventListener('change', apply)
-    }
-    if (theme === 'dark') document.documentElement.classList.add('dark')
+    if (isAuthenticated) return
+    const mq = window.matchMedia('(prefers-color-scheme: dark)')
+    const handler = (e: MediaQueryListEvent) => setSystemDark(e.matches)
+    setSystemDark(mq.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [isAuthenticated])
+
+  const effectiveDark = isAuthenticated ? isDark : systemDark
+
+  useEffect(() => {
+    if (effectiveDark) document.documentElement.classList.add('dark')
     else document.documentElement.classList.remove('dark')
-  }, [isAuthenticated, theme])
+  }, [effectiveDark])
 
   useEffect(() => {
     // Page de connexion : toujours orange

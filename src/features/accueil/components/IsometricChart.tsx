@@ -1,6 +1,7 @@
 import { useMemo, useImperativeHandle, forwardRef } from 'react'
 import type { Investment } from '../accueil.types'
 import { useProfilStore } from '@/features/profil/profil.store'
+import { useIsDark } from '@/features/profil/useIsDark'
 import { COLOR_THEME_BARS } from '@/features/profil/color-themes'
 
 // ─── Dimensions ─────────────────────────────────────────────────────────────
@@ -70,9 +71,9 @@ interface Props {
 const IsometricChart = forwardRef<IsometricChartHandle, Props>(function IsometricChart(
   { investments, total, onSelect, selected }, ref
 ) {
-  const theme = useProfilStore((s) => s.theme)
   const colorTheme = useProfilStore((s) => s.colorTheme)
-  const EMPTY = theme === 'dark' ? EMPTY_DARK : EMPTY_LIGHT
+  const isDark = useIsDark()
+  const EMPTY = isDark ? EMPTY_DARK : EMPTY_LIGHT
   const FILLED = COLOR_THEME_BARS[colorTheme]
   // Face selected = version plus sombre du thème (face du bas surtout)
   const SELECTED = { top: FILLED.left, left: FILLED.right, right: darken(FILLED.right) }
