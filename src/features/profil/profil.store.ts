@@ -10,7 +10,7 @@ export const useProfilStore = create<ProfilState>()(
       avatarId: 'avatar-1',
       currency: 'EUR' as Currency,
       language: 'fr' as Language,
-      theme: (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') as Theme,
+      theme: 'system' as Theme,
       colorTheme: 'orange' as ColorTheme,
       memberSince: new Date().toISOString(),
 

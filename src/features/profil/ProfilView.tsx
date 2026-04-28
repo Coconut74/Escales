@@ -301,7 +301,7 @@ function PreferencesModal({ onClose }: { onClose: () => void }) {
       <div className="space-y-2">
         <label className="text-sm font-medium text-neutral-700 dark:text-neutral-200">{t('profil.displayMode')}</label>
         <div className="flex gap-2">
-          {(['light', 'dark'] as Theme[]).map((th) => (
+          {(['light', 'dark', 'system'] as Theme[]).map((th) => (
             <button
               key={th}
               type="button"
@@ -312,8 +312,8 @@ function PreferencesModal({ onClose }: { onClose: () => void }) {
                   : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-600'
               }`}
             >
-              <Icon name={th === 'light' ? 'sun' : 'moon'} size={15} />
-              {t(th === 'light' ? 'profil.light' : 'profil.dark')}
+              <Icon name={th === 'light' ? 'sun' : th === 'dark' ? 'moon' : 'monitor'} size={15} />
+              {t(th === 'light' ? 'profil.light' : th === 'dark' ? 'profil.dark' : 'profil.system')}
             </button>
           ))}
         </div>

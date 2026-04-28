@@ -2,7 +2,7 @@ import type { ColorTheme } from './color-themes'
 export type { ColorTheme }
 export type Currency = 'EUR' | 'USD' | 'GBP' | 'CHF'
 export type Language = 'fr' | 'en'
-export type Theme = 'light' | 'dark'
+export type Theme = 'light' | 'dark' | 'system'
 
 export interface ProfilState {
   pseudonyme: string

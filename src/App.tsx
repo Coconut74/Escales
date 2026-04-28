@@ -44,8 +44,8 @@ export default function App() {
   const isAuthenticated = !!user || isGuest
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      // Page de connexion : mode selon la préférence système, écoute les changements OS
+    if (!isAuthenticated || theme === 'system') {
+      // Pas connecté ou mode système : suit prefers-color-scheme en temps réel
       const mq = window.matchMedia('(prefers-color-scheme: dark)')
       const apply = () => {
         if (mq.matches) document.documentElement.classList.add('dark')
