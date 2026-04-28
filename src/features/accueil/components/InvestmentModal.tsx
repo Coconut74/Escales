@@ -140,7 +140,7 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
         <div
           key={uid}
           aria-hidden="true"
-          className={`${CARD_CLASSES} lg:left-[calc(50vw+112px)] pointer-events-none`}
+          className={`${CARD_CLASSES} lg:left-[calc(50vw+156px)] pointer-events-none`}
           style={{
             ...baseLeft,
             bottom: '16px',
@@ -156,7 +156,7 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
         role="dialog"
         aria-modal="true"
         aria-label={investment?.label ?? 'Investment'}
-        className={`${CARD_CLASSES} lg:left-[calc(50vw+112px)] select-none cursor-grab active:cursor-grabbing`}
+        className={`${CARD_CLASSES} lg:left-[calc(50vw+156px)] select-none cursor-grab active:cursor-grabbing`}
         style={{
           ...baseLeft,
           bottom: '16px',
