@@ -13,7 +13,7 @@ export default function PortfolioTotal({ total, monthlyChange }: PortfolioTotalP
   const isDark = useIsDark()
   const t = useT()
   const formatted = formatCurrency(total, currency).replace(/ /g, ' ')
-  const bgColor = isDark ? 'rgba(20,22,42,0.92)' : 'rgba(242,243,248,0.92)'
+  const bgColor = isDark ? 'rgba(20,22,42,0.65)' : 'rgba(242,243,248,0.65)'
 
   return (
     <div

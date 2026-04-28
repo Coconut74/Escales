@@ -167,17 +167,11 @@ export default function AccueilView() {
               />
             </div>
           </div>
-          {!selected && (
-            <div className="flex gap-1.5 mt-3">
-              <div className={`rounded-full transition-all duration-300 ${vizMode === 'chart' ? 'w-4 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600'}`} />
-              <div className={`rounded-full transition-all duration-300 ${vizMode === 'categories' ? 'w-4 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600'}`} />
-            </div>
-          )}
         </div>
 
-        {/* Vue donut */}
+        {/* Vue donut — même positionnement vertical que la vue isométrique */}
         <div
-          className="absolute inset-0 flex flex-col items-center justify-center"
+          className="absolute inset-0 flex flex-col items-center pt-16 lg:pt-0 lg:justify-center"
           style={{
             transform: `translateX(${vizMode === 'categories' ? '0%' : '100%'})`,
             transition: 'transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)',
@@ -186,13 +180,15 @@ export default function AccueilView() {
           <div className="w-[90%] max-w-[480px] lg:max-w-[660px]">
             <CategoryChart investments={effectiveInvestments} total={total} />
           </div>
-          {!selected && (
-            <div className="flex gap-1.5 mt-3">
-              <div className={`rounded-full transition-all duration-300 ${vizMode === 'chart' ? 'w-4 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600'}`} />
-              <div className={`rounded-full transition-all duration-300 ${vizMode === 'categories' ? 'w-4 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600'}`} />
-            </div>
-          )}
         </div>
+
+        {/* Dots — hors des vues, ne swipent pas, s'animent seulement */}
+        {!selected && (
+          <div className="absolute bottom-[96px] lg:bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5 z-10 pointer-events-none">
+            <div className={`rounded-full transition-all duration-300 ${vizMode === 'chart' ? 'w-4 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600'}`} />
+            <div className={`rounded-full transition-all duration-300 ${vizMode === 'categories' ? 'w-4 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600'}`} />
+          </div>
+        )}
       </div>
 
       {/* Bouton modifier */}
