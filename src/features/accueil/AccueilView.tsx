@@ -130,12 +130,13 @@ export default function AccueilView() {
   }
 
   return (
-    <div className="flex flex-col w-full h-full overflow-hidden">
+    <div className="flex flex-col w-full h-full overflow-hidden pt-3 lg:pt-5">
       <PortfolioTotal total={total} monthlyChange={avgChange ?? undefined} />
 
-      {/* Zone graphique — overflow-hidden au niveau pleine largeur pour ne pas clipper le zoom */}
+      {/* Zone graphique — overflow-x:clip pour le swipe, overflow-y:visible pour le zoom vers le haut */}
       <div
-        className="flex-1 relative overflow-hidden"
+        className="flex-1 relative"
+        style={{ overflowX: 'clip', overflowY: 'visible' }}
         onTouchStart={(e) => handleChartSwipeStart(e.touches[0]?.clientX ?? 0)}
         onTouchEnd={(e) => handleChartSwipeEnd(e.changedTouches[0]?.clientX ?? 0)}
         onMouseDown={(e) => handleChartSwipeStart(e.clientX)}
