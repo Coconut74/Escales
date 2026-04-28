@@ -101,10 +101,11 @@ export default function AccueilView() {
     if (swipeStartX.current === null) return
     const delta = clientX - swipeStartX.current
     swipeStartX.current = null
+    // Swipe bloqué quand une barre est sélectionnée
+    if (selected) return
     if (Math.abs(delta) < SWIPE_THRESHOLD) return
     if (delta < 0 && vizMode === 'chart') {
       setVizMode('categories')
-      if (selected) { setSelected(null); setZoom(1) }
     } else if (delta > 0 && vizMode === 'categories') {
       setVizMode('chart')
     }
@@ -133,7 +134,7 @@ export default function AccueilView() {
       <PortfolioTotal total={total} monthlyChange={avgChange ?? undefined} />
 
       {/* Zone graphique */}
-      <div className="flex-1 flex flex-col items-center pt-16 lg:pt-2 overflow-hidden">
+      <div className="flex-1 flex flex-col items-center justify-start lg:justify-center pt-16 lg:pt-0 overflow-hidden">
         {/* Slider swipeable */}
         <div
           className="w-[90%] max-w-[480px] lg:max-w-[660px] overflow-hidden"
@@ -174,11 +175,13 @@ export default function AccueilView() {
           </div>
         </div>
 
-        {/* Dots indicateurs — juste sous les graphes */}
-        <div className="flex gap-1.5 mt-3 shrink-0">
-          <div className={`rounded-full transition-all duration-300 ${vizMode === 'chart' ? 'w-4 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600'}`} />
-          <div className={`rounded-full transition-all duration-300 ${vizMode === 'categories' ? 'w-4 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600'}`} />
-        </div>
+        {/* Dots indicateurs — cachés quand une barre est sélectionnée */}
+        {!selected && (
+          <div className="flex gap-1.5 mt-3 shrink-0">
+            <div className={`rounded-full transition-all duration-300 ${vizMode === 'chart' ? 'w-4 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600'}`} />
+            <div className={`rounded-full transition-all duration-300 ${vizMode === 'categories' ? 'w-4 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600'}`} />
+          </div>
+        )}
       </div>
 
       {/* Bouton modifier */}

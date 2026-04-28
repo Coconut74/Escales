@@ -104,7 +104,7 @@ export default function CategoryChart({ investments, total }: Props) {
   return (
     <div className="flex flex-col items-center w-full px-4 pt-2 pb-2 select-none">
       {/* Donut SVG */}
-      <svg viewBox="0 0 220 220" width="200" height="200" className="shrink-0">
+      <svg viewBox="0 0 220 220" className="w-[200px] lg:w-[300px] h-auto shrink-0">
         {segments.map(({ category, path }) => (
           <path
             key={category}
@@ -135,7 +135,7 @@ export default function CategoryChart({ investments, total }: Props) {
       </svg>
 
       {/* Légende en colonne */}
-      <div className="w-full max-w-[260px] flex flex-col gap-2 mt-3">
+      <div className="w-full max-w-[260px] lg:max-w-[320px] flex flex-col gap-2 mt-3">
         {segments.map(({ category, value, pct }) => (
           <div key={category} className="flex items-center gap-2.5">
             <div
