@@ -133,37 +133,49 @@ export default function AccueilView() {
       <PortfolioTotal total={total} monthlyChange={avgChange ?? undefined} />
 
       {/* Zone graphique */}
-      <div
-        className="flex-1 flex items-start justify-center pt-16 lg:pt-2 relative overflow-hidden"
-        onTouchStart={(e) => handleChartSwipeStart(e.touches[0]?.clientX ?? 0)}
-        onTouchEnd={(e) => handleChartSwipeEnd(e.changedTouches[0]?.clientX ?? 0)}
-        onMouseDown={(e) => handleChartSwipeStart(e.clientX)}
-        onMouseUp={(e) => handleChartSwipeEnd(e.clientX)}
-      >
-        <div className="w-[90%] max-w-[480px] lg:max-w-[660px]">
-          {vizMode === 'chart' ? (
-            <div
-              style={{
-                transformOrigin: '0% 0%',
-                transform: `translate(${zoomOrigin.x * (1 - zoom)}%, ${zoomOrigin.y * (1 - zoom)}%) scale(${zoom})`,
-                transition: 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)',
-              }}
-            >
-              <IsometricChart
-                ref={chartRef}
-                investments={effectiveInvestments}
-                total={total}
-                onSelect={handleSelect}
-                selected={effectiveSelected}
-              />
+      <div className="flex-1 flex flex-col items-center pt-16 lg:pt-2 overflow-hidden">
+        {/* Slider swipeable */}
+        <div
+          className="w-[90%] max-w-[480px] lg:max-w-[660px] overflow-hidden"
+          onTouchStart={(e) => handleChartSwipeStart(e.touches[0]?.clientX ?? 0)}
+          onTouchEnd={(e) => handleChartSwipeEnd(e.changedTouches[0]?.clientX ?? 0)}
+          onMouseDown={(e) => handleChartSwipeStart(e.clientX)}
+          onMouseUp={(e) => handleChartSwipeEnd(e.clientX)}
+        >
+          <div
+            className="flex"
+            style={{
+              transform: `translateX(${vizMode === 'chart' ? 0 : -100}%)`,
+              transition: 'transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)',
+            }}
+          >
+            {/* Vue isométrique */}
+            <div className="min-w-full">
+              <div
+                style={{
+                  transformOrigin: '0% 0%',
+                  transform: `translate(${zoomOrigin.x * (1 - zoom)}%, ${zoomOrigin.y * (1 - zoom)}%) scale(${zoom})`,
+                  transition: 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)',
+                }}
+              >
+                <IsometricChart
+                  ref={chartRef}
+                  investments={effectiveInvestments}
+                  total={total}
+                  onSelect={handleSelect}
+                  selected={effectiveSelected}
+                />
+              </div>
             </div>
-          ) : (
-            <CategoryChart investments={effectiveInvestments} total={total} />
-          )}
+            {/* Vue donut */}
+            <div className="min-w-full">
+              <CategoryChart investments={effectiveInvestments} total={total} />
+            </div>
+          </div>
         </div>
 
-        {/* Dots indicateurs de vue */}
-        <div className="absolute bottom-4 left-1/2 lg:left-[calc(312px+(100vw-312px)/2)] -translate-x-1/2 flex gap-1.5">
+        {/* Dots indicateurs — juste sous les graphes */}
+        <div className="flex gap-1.5 mt-3 shrink-0">
           <div className={`rounded-full transition-all duration-300 ${vizMode === 'chart' ? 'w-4 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600'}`} />
           <div className={`rounded-full transition-all duration-300 ${vizMode === 'categories' ? 'w-4 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600'}`} />
         </div>
