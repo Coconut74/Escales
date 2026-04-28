@@ -77,6 +77,33 @@ Ce fichier fournit le contexte et les directives pour Claude Code sur le projet 
 
 ---
 
+## Optimisation des tokens — Choix de modèle
+
+Pour réduire le coût en tokens, utiliser le modèle le plus léger adapté à la tâche.
+
+### Haiku 4.5 — tâches légères, rapides, répétitives
+Lancer les agents `subagent_type: Explore` ou `general-purpose` avec `"model": "haiku"` pour :
+- Exploration de fichiers et recherche de symboles (`grep`, `find`, lecture de fichiers)
+- Vérification de l'existence d'un fichier, d'une clé i18n, d'un import
+- Listing de routes, composants, ou migrations existantes
+- Extraction d'une valeur précise dans un fichier connu
+- Tâches de type "est-ce que X existe ?" ou "où est défini Y ?"
+
+### Sonnet 4.6 — tâches de raisonnement et génération
+Garder Sonnet (modèle par défaut de la conversation) pour :
+- Écriture et modification de code métier (calculs financiers, logique)
+- Refactoring ou architecture de composants
+- Décisions de design (structure de données, API, schéma BDD)
+- Génération de nouveaux composants UI complets
+- Résolution de bugs complexes nécessitant du contexte global
+- Revues de code, sécurité, conformité
+
+### Règle pratique
+> Si la tâche se résume à **lire et rapporter**, utiliser Haiku.  
+> Si la tâche nécessite de **comprendre, créer ou décider**, garder Sonnet.
+
+---
+
 ## Ce que Claude Code doit éviter
 
 - Ne pas sur-complexifier l'architecture pour un MVP
