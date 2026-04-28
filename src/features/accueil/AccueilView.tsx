@@ -14,6 +14,15 @@ import { useT } from '@/lib/i18n'
 
 const SWIPE_THRESHOLD = 60
 
+function Dots({ vizMode }: { vizMode: 'chart' | 'categories' }) {
+  return (
+    <div className="flex gap-1.5 mt-4 shrink-0">
+      <div className={`rounded-full transition-all duration-300 ${vizMode === 'chart' ? 'w-4 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600'}`} />
+      <div className={`rounded-full transition-all duration-300 ${vizMode === 'categories' ? 'w-4 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600'}`} />
+    </div>
+  )
+}
+
 const VB_Y = 140
 const VB_H = 310
 
@@ -167,6 +176,7 @@ export default function AccueilView() {
               />
             </div>
           </div>
+          {!selected && <Dots vizMode={vizMode} />}
         </div>
 
         {/* Vue donut — même positionnement vertical que la vue isométrique */}
@@ -180,15 +190,8 @@ export default function AccueilView() {
           <div className="w-[90%] max-w-[480px] lg:max-w-[660px]">
             <CategoryChart investments={effectiveInvestments} total={total} />
           </div>
+          {!selected && <Dots vizMode={vizMode} />}
         </div>
-
-        {/* Dots — hors des vues, ne swipent pas, s'animent seulement */}
-        {!selected && (
-          <div className="absolute bottom-[96px] lg:bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5 z-10 pointer-events-none">
-            <div className={`rounded-full transition-all duration-300 ${vizMode === 'chart' ? 'w-4 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600'}`} />
-            <div className={`rounded-full transition-all duration-300 ${vizMode === 'categories' ? 'w-4 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600'}`} />
-          </div>
-        )}
       </div>
 
       {/* Bouton modifier */}
