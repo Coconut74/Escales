@@ -180,8 +180,11 @@ export function selectEffectiveChange(inv: Investment, snapshots: InvestmentSnap
     .filter((s) => s.investmentId === inv.id)
     .sort((a, b) => a.date.localeCompare(b.date))
   if (invSnaps.length < 2) return null
-  const first = invSnaps[0].value
-  const last = invSnaps[invSnaps.length - 1].value
+  const firstSnap = invSnaps[0]
+  const lastSnap = invSnaps[invSnaps.length - 1]
+  if (!firstSnap || !lastSnap) return null
+  const first = firstSnap.value
+  const last = lastSnap.value
   if (first === 0) return null
   return ((last - first) / first) * 100
 }
