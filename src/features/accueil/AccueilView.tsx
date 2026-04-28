@@ -133,55 +133,65 @@ export default function AccueilView() {
     <div className="flex flex-col w-full h-full overflow-hidden">
       <PortfolioTotal total={total} monthlyChange={avgChange ?? undefined} />
 
-      {/* Zone graphique */}
-      <div className="flex-1 flex flex-col items-center justify-start lg:justify-center pt-16 lg:pt-0 overflow-hidden">
-        {/* Slider swipeable */}
+      {/* Zone graphique — overflow-hidden au niveau pleine largeur pour ne pas clipper le zoom */}
+      <div
+        className="flex-1 relative overflow-hidden"
+        onTouchStart={(e) => handleChartSwipeStart(e.touches[0]?.clientX ?? 0)}
+        onTouchEnd={(e) => handleChartSwipeEnd(e.changedTouches[0]?.clientX ?? 0)}
+        onMouseDown={(e) => handleChartSwipeStart(e.clientX)}
+        onMouseUp={(e) => handleChartSwipeEnd(e.clientX)}
+      >
+        {/* Vue isométrique */}
         <div
-          className="w-[90%] max-w-[480px] lg:max-w-[660px] overflow-hidden"
-          onTouchStart={(e) => handleChartSwipeStart(e.touches[0]?.clientX ?? 0)}
-          onTouchEnd={(e) => handleChartSwipeEnd(e.changedTouches[0]?.clientX ?? 0)}
-          onMouseDown={(e) => handleChartSwipeStart(e.clientX)}
-          onMouseUp={(e) => handleChartSwipeEnd(e.clientX)}
+          className="absolute inset-0 flex flex-col items-center pt-16 lg:pt-0 lg:justify-center"
+          style={{
+            transform: `translateX(${vizMode === 'chart' ? '0%' : '-100%'})`,
+            transition: 'transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)',
+          }}
         >
-          <div
-            className="flex"
-            style={{
-              transform: `translateX(${vizMode === 'chart' ? 0 : -100}%)`,
-              transition: 'transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)',
-            }}
-          >
-            {/* Vue isométrique */}
-            <div className="min-w-full">
-              <div
-                style={{
-                  transformOrigin: '0% 0%',
-                  transform: `translate(${zoomOrigin.x * (1 - zoom)}%, ${zoomOrigin.y * (1 - zoom)}%) scale(${zoom})`,
-                  transition: 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)',
-                }}
-              >
-                <IsometricChart
-                  ref={chartRef}
-                  investments={effectiveInvestments}
-                  total={total}
-                  onSelect={handleSelect}
-                  selected={effectiveSelected}
-                />
-              </div>
-            </div>
-            {/* Vue donut */}
-            <div className="min-w-full">
-              <CategoryChart investments={effectiveInvestments} total={total} />
+          <div className="w-[90%] max-w-[480px] lg:max-w-[660px]">
+            <div
+              style={{
+                transformOrigin: '0% 0%',
+                transform: `translate(${zoomOrigin.x * (1 - zoom)}%, ${zoomOrigin.y * (1 - zoom)}%) scale(${zoom})`,
+                transition: 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)',
+              }}
+            >
+              <IsometricChart
+                ref={chartRef}
+                investments={effectiveInvestments}
+                total={total}
+                onSelect={handleSelect}
+                selected={effectiveSelected}
+              />
             </div>
           </div>
+          {!selected && (
+            <div className="flex gap-1.5 mt-3">
+              <div className={`rounded-full transition-all duration-300 ${vizMode === 'chart' ? 'w-4 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600'}`} />
+              <div className={`rounded-full transition-all duration-300 ${vizMode === 'categories' ? 'w-4 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600'}`} />
+            </div>
+          )}
         </div>
 
-        {/* Dots indicateurs — cachés quand une barre est sélectionnée */}
-        {!selected && (
-          <div className="flex gap-1.5 mt-3 shrink-0">
-            <div className={`rounded-full transition-all duration-300 ${vizMode === 'chart' ? 'w-4 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600'}`} />
-            <div className={`rounded-full transition-all duration-300 ${vizMode === 'categories' ? 'w-4 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600'}`} />
+        {/* Vue donut */}
+        <div
+          className="absolute inset-0 flex flex-col items-center justify-center"
+          style={{
+            transform: `translateX(${vizMode === 'categories' ? '0%' : '100%'})`,
+            transition: 'transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)',
+          }}
+        >
+          <div className="w-[90%] max-w-[480px] lg:max-w-[660px]">
+            <CategoryChart investments={effectiveInvestments} total={total} />
           </div>
-        )}
+          {!selected && (
+            <div className="flex gap-1.5 mt-3">
+              <div className={`rounded-full transition-all duration-300 ${vizMode === 'chart' ? 'w-4 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600'}`} />
+              <div className={`rounded-full transition-all duration-300 ${vizMode === 'categories' ? 'w-4 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600'}`} />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Bouton modifier */}
