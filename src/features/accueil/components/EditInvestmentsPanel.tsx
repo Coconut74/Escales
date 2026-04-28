@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useAccueilStore } from '../accueil.store'
-import type { Investment, InvestmentCategory } from '../accueil.types'
+import type { Investment, InvestmentCategory, InvestmentSnapshot } from '../accueil.types'
 import { CATEGORY_LABELS } from '../accueil.types'
 import { searchSymbol } from '@/services/finnhub'
 import type { FinnhubSearchResult } from '@/services/finnhub'
@@ -11,6 +11,8 @@ import Button from '@/components/ui/Button'
 import Icon from '@/components/ui/Icon'
 import { useT } from '@/lib/i18n'
 import type { TKey } from '@/lib/i18n'
+import { formatCurrency, formatDate } from '@/lib/formatting'
+import { useProfilStore } from '@/features/profil/profil.store'
 
 const ChartIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
@@ -37,6 +39,7 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
   const t = useT()
   const [draft, setDraft] = useState<Investment[]>([])
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [openHistoryId, setOpenHistoryId] = useState<string | null>(null)
 
   const CATEGORY_OPTIONS = (Object.keys(CATEGORY_LABELS) as InvestmentCategory[]).map(
     (k) => ({ value: k, label: t(CATEGORY_TKEYS[k]) })
@@ -170,6 +173,16 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
                   onSelect={(ticker) => update(inv.id, { ticker, shares: inv.shares ?? 1 })}
                   onUnlink={() => update(inv.id, { ticker: undefined, shares: undefined })}
                 />
+
+                {/* Bouton historique */}
+                <button
+                  onClick={() => setOpenHistoryId(openHistoryId === inv.id ? null : inv.id)}
+                  className="flex items-center gap-1.5 text-xs font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
+                >
+                  <ChartIcon />
+                  {t('history.title')}
+                  <span className="text-neutral-400">{openHistoryId === inv.id ? '▲' : '▼'}</span>
+                </button>
               </div>
               <button
                 onClick={() => remove(inv.id)}
@@ -179,6 +192,11 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
                 <Icon name="trash" size={18} />
               </button>
             </div>
+
+            {/* Section historique dépliante */}
+            {openHistoryId === inv.id && (
+              <HistorySection investmentId={inv.id} />
+            )}
           </div>
         ))}
 
@@ -240,6 +258,106 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
         </div>
       </div>
     </>
+  )
+}
+
+// ─── Section historique ──────────────────────────────────────────────────────
+
+function HistorySection({ investmentId }: { investmentId: string }) {
+  const t = useT()
+  const currency = useProfilStore((s) => s.currency)
+  const snapshots = useAccueilStore((s) => s.snapshots)
+  const addSnapshot = useAccueilStore((s) => s.addSnapshot)
+  const removeSnapshot = useAccueilStore((s) => s.removeSnapshot)
+
+  const invSnaps = snapshots
+    .filter((s) => s.investmentId === investmentId)
+    .sort((a, b) => b.date.localeCompare(a.date))
+
+  const today = new Date().toISOString().slice(0, 10)
+  const [date, setDate] = useState(today)
+  const [value, setValue] = useState('')
+
+  function handleAdd() {
+    const v = parseFloat(value)
+    if (!date || isNaN(v) || v <= 0) return
+    const snapshot: InvestmentSnapshot = {
+      id: crypto.randomUUID(),
+      investmentId,
+      value: v,
+      date,
+    }
+    addSnapshot(snapshot)
+    setValue('')
+    setDate(today)
+  }
+
+  return (
+    <div className="mt-1 pt-3 border-t border-neutral-200/60 dark:border-neutral-600/60 space-y-2">
+      {/* Formulaire d'ajout */}
+      <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">
+        {t('history.addEntry')}
+      </p>
+      <div className="flex gap-2 items-end">
+        <div className="flex-1">
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="w-full px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
+          />
+        </div>
+        <div className="w-28">
+          <input
+            type="number"
+            placeholder={t('history.value')}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            className="w-full px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-sm placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
+          />
+        </div>
+        <button
+          onClick={handleAdd}
+          className="px-3 py-2 rounded-xl bg-primary-500 text-white text-sm font-semibold hover:bg-primary-600 transition-colors shrink-0"
+        >
+          {t('history.add')}
+        </button>
+      </div>
+
+      {/* Liste des entrées */}
+      {invSnaps.length === 0 ? (
+        <p className="text-xs text-neutral-400 dark:text-neutral-500 py-1">{t('history.noEntries')}</p>
+      ) : (
+        <div className="space-y-1">
+          {invSnaps.map((snap, i) => {
+            const prev = invSnaps[i + 1]
+            const delta = prev ? ((snap.value - prev.value) / prev.value) * 100 : null
+            return (
+              <div key={snap.id} className="flex items-center gap-2 text-xs py-1">
+                <span className="text-neutral-500 dark:text-neutral-400 w-24 shrink-0">
+                  {formatDate(snap.date)}
+                </span>
+                <span className="font-semibold text-neutral-800 dark:text-neutral-100">
+                  {formatCurrency(snap.value, currency)}
+                </span>
+                {delta !== null && (
+                  <span className={`font-semibold ${delta >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}`}>
+                    {delta >= 0 ? '+' : ''}{delta.toFixed(1)}%
+                  </span>
+                )}
+                <button
+                  onClick={() => removeSnapshot(snap.id)}
+                  className="ml-auto text-neutral-400 hover:text-red-500 transition-colors p-0.5"
+                  aria-label={t('history.delete')}
+                >
+                  <Icon name="trash" size={13} />
+                </button>
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
   )
 }
 

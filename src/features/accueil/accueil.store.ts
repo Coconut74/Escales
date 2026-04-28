@@ -1,10 +1,11 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { supabase } from '@/lib/supabase'
-import type { Investment } from './accueil.types'
+import type { Investment, InvestmentSnapshot } from './accueil.types'
 
 interface AccueilStore {
   investments: Investment[]
+  snapshots: InvestmentSnapshot[]
   loading: boolean
   loadFromCloud: (userId: string) => Promise<void>
   resetData: () => void
@@ -13,6 +14,8 @@ interface AccueilStore {
   addInvestment: (inv: Investment) => void
   removeInvestment: (id: string) => void
   resetInvestments: () => void
+  addSnapshot: (snapshot: InvestmentSnapshot) => Promise<void>
+  removeSnapshot: (id: string) => Promise<void>
 }
 
 function toRow(inv: Investment, userId: string) {
@@ -40,6 +43,16 @@ function fromRow(row: Record<string, unknown>): Investment {
   }
 }
 
+function snapshotFromRow(row: Record<string, unknown>): InvestmentSnapshot {
+  return {
+    id: row.id as string,
+    investmentId: row.investment_id as string,
+    value: Number(row.value),
+    date: (row.date as string).slice(0, 10),
+    note: row.note != null ? (row.note as string) : undefined,
+  }
+}
+
 async function currentUserId(): Promise<string | null> {
   const { data } = await supabase.auth.getSession()
   return data.session?.user.id ?? null
@@ -49,22 +62,25 @@ export const useAccueilStore = create<AccueilStore>()(
   persist(
     (set, get) => ({
       investments: [],
+      snapshots: [],
       loading: false,
 
       loadFromCloud: async (userId) => {
         set({ loading: true })
-        const { data, error } = await supabase
-          .from('investments')
-          .select('*')
-          .eq('user_id', userId)
-          .order('created_at', { ascending: true })
-        if (!error && data) {
-          set({ investments: data.map(fromRow) })
+        const [invResult, snapResult] = await Promise.all([
+          supabase.from('investments').select('*').eq('user_id', userId).order('created_at', { ascending: true }),
+          supabase.from('investment_snapshots').select('*').eq('user_id', userId).order('date', { ascending: true }),
+        ])
+        if (!invResult.error && invResult.data) {
+          set({ investments: invResult.data.map(fromRow) })
+        }
+        if (!snapResult.error && snapResult.data) {
+          set({ snapshots: snapResult.data.map(snapshotFromRow) })
         }
         set({ loading: false })
       },
 
-      resetData: () => set({ investments: [], loading: false }),
+      resetData: () => set({ investments: [], snapshots: [], loading: false }),
 
       setInvestments: async (investments) => {
         set({ investments })
@@ -98,21 +114,53 @@ export const useAccueilStore = create<AccueilStore>()(
       },
 
       removeInvestment: async (id) => {
-        set((s) => ({ investments: s.investments.filter((i) => i.id !== id) }))
+        set((s) => ({
+          investments: s.investments.filter((i) => i.id !== id),
+          snapshots: s.snapshots.filter((s) => s.investmentId !== id),
+        }))
         const userId = await currentUserId()
         if (!userId) return
-        await supabase.from('investments').delete().eq('id', id)
+        await Promise.all([
+          supabase.from('investments').delete().eq('id', id),
+          supabase.from('investment_snapshots').delete().eq('investment_id', id).eq('user_id', userId),
+        ])
       },
 
       resetInvestments: async () => {
         const userId = await currentUserId()
-        set({ investments: [] })
-        if (userId) await supabase.from('investments').delete().eq('user_id', userId)
+        set({ investments: [], snapshots: [] })
+        if (userId) {
+          await Promise.all([
+            supabase.from('investments').delete().eq('user_id', userId),
+            supabase.from('investment_snapshots').delete().eq('user_id', userId),
+          ])
+        }
+      },
+
+      addSnapshot: async (snapshot) => {
+        set((s) => ({ snapshots: [...s.snapshots, snapshot] }))
+        const userId = await currentUserId()
+        if (!userId) return
+        await supabase.from('investment_snapshots').insert({
+          id: snapshot.id,
+          user_id: userId,
+          investment_id: snapshot.investmentId,
+          value: snapshot.value,
+          date: snapshot.date,
+          note: snapshot.note ?? null,
+        })
+      },
+
+      removeSnapshot: async (id) => {
+        set((s) => ({ snapshots: s.snapshots.filter((s) => s.id !== id) }))
+        const userId = await currentUserId()
+        if (!userId) return
+        await supabase.from('investment_snapshots').delete().eq('id', id)
       },
     }),
     {
       name: 'escales-investments',
-      partialize: (state) => ({ investments: state.investments }),
+      partialize: (state) => ({ investments: state.investments, snapshots: state.snapshots }),
     }
   )
 )
@@ -125,4 +173,15 @@ export function selectAverageChange(investments: Investment[]): number | null {
   const withChange = investments.filter((inv) => inv.change !== undefined)
   if (withChange.length === 0) return null
   return withChange.reduce((sum, inv) => sum + inv.change!, 0) / withChange.length
+}
+
+export function selectEffectiveChange(inv: Investment, snapshots: InvestmentSnapshot[]): number | null {
+  const invSnaps = snapshots
+    .filter((s) => s.investmentId === inv.id)
+    .sort((a, b) => a.date.localeCompare(b.date))
+  if (invSnaps.length < 2) return null
+  const first = invSnaps[0].value
+  const last = invSnaps[invSnaps.length - 1].value
+  if (first === 0) return null
+  return ((last - first) / first) * 100
 }

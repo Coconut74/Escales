@@ -10,6 +10,17 @@ const fr = {
   // Accueil
   'home.myInvestments': 'Mes investissements',
   'home.editInvestments': 'Modifier mes investissements',
+  'home.emptyChart': 'Aucun investissement',
+  'home.portfolio': 'Portfolio',
+
+  // Historique investissements
+  'history.title': 'Historique',
+  'history.addEntry': 'Ajouter une entrée',
+  'history.date': 'Date',
+  'history.value': 'Valeur',
+  'history.noEntries': 'Aucune entrée',
+  'history.delete': 'Supprimer',
+  'history.add': 'Ajouter',
 
   // InvestmentModal
   'investment.detail': 'Détail investissement',
@@ -218,6 +229,16 @@ const en: typeof fr = {
 
   'home.myInvestments': 'My investments',
   'home.editInvestments': 'Edit my investments',
+  'home.emptyChart': 'No investments yet',
+  'home.portfolio': 'Portfolio',
+
+  'history.title': 'History',
+  'history.addEntry': 'Add an entry',
+  'history.date': 'Date',
+  'history.value': 'Value',
+  'history.noEntries': 'No entries yet',
+  'history.delete': 'Delete',
+  'history.add': 'Add',
 
   'investment.detail': 'Investment detail',
   'investment.close': 'Close',

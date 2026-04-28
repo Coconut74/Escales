@@ -1,8 +1,9 @@
 import { useState, useCallback, useMemo, useRef } from 'react'
 import Button from '@/components/ui/Button'
-import { useAccueilStore, selectTotal, selectAverageChange } from './accueil.store'
+import { useAccueilStore, selectTotal, selectAverageChange, selectEffectiveChange } from './accueil.store'
 import PortfolioTotal from './components/PortfolioTotal'
 import IsometricChart from './components/IsometricChart'
+import CategoryChart from './components/CategoryChart'
 import type { SvgPoint, IsometricChartHandle } from './components/IsometricChart'
 import InvestmentModal from './components/InvestmentModal'
 import EditInvestmentsPanel from './components/EditInvestmentsPanel'
@@ -11,23 +12,27 @@ import Icon from '@/components/ui/Icon'
 import { useStockPrices } from '@/hooks/useStockPrices'
 import { useT } from '@/lib/i18n'
 
+const SWIPE_THRESHOLD = 60
+
 const VB_Y = 140
 const VB_H = 310
 
 export default function AccueilView() {
   const t = useT()
   const investments = useAccueilStore((s) => s.investments)
+  const snapshots = useAccueilStore((s) => s.snapshots)
   const { prices } = useStockPrices(investments, import.meta.env.VITE_FINNHUB_KEY ?? '')
 
-  // Investissements avec prix live injectés (fallback sur valeur manuelle)
+  // Investissements avec prix live injectés + change calculé depuis snapshots
   const effectiveInvestments = useMemo(() =>
     investments.map(inv => {
       const live = prices[inv.id]
       if (live && inv.ticker && inv.shares) {
         return { ...inv, value: Math.round(live.price * inv.shares * 100) / 100, change: live.changePercent }
       }
-      return inv
-    }), [investments, prices])
+      const computedChange = selectEffectiveChange(inv, snapshots)
+      return computedChange !== null ? { ...inv, change: computedChange } : inv
+    }), [investments, prices, snapshots])
 
   const total = selectTotal(effectiveInvestments)
   const avgChange = selectAverageChange(effectiveInvestments)
@@ -41,9 +46,11 @@ export default function AccueilView() {
   const [editOpen, setEditOpen] = useState(false)
   const [zoom, setZoom] = useState(1)
   const [zoomOrigin, setZoomOrigin] = useState({ x: 50, y: 50 })
+  const [vizMode, setVizMode] = useState<'chart' | 'categories'>('chart')
 
   const chartRef = useRef<IsometricChartHandle>(null)
   const navDirRef = useRef<'left' | 'right'>('right')
+  const swipeStartX = useRef<number | null>(null)
 
   // Ordre croissant de pourcentage pour la navigation swipe
   const sortedByPct = useMemo(
@@ -86,6 +93,23 @@ export default function AccueilView() {
     setZoom(1)
   }
 
+  function handleChartSwipeStart(clientX: number) {
+    swipeStartX.current = clientX
+  }
+
+  function handleChartSwipeEnd(clientX: number) {
+    if (swipeStartX.current === null) return
+    const delta = clientX - swipeStartX.current
+    swipeStartX.current = null
+    if (Math.abs(delta) < SWIPE_THRESHOLD) return
+    if (delta < 0 && vizMode === 'chart') {
+      setVizMode('categories')
+      if (selected) { setSelected(null); setZoom(1) }
+    } else if (delta > 0 && vizMode === 'categories') {
+      setVizMode('chart')
+    }
+  }
+
   function handleNext() {
     if (!sortedByPct.length) return
     const next = sortedByPct[(selectedIndex + 1) % sortedByPct.length]
@@ -109,28 +133,44 @@ export default function AccueilView() {
       <PortfolioTotal total={total} monthlyChange={avgChange ?? undefined} />
 
       {/* Zone graphique */}
-      <div className="flex-1 flex items-start justify-center pt-16 lg:pt-2">
+      <div
+        className="flex-1 flex items-start justify-center pt-16 lg:pt-2 relative overflow-hidden"
+        onTouchStart={(e) => handleChartSwipeStart(e.touches[0]?.clientX ?? 0)}
+        onTouchEnd={(e) => handleChartSwipeEnd(e.changedTouches[0]?.clientX ?? 0)}
+        onMouseDown={(e) => handleChartSwipeStart(e.clientX)}
+        onMouseUp={(e) => handleChartSwipeEnd(e.clientX)}
+      >
         <div className="w-[90%] max-w-[480px] lg:max-w-[660px]">
-          <div
-            style={{
-              transformOrigin: '0% 0%',
-              transform: `translate(${zoomOrigin.x * (1 - zoom)}%, ${zoomOrigin.y * (1 - zoom)}%) scale(${zoom})`,
-              transition: 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)',
-            }}
-          >
-            <IsometricChart
-              ref={chartRef}
-              investments={effectiveInvestments}
-              total={total}
-              onSelect={handleSelect}
-              selected={effectiveSelected}
-            />
-          </div>
+          {vizMode === 'chart' ? (
+            <div
+              style={{
+                transformOrigin: '0% 0%',
+                transform: `translate(${zoomOrigin.x * (1 - zoom)}%, ${zoomOrigin.y * (1 - zoom)}%) scale(${zoom})`,
+                transition: 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)',
+              }}
+            >
+              <IsometricChart
+                ref={chartRef}
+                investments={effectiveInvestments}
+                total={total}
+                onSelect={handleSelect}
+                selected={effectiveSelected}
+              />
+            </div>
+          ) : (
+            <CategoryChart investments={effectiveInvestments} total={total} />
+          )}
+        </div>
+
+        {/* Dots indicateurs de vue */}
+        <div className="absolute bottom-4 left-1/2 lg:left-[calc(312px+(100vw-312px)/2)] -translate-x-1/2 flex gap-1.5">
+          <div className={`rounded-full transition-all duration-300 ${vizMode === 'chart' ? 'w-4 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600'}`} />
+          <div className={`rounded-full transition-all duration-300 ${vizMode === 'categories' ? 'w-4 h-1.5 bg-primary-500' : 'w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600'}`} />
         </div>
       </div>
 
       {/* Bouton modifier */}
-      <div className="fixed bottom-[120px] lg:bottom-8 left-1/2 lg:left-[calc(50vw+156px)] -translate-x-1/2 z-[45]">
+      <div className="fixed bottom-[120px] lg:bottom-8 left-1/2 lg:left-[calc(312px+(100vw-312px)/2)] -translate-x-1/2 z-[45]">
         <Button
           variant="grey-outline"
           size="lg"
