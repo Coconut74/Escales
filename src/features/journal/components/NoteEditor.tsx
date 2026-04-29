@@ -96,7 +96,7 @@ export default function NoteEditor({ note, onClose, onDelete }: Props) {
           <div className="flex-1" />
           <button
             onClick={onDelete}
-            className="px-3 py-1.5 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 text-base font-semibold transition-colors"
+            className="px-3 py-1.5 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 text-sm font-semibold transition-colors"
           >
             {t('noteEditor.delete')}
           </button>

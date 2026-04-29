@@ -134,10 +134,10 @@ export default function CategoryChart({ investments, total }: Props) {
               className="w-3 h-3 rounded-full shrink-0 mt-0.5"
               style={{ backgroundColor: CATEGORY_COLORS[category].bg }}
             />
-            <span className="text-base font-semibold text-neutral-800 dark:text-neutral-100 w-28 shrink-0">
+            <span className="text-sm font-semibold text-neutral-800 dark:text-neutral-100 w-28 shrink-0">
               {t(CATEGORY_TKEYS[category])}
             </span>
-            <span className="text-base text-neutral-600 dark:text-neutral-300 ml-auto">
+            <span className="text-sm text-neutral-600 dark:text-neutral-300 ml-auto">
               {formatCurrency(value, currency)} · {(pct * 100).toFixed(1)}%
             </span>
           </li>

@@ -236,13 +236,13 @@ function ProjectDetail({ project, onClose, onDelete }: { project: Project; onClo
             <img src={meta.icon} alt="" className="w-11 h-11 object-contain shrink-0" />
             <div>
               <h2 id="project-detail-title" className="text-base font-bold text-neutral-900 dark:text-neutral-50 leading-tight">{project.name}</h2>
-              <p className="text-base text-neutral-400 dark:text-neutral-500">{typeLabel}</p>
+              <p className="text-sm text-neutral-400 dark:text-neutral-500">{typeLabel}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={onDelete}
-              className="px-3 py-1.5 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 text-base font-semibold transition-colors"
+              className="px-3 py-1.5 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 text-sm font-semibold transition-colors"
             >
               {t('projects.delete')}
             </button>
