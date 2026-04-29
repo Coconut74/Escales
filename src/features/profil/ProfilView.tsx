@@ -111,7 +111,7 @@ function SettingsModal({ title, children, onClose, onConfirm, saving }: {
 }) {
   const t = useT()
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 sm:p-6">
+    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4 sm:p-6">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
       <div className="relative w-full max-w-md bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl flex flex-col max-h-[90vh]">
         <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-neutral-100 dark:border-neutral-700">
