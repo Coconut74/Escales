@@ -121,16 +121,8 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
       <div className="flex items-center gap-2 px-6 pt-6 pb-4 shrink-0">
         <h2 className="flex-1 text-lg font-bold text-neutral-900 dark:text-neutral-50">{t('edit.title')}</h2>
         <button
-          onClick={startAdd}
-          disabled={editingId !== null}
-          className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100/80 dark:bg-neutral-700/80 text-neutral-500 dark:text-neutral-400 hover:bg-primary-50 hover:text-primary-600 dark:hover:bg-primary-900/30 dark:hover:text-primary-400 disabled:opacity-30 transition-colors"
-          aria-label={t('edit.addInvestment')}
-        >
-          <Icon name="plus" size={18} />
-        </button>
-        <button
           onClick={onClose}
-          className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100/80 dark:bg-neutral-700/80 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-200/80 dark:hover:bg-neutral-600/80 transition-colors"
+          className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors"
           aria-label={t('edit.close')}
         >
           ✕
@@ -169,6 +161,16 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
             )
           )}
         </div>
+
+        {/* Bouton ajouter */}
+        <button
+          onClick={startAdd}
+          disabled={editingId !== null}
+          className="mt-3 w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl border border-dashed border-neutral-300 dark:border-neutral-600 text-neutral-500 dark:text-neutral-400 hover:border-primary-400 hover:text-primary-600 dark:hover:border-primary-500 dark:hover:text-primary-400 disabled:opacity-30 transition-colors text-sm font-semibold"
+        >
+          <Icon name="plus" size={16} />
+          {t('edit.addInvestment')}
+        </button>
       </div>
     </div>
   )
@@ -179,8 +181,8 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
       <div
         className={`
           lg:hidden fixed inset-0 z-[110] flex flex-col
-          bg-white/80 dark:bg-neutral-800/90 backdrop-blur-xl
-          border-t border-white/40 dark:border-neutral-700/40 shadow-2xl
+          bg-white dark:bg-neutral-900
+          border-t border-neutral-200 dark:border-neutral-700 shadow-2xl
           transition-transform duration-300 ease-out
           ${open ? 'translate-y-0' : 'translate-y-full'}
         `}
@@ -193,7 +195,7 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
         className={`
           hidden lg:flex fixed inset-0 z-[110]
           items-center justify-center
-          bg-black/30 backdrop-blur-sm
+          bg-black/40
           transition-opacity duration-300
           ${open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}
         `}
@@ -202,8 +204,8 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
         <div
           className={`
             w-full max-w-lg h-[80vh] flex flex-col
-            bg-white/80 dark:bg-neutral-800/90 backdrop-blur-xl
-            border border-white/40 dark:border-neutral-700/40 shadow-2xl rounded-3xl
+            bg-white dark:bg-neutral-900
+            border border-neutral-200 dark:border-neutral-700 shadow-2xl rounded-3xl
             transition-transform duration-300 ease-out
             ${open ? 'scale-100' : 'scale-95'}
           `}
@@ -282,7 +284,7 @@ function EditRow({ draft, error, isNew, openHistoryId, setOpenHistoryId, categor
   const t = useT()
 
   return (
-    <div className="bg-white/60 dark:bg-neutral-700/60 backdrop-blur-sm border border-primary-200/60 dark:border-primary-700/40 rounded-2xl p-4 space-y-3">
+    <div className="bg-neutral-50 dark:bg-neutral-800 border border-primary-200 dark:border-primary-800 rounded-2xl p-4 space-y-3">
       <div className="space-y-3">
         <TextField
           placeholder={t('edit.investmentName')}
