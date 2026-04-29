@@ -95,14 +95,16 @@ export default function ProjectEditor({ initial, onSave, onCancel }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-end lg:items-center justify-center bg-black/40 backdrop-blur-sm p-4 lg:p-8">
+    <div role="dialog" aria-modal="true" aria-labelledby="project-editor-title" className="fixed inset-0 z-[60] flex items-end lg:items-center justify-center bg-black/40 backdrop-blur-sm p-4 lg:p-8">
       <div className="w-full max-w-lg max-h-[90vh] bg-white dark:bg-neutral-800 rounded-3xl border border-neutral-200 dark:border-neutral-700 shadow-2xl flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-4 shrink-0 border-b border-neutral-100 dark:border-neutral-700">
-          <h2 className="text-base font-bold text-neutral-900 dark:text-neutral-50">
+          <h2 id="project-editor-title" className="text-base font-bold text-neutral-900 dark:text-neutral-50">
             {initial ? t('projectEditor.editTitle') : t('projectEditor.newTitle')}
           </h2>
-          <button onClick={onCancel} className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-700 text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors text-lg">✕</button>
+          <button type="button" onClick={onCancel} aria-label={t('common.close')} className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-700 text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors text-lg">
+            <span aria-hidden="true">✕</span>
+          </button>
         </div>
 
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
@@ -118,7 +120,7 @@ export default function ProjectEditor({ initial, onSave, onCancel }: Props) {
             <label className={labelCls}>{t('projectEditor.typeLabel')}</label>
             <div className="grid grid-cols-1 gap-2">
               {PROJECT_TYPES.map((pt) => (
-                <button key={pt.value} onClick={() => handleTypeChange(pt.value)}
+                <button key={pt.value} type="button" aria-pressed={type === pt.value} onClick={() => handleTypeChange(pt.value)}
                   className={`flex items-center gap-3 px-4 py-3 rounded-2xl border text-left transition-all ${
                     type === pt.value
                       ? 'border-primary-400 bg-primary-50 dark:bg-primary-900/20 dark:border-primary-600'
@@ -128,7 +130,7 @@ export default function ProjectEditor({ initial, onSave, onCancel }: Props) {
                   <img src={pt.icon} alt="" className="w-11 h-11 object-contain shrink-0" />
                   <div>
                     <p className={`text-sm font-semibold ${type === pt.value ? 'text-primary-700 dark:text-primary-300' : 'text-neutral-800 dark:text-neutral-100'}`}>{pt.label}</p>
-                    <p className="text-xs text-neutral-400 dark:text-neutral-500">{pt.description}</p>
+                    <p className="text-sm text-neutral-400 dark:text-neutral-500">{pt.description}</p>
                   </div>
                 </button>
               ))}
@@ -201,13 +203,13 @@ export default function ProjectEditor({ initial, onSave, onCancel }: Props) {
           {/* Checklist */}
           {(type === 'real-estate' || type === 'free') && (
             <div className="space-y-2">
-              <label className={labelCls}>{type === 'real-estate' ? t('projectEditor.steps') : t('projects.checklist')}</label>
+              <p className={labelCls}>{type === 'real-estate' ? t('projectEditor.steps') : t('projects.checklist')}</p>
               <div className="space-y-1.5">
                 {checklist.map((item) => (
                   <div key={item.id} className="flex items-center gap-2 group">
                     <span className="text-neutral-300 dark:text-neutral-600 text-sm shrink-0">•</span>
                     <span className="flex-1 text-sm text-neutral-700 dark:text-neutral-200">{item.label}</span>
-                    <button onClick={() => removeItem(item.id)} className="opacity-0 group-hover:opacity-100 p-0.5 text-neutral-400 hover:text-red-500 transition-all">
+                    <button type="button" onClick={() => removeItem(item.id)} aria-label={t('projectEditor.removeStepAria')} className="opacity-0 group-hover:opacity-100 p-0.5 text-neutral-400 hover:text-red-500 transition-all">
                       <Icon name="trash" size={13} />
                     </button>
                   </div>
@@ -217,14 +219,14 @@ export default function ProjectEditor({ initial, onSave, onCancel }: Props) {
                 <input type="text" value={newItem} onChange={(e) => setNewItem(e.target.value)}
                   onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addItem() } }}
                   placeholder={t('projectEditor.addStep')} className={`${inputCls(false)} flex-1`} />
-                <button onClick={addItem} className="px-3 py-2 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                <button type="button" onClick={addItem} aria-label={t('projectEditor.addStepAria')} className="px-3 py-2 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                   <Icon name="plus" size={15} />
                 </button>
               </div>
             </div>
           )}
 
-          {error && <p className="text-xs text-red-500">{error}</p>}
+          {error && <p className="text-sm text-red-500">{error}</p>}
         </div>
 
         {/* Footer */}
@@ -239,14 +241,14 @@ export default function ProjectEditor({ initial, onSave, onCancel }: Props) {
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="space-y-1">
-      <label className={labelCls}>{label}</label>
+    <label className="flex flex-col gap-1">
+      <span className={labelCls}>{label}</span>
       {children}
-    </div>
+    </label>
   )
 }
 
-const labelCls = 'text-xs font-medium text-neutral-500 dark:text-neutral-400'
+const labelCls = 'text-sm font-medium text-neutral-500 dark:text-neutral-400'
 const inputCls = (err: boolean) =>
   `w-full px-3 py-2 rounded-xl border text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-50 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-300 dark:focus:ring-primary-700 transition-colors ${
     err ? 'border-red-400' : 'border-neutral-200 dark:border-neutral-600'

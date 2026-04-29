@@ -73,7 +73,7 @@ export default function ProjectsTab() {
           <div className="flex flex-col items-center justify-center py-24 gap-3 text-center">
             <img src="/3dicon/Project.png" alt="" className="w-16 h-16 object-contain" />
             <p className="text-sm text-neutral-400 dark:text-neutral-500">{t('projects.empty')}</p>
-            <p className="text-xs text-neutral-400 dark:text-neutral-600">{t('projects.emptyHint')}</p>
+            <p className="text-sm text-neutral-400 dark:text-neutral-600">{t('projects.emptyHint')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
@@ -123,8 +123,10 @@ function ProjectCard({ project, onClick }: {
   const progress = calcProgress(project)
 
   return (
-    <div
-      className="group relative bg-white dark:bg-neutral-800 rounded-2xl border border-neutral-200 dark:border-neutral-700 p-4 cursor-pointer hover:border-primary-300 dark:hover:border-primary-700 hover:shadow-md transition-all"
+    <button
+      type="button"
+      aria-label={project.name}
+      className="group relative text-left w-full bg-white dark:bg-neutral-800 rounded-2xl border border-neutral-200 dark:border-neutral-700 p-4 hover:border-primary-300 dark:hover:border-primary-700 hover:shadow-md transition-all"
       onClick={onClick}
     >
       <div className="flex items-start justify-between gap-3">
@@ -132,7 +134,7 @@ function ProjectCard({ project, onClick }: {
           <img src={meta.icon} alt="" className="w-11 h-11 object-contain shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-neutral-900 dark:text-neutral-50 truncate">{project.name}</p>
-            <p className="text-xs text-neutral-400 dark:text-neutral-500">{typeLabel}</p>
+            <p className="text-sm text-neutral-400 dark:text-neutral-500">{typeLabel}</p>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
@@ -152,7 +154,7 @@ function ProjectCard({ project, onClick }: {
       <div className="mt-2.5 flex flex-wrap gap-x-3 gap-y-1">
         <CardMeta project={project} currency={currency} />
       </div>
-    </div>
+    </button>
   )
 }
 
@@ -164,13 +166,13 @@ function CardMeta({ project, currency }: { project: Project; currency: string })
       return (
         <>
           {project.currentAmount !== undefined && (
-            <span className="text-xs text-neutral-500 dark:text-neutral-400">
+            <span className="text-sm text-neutral-500 dark:text-neutral-400">
               {formatCurrency(project.currentAmount, currency)}
               {project.targetAmount ? <span className="text-neutral-300 dark:text-neutral-600"> / {formatCurrency(project.targetAmount, currency)}</span> : null}
             </span>
           )}
           {project.type === 'investment' && project.assetName && (
-            <span className="text-xs text-neutral-400 dark:text-neutral-500">{project.assetName}</span>
+            <span className="text-sm text-neutral-400 dark:text-neutral-500">{project.assetName}</span>
           )}
         </>
       )
@@ -181,12 +183,12 @@ function CardMeta({ project, currency }: { project: Project; currency: string })
       return (
         <>
           {total > 0 && (
-            <span className="text-xs text-neutral-500 dark:text-neutral-400">
+            <span className="text-sm text-neutral-500 dark:text-neutral-400">
               {done}/{total} {t('projects.step')}{total > 1 ? 's' : ''}
             </span>
           )}
           {project.type === 'real-estate' && project.city && (
-            <span className="text-xs text-neutral-400 dark:text-neutral-500">{project.city}</span>
+            <span className="text-sm text-neutral-400 dark:text-neutral-500">{project.city}</span>
           )}
         </>
       )
@@ -198,11 +200,11 @@ function CardMeta({ project, currency }: { project: Project; currency: string })
       return (
         <>
           {project.loanAmount && (
-            <span className="text-xs text-neutral-500 dark:text-neutral-400">
+            <span className="text-sm text-neutral-500 dark:text-neutral-400">
               {formatCurrency(project.loanAmount, currency)}
             </span>
           )}
-          <span className="text-xs text-neutral-400 dark:text-neutral-500">
+          <span className="text-sm text-neutral-400 dark:text-neutral-500">
             {t('projects.monthsRemaining', { n: remaining })}
           </span>
         </>
@@ -226,29 +228,30 @@ function ProjectDetail({ project, onClose, onDelete }: { project: Project; onClo
   }
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-end lg:items-center justify-center bg-black/40 backdrop-blur-sm p-4 lg:p-8">
+    <div role="dialog" aria-modal="true" aria-labelledby="project-detail-title" className="fixed inset-0 z-[60] flex items-end lg:items-center justify-center bg-black/40 backdrop-blur-sm p-4 lg:p-8">
       <div className="w-full max-w-lg max-h-[85vh] bg-white dark:bg-neutral-800 rounded-3xl border border-neutral-200 dark:border-neutral-700 shadow-2xl flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-4 shrink-0 border-b border-neutral-100 dark:border-neutral-700">
           <div className="flex items-center gap-2">
             <img src={meta.icon} alt="" className="w-11 h-11 object-contain shrink-0" />
             <div>
-              <h2 className="text-base font-bold text-neutral-900 dark:text-neutral-50 leading-tight">{project.name}</h2>
-              <p className="text-xs text-neutral-400 dark:text-neutral-500">{typeLabel}</p>
+              <h2 id="project-detail-title" className="text-base font-bold text-neutral-900 dark:text-neutral-50 leading-tight">{project.name}</h2>
+              <p className="text-sm text-neutral-400 dark:text-neutral-500">{typeLabel}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={onDelete}
-              className="px-3 py-1.5 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 text-xs font-semibold transition-colors"
+              className="px-3 py-1.5 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 text-sm font-semibold transition-colors"
             >
               {t('projects.delete')}
             </button>
             <button
               onClick={onClose}
+              aria-label={t('common.close')}
               className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-700 text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors text-lg"
             >
-              ✕
+              <span aria-hidden="true">✕</span>
             </button>
           </div>
         </div>
@@ -257,7 +260,7 @@ function ProjectDetail({ project, onClose, onDelete }: { project: Project; onClo
           {/* Barre de progression */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <span className="text-xs font-medium text-neutral-500 dark:text-neutral-400">{t('projects.progress')}</span>
+              <span className="text-sm font-medium text-neutral-500 dark:text-neutral-400">{t('projects.progress')}</span>
               <span className="text-sm font-bold text-primary-600 dark:text-primary-400">{progress}%</span>
             </div>
             <div className="h-2 rounded-full bg-neutral-100 dark:bg-neutral-700 overflow-hidden">
@@ -311,14 +314,14 @@ function DetailContent({ project, currency, currentInput, setCurrentInput, onTog
         <div className="space-y-3">
           {project.targetAmount && (
             <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-xl">
-              <span className="text-xs text-neutral-500 dark:text-neutral-400">{t('projects.target')}</span>
+              <span className="text-sm text-neutral-500 dark:text-neutral-400">{t('projects.target')}</span>
               <span className="text-sm font-semibold text-neutral-900 dark:text-neutral-50">
                 {formatCurrency(project.targetAmount, currency)}
               </span>
             </div>
           )}
           <div className="flex items-center justify-between p-3 bg-primary-50 dark:bg-primary-900/20 rounded-xl gap-2">
-            <span className="text-xs text-primary-700 dark:text-primary-300 shrink-0">{t('projects.current')}</span>
+            <span className="text-sm text-primary-700 dark:text-primary-300 shrink-0">{t('projects.current')}</span>
             <div className="flex items-center gap-1.5">
               <input
                 type="number"
@@ -347,7 +350,7 @@ function DetailContent({ project, currency, currentInput, setCurrentInput, onTog
           </div>
           {project.targetAmount && project.currentAmount !== undefined && (
             <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-xl">
-              <span className="text-xs text-neutral-500 dark:text-neutral-400">{t('projects.remaining')}</span>
+              <span className="text-sm text-neutral-500 dark:text-neutral-400">{t('projects.remaining')}</span>
               <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
                 {formatCurrency(Math.max(0, project.targetAmount - project.currentAmount), currency)}
               </span>
@@ -355,7 +358,7 @@ function DetailContent({ project, currency, currentInput, setCurrentInput, onTog
           )}
           {project.type === 'investment' && project.assetName && (
             <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-xl">
-              <span className="text-xs text-neutral-500 dark:text-neutral-400">{t('projects.asset')}</span>
+              <span className="text-sm text-neutral-500 dark:text-neutral-400">{t('projects.asset')}</span>
               <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">{project.assetName}</span>
             </div>
           )}
@@ -370,16 +373,18 @@ function DetailContent({ project, currency, currentInput, setCurrentInput, onTog
       }
       return (
         <div className="space-y-2">
-          <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
+          <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
             {project.type === 'real-estate' ? t('projects.steps') : t('projects.checklist')}
           </p>
           {project.checklist.map((item) => (
             <button
               key={item.id}
+              type="button"
+              aria-pressed={item.done}
               onClick={() => onToggle(item.id)}
               className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors text-left"
             >
-              <span className={`text-lg ${item.done ? 'text-green-500' : 'text-neutral-300 dark:text-neutral-600'}`}>
+              <span aria-hidden="true" className={`text-lg ${item.done ? 'text-green-500' : 'text-neutral-300 dark:text-neutral-600'}`}>
                 {item.done ? '✅' : '⬜'}
               </span>
               <span className={`text-sm ${item.done ? 'line-through text-neutral-400 dark:text-neutral-500' : 'text-neutral-800 dark:text-neutral-100'}`}>
@@ -399,22 +404,22 @@ function DetailContent({ project, currency, currentInput, setCurrentInput, onTog
         <div className="space-y-3">
           {project.loanAmount && (
             <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-xl">
-              <span className="text-xs text-neutral-500 dark:text-neutral-400">{t('projects.loanAmount')}</span>
+              <span className="text-sm text-neutral-500 dark:text-neutral-400">{t('projects.loanAmount')}</span>
               <span className="text-sm font-semibold text-neutral-900 dark:text-neutral-50">
                 {formatCurrency(project.loanAmount, currency)}
               </span>
             </div>
           )}
           <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-xl">
-            <span className="text-xs text-neutral-500 dark:text-neutral-400">{t('projects.totalDuration')}</span>
+            <span className="text-sm text-neutral-500 dark:text-neutral-400">{t('projects.totalDuration')}</span>
             <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">{project.loanDurationMonths} {t('projects.months')}</span>
           </div>
           <div className="flex items-center justify-between p-3 bg-primary-50 dark:bg-primary-900/20 rounded-xl">
-            <span className="text-xs text-primary-700 dark:text-primary-300">{t('projects.elapsed')}</span>
+            <span className="text-sm text-primary-700 dark:text-primary-300">{t('projects.elapsed')}</span>
             <span className="text-sm font-semibold text-primary-700 dark:text-primary-300">{elapsed} {t('projects.months')}</span>
           </div>
           <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-xl">
-            <span className="text-xs text-neutral-500 dark:text-neutral-400">{t('projects.remaining')}</span>
+            <span className="text-sm text-neutral-500 dark:text-neutral-400">{t('projects.remaining')}</span>
             <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">{remaining} {t('projects.months')}</span>
           </div>
         </div>

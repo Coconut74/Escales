@@ -64,19 +64,21 @@ export default function NotesTab() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {notes.map((note) => (
-              <div
+              <button
+                type="button"
                 key={note.id}
-                className="group relative bg-white dark:bg-neutral-800 rounded-2xl border border-neutral-200 dark:border-neutral-700 p-4 cursor-pointer hover:border-primary-300 dark:hover:border-primary-700 hover:shadow-md transition-all"
+                aria-label={note.title || t('notes.noTitle')}
+                className="group relative text-left bg-white dark:bg-neutral-800 rounded-2xl border border-neutral-200 dark:border-neutral-700 p-4 hover:border-primary-300 dark:hover:border-primary-700 hover:shadow-md transition-all"
                 onClick={() => setEditing(note)}
               >
                 <p className="font-semibold text-neutral-900 dark:text-neutral-50 truncate mb-1">
                   {note.title || <span className="italic text-neutral-400">{t('notes.noTitle')}</span>}
                 </p>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400 line-clamp-2 mb-3">
+                <p className="text-sm text-neutral-500 dark:text-neutral-400 line-clamp-2 mb-3">
                   {stripHtml(note.content) || <span className="italic">{t('notes.emptyNote')}</span>}
                 </p>
-                <p className="text-xs text-neutral-400 dark:text-neutral-500">{relativeDate(note.updatedAt, t, lang)}</p>
-              </div>
+                <p className="text-sm text-neutral-400 dark:text-neutral-500">{relativeDate(note.updatedAt, t, lang)}</p>
+              </button>
             ))}
           </div>
         )}

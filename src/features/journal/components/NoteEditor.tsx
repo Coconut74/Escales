@@ -71,23 +71,28 @@ export default function NoteEditor({ note, onClose, onDelete }: Props) {
   useEffect(() => () => clearTimeout(saveTimer.current), [])
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-end lg:items-center justify-center bg-black/40 backdrop-blur-sm p-4 lg:p-8">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="note-editor-title"
+      className="fixed inset-0 z-[60] flex items-end lg:items-center justify-center bg-black/40 backdrop-blur-sm p-4 lg:p-8"
+    >
       <div className="w-full max-w-2xl h-[85vh] rounded-3xl border border-neutral-200 dark:border-neutral-700 shadow-2xl flex flex-col overflow-hidden bg-white dark:bg-neutral-800">
         {/* Toolbar */}
         <div className="flex items-center gap-1 px-4 py-3 border-b border-neutral-200 dark:border-neutral-700 shrink-0">
           <button
             onClick={handleClose}
             className="p-1.5 rounded-lg text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors mr-1"
-            aria-label="Retour"
+            aria-label={t('noteEditor.back')}
           >
             <Icon name="arrow" size={18} className="rotate-180" />
           </button>
           <div className="w-px h-5 bg-neutral-200 dark:bg-neutral-700 mx-1" />
-          <ToolbarBtn onClick={() => execFmt('bold')} title={t('noteEditor.bold')}><strong className="text-sm">G</strong></ToolbarBtn>
-          <ToolbarBtn onClick={() => execFmt('italic')} title={t('noteEditor.italic')}><em className="text-sm font-serif">I</em></ToolbarBtn>
-          <ToolbarBtn onClick={() => execFmt('insertUnorderedList')} title={t('noteEditor.bulletList')}><span className="text-sm">•≡</span></ToolbarBtn>
-          <ToolbarBtn onClick={() => execFmt('insertOrderedList')} title={t('noteEditor.numberedList')}><span className="text-sm">1≡</span></ToolbarBtn>
-          <ToolbarBtn onClick={insertCheckbox} title={t('noteEditor.checkbox')}><span className="text-base leading-none">☑</span></ToolbarBtn>
+          <ToolbarBtn onClick={() => execFmt('bold')} label={t('noteEditor.bold')}><strong className="text-sm">G</strong></ToolbarBtn>
+          <ToolbarBtn onClick={() => execFmt('italic')} label={t('noteEditor.italic')}><em className="text-sm font-serif">I</em></ToolbarBtn>
+          <ToolbarBtn onClick={() => execFmt('insertUnorderedList')} label={t('noteEditor.bulletList')}><span className="text-sm">•≡</span></ToolbarBtn>
+          <ToolbarBtn onClick={() => execFmt('insertOrderedList')} label={t('noteEditor.numberedList')}><span className="text-sm">1≡</span></ToolbarBtn>
+          <ToolbarBtn onClick={insertCheckbox} label={t('noteEditor.checkbox')}><span className="text-base leading-none">☑</span></ToolbarBtn>
           <div className="flex-1" />
           <button
             onClick={onDelete}
@@ -99,17 +104,22 @@ export default function NoteEditor({ note, onClose, onDelete }: Props) {
 
         {/* Titre */}
         <input
+          id="note-editor-title"
           ref={titleRef}
           type="text"
           defaultValue={note.title}
           onChange={(e) => scheduleSave({ title: e.target.value })}
           placeholder={t('noteEditor.titlePlaceholder')}
+          aria-label={t('noteEditor.titleLabel')}
           className="w-full px-6 pt-5 pb-2 text-xl font-bold bg-transparent text-neutral-900 dark:text-neutral-50 placeholder:text-neutral-300 dark:placeholder:text-neutral-600 focus:outline-none shrink-0"
         />
 
         {/* Corps */}
         <div
           ref={bodyRef}
+          role="textbox"
+          aria-multiline="true"
+          aria-label={t('noteEditor.bodyLabel')}
           contentEditable
           suppressContentEditableWarning
           onInput={handleBodyInput}
@@ -124,11 +134,13 @@ export default function NoteEditor({ note, onClose, onDelete }: Props) {
   )
 }
 
-function ToolbarBtn({ onClick, title, children }: { onClick: () => void; title: string; children: React.ReactNode }) {
+function ToolbarBtn({ onClick, label, children }: { onClick: () => void; label: string; children: React.ReactNode }) {
   return (
     <button
+      type="button"
       onMouseDown={(e) => { e.preventDefault(); onClick() }}
-      title={title}
+      aria-label={label}
+      title={label}
       className="w-8 h-8 flex items-center justify-center rounded-lg text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
     >
       {children}
