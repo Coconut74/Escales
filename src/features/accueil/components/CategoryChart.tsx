@@ -1,8 +1,6 @@
 import { useMemo } from 'react'
 import type { Investment, InvestmentCategory } from '../accueil.types'
 import { CATEGORY_COLORS } from '../accueil.types'
-import { formatCurrency } from '@/lib/formatting'
-import { useProfilStore } from '@/features/profil/profil.store'
 import { useT } from '@/lib/i18n'
 import type { TKey } from '@/lib/i18n'
 
@@ -68,7 +66,6 @@ interface Props {
 
 export default function CategoryChart({ investments, total }: Props) {
   const t = useT()
-  const currency = useProfilStore((s) => s.currency)
 
   const segments = useMemo(() => {
     const grouped: Partial<Record<InvestmentCategory, number>> = {}
@@ -125,20 +122,17 @@ export default function CategoryChart({ investments, total }: Props) {
         </text>
       </svg>
 
-      {/* Légende en colonne */}
-      <ul role="list" className="w-full max-w-[220px] lg:max-w-[240px] flex flex-col gap-2 mt-3">
-        {segments.map(({ category, value, pct }) => (
-          <li key={category} className="flex items-start gap-2">
+      {/* Légende horizontale */}
+      <ul role="list" className="flex flex-wrap justify-center gap-x-4 gap-y-1.5 mt-3">
+        {segments.map(({ category }) => (
+          <li key={category} className="flex items-center gap-1.5">
             <div
               aria-hidden="true"
-              className="w-2.5 h-2.5 rounded-full shrink-0 mt-0.5"
+              className="w-2.5 h-2.5 rounded-full shrink-0"
               style={{ backgroundColor: CATEGORY_COLORS[category].bg }}
             />
-            <span className="text-sm font-semibold text-neutral-800 dark:text-neutral-100 w-24 shrink-0">
+            <span className="text-sm text-neutral-700 dark:text-neutral-300">
               {t(CATEGORY_TKEYS[category])}
-            </span>
-            <span className="text-sm text-neutral-600 dark:text-neutral-300 ml-auto">
-              {formatCurrency(value, currency)} · {(pct * 100).toFixed(1)}%
             </span>
           </li>
         ))}
