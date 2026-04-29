@@ -71,6 +71,11 @@ Ce fichier fournit le contexte et les directives pour Claude Code sur le projet 
 3. Sécurité et fiabilité des données
 4. Performance du dashboard
 
+### Accessibilité UI
+- **Taille de texte minimale : 16px** — utiliser `text-base` au minimum dans tous les composants. Interdire `text-xs` (12px) et `text-sm` (14px) pour du texte visible par l'utilisateur.
+- **Taille d'icône minimale : 20px** — toujours passer `size={20}` ou plus aux composants `<Icon>` et aux SVG inline. Ne pas utiliser 13, 14, 15 ou 16px pour des icônes.
+- Ces règles s'appliquent à l'ensemble de l'application (panneaux, modales, listes, formulaires, boutons d'action).
+
 ### Tests
 - Tester les calculs financiers en priorité (erreurs critiques)
 - Valider les cas limites : portefeuille vide, valeurs négatives, dates invalides
