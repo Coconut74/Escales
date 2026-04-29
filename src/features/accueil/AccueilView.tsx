@@ -194,7 +194,7 @@ export default function AccueilView() {
 
         {/* Dots — ancrés en bas de la zone, au-dessus du bouton fixe */}
         {!selected && (
-          <div className="absolute bottom-[220px] lg:bottom-20 left-1/2 -translate-x-1/2 pointer-events-none z-10">
+          <div className="absolute bottom-[200px] lg:bottom-[120px] left-1/2 -translate-x-1/2 pointer-events-none z-10">
             <Dots vizMode={vizMode} />
           </div>
         )}
