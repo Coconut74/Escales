@@ -12,7 +12,7 @@ interface Category {
   bg: string
   titleColor: string
   iconColor: string
-  glow: string
+  glowColor: string
   icon: IconName
 }
 
@@ -23,7 +23,7 @@ const CATEGORIES: Category[] = [
     bg: 'bg-green-50 dark:bg-green-950/40',
     titleColor: 'text-green-700 dark:text-green-400',
     iconColor: 'text-green-300 dark:text-green-800',
-    glow: 'shadow-green-200/80 dark:shadow-green-900/60',
+    glowColor: 'rgba(134,239,172,0.55)',
     icon: 'book',
   },
   {
@@ -32,7 +32,7 @@ const CATEGORIES: Category[] = [
     bg: 'bg-orange-50 dark:bg-orange-950/40',
     titleColor: 'text-orange-700 dark:text-orange-400',
     iconColor: 'text-orange-300 dark:text-orange-800',
-    glow: 'shadow-orange-200/80 dark:shadow-orange-900/60',
+    glowColor: 'rgba(253,186,116,0.55)',
     icon: 'feed',
   },
   {
@@ -41,7 +41,7 @@ const CATEGORIES: Category[] = [
     bg: 'bg-purple-50 dark:bg-purple-950/40',
     titleColor: 'text-purple-700 dark:text-purple-400',
     iconColor: 'text-purple-300 dark:text-purple-800',
-    glow: 'shadow-purple-200/80 dark:shadow-purple-900/60',
+    glowColor: 'rgba(216,180,254,0.55)',
     icon: 'write',
   },
   {
@@ -50,7 +50,7 @@ const CATEGORIES: Category[] = [
     bg: 'bg-sky-50 dark:bg-sky-950/40',
     titleColor: 'text-sky-700 dark:text-sky-400',
     iconColor: 'text-sky-300 dark:text-sky-800',
-    glow: 'shadow-sky-200/80 dark:shadow-sky-900/60',
+    glowColor: 'rgba(125,211,252,0.55)',
     icon: 'external-link',
   },
 ]
@@ -99,7 +99,8 @@ function CategoryCard({ category, onClick }: { category: Category; onClick: () =
       type="button"
       onClick={onClick}
       aria-label={t(category.titleKey)}
-      className={`relative w-full text-left rounded-3xl overflow-hidden p-4 aspect-square border border-black/10 dark:border-white/10 ${category.bg} shadow-lg ${category.glow} transition-all hover:scale-[1.02]`}
+      className={`relative w-full text-left rounded-3xl overflow-hidden p-4 aspect-square ${category.bg} transition-all hover:scale-[1.02]`}
+      style={{ boxShadow: `0 0 0 1.5px ${category.glowColor}, 0 0 18px 3px ${category.glowColor}` }}
     >
       {/* Titre en haut à gauche */}
       <span className={`relative z-10 text-base font-extrabold uppercase tracking-wide leading-tight ${category.titleColor}`}>
