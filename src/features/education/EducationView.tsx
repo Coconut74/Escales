@@ -12,6 +12,7 @@ interface Category {
   bg: string
   titleColor: string
   iconColor: string
+  glow: string
   icon: IconName
 }
 
@@ -21,7 +22,8 @@ const CATEGORIES: Category[] = [
     titleKey: 'education.videos',
     bg: 'bg-green-50 dark:bg-green-950/40',
     titleColor: 'text-green-700 dark:text-green-400',
-    iconColor: 'text-green-200 dark:text-green-900',
+    iconColor: 'text-green-300 dark:text-green-800',
+    glow: 'shadow-green-200/80 dark:shadow-green-900/60',
     icon: 'book',
   },
   {
@@ -29,7 +31,8 @@ const CATEGORIES: Category[] = [
     titleKey: 'education.podcasts',
     bg: 'bg-orange-50 dark:bg-orange-950/40',
     titleColor: 'text-orange-700 dark:text-orange-400',
-    iconColor: 'text-orange-200 dark:text-orange-900',
+    iconColor: 'text-orange-300 dark:text-orange-800',
+    glow: 'shadow-orange-200/80 dark:shadow-orange-900/60',
     icon: 'feed',
   },
   {
@@ -37,7 +40,8 @@ const CATEGORIES: Category[] = [
     titleKey: 'education.articles',
     bg: 'bg-purple-50 dark:bg-purple-950/40',
     titleColor: 'text-purple-700 dark:text-purple-400',
-    iconColor: 'text-purple-200 dark:text-purple-900',
+    iconColor: 'text-purple-300 dark:text-purple-800',
+    glow: 'shadow-purple-200/80 dark:shadow-purple-900/60',
     icon: 'write',
   },
   {
@@ -45,7 +49,8 @@ const CATEGORIES: Category[] = [
     titleKey: 'education.bref',
     bg: 'bg-sky-50 dark:bg-sky-950/40',
     titleColor: 'text-sky-700 dark:text-sky-400',
-    iconColor: 'text-sky-200 dark:text-sky-900',
+    iconColor: 'text-sky-300 dark:text-sky-800',
+    glow: 'shadow-sky-200/80 dark:shadow-sky-900/60',
     icon: 'external-link',
   },
 ]
@@ -94,19 +99,16 @@ function CategoryCard({ category, onClick }: { category: Category; onClick: () =
       type="button"
       onClick={onClick}
       aria-label={t(category.titleKey)}
-      className={`relative w-full text-left rounded-3xl overflow-hidden p-5 aspect-square border border-black/10 dark:border-white/10 ${category.bg} transition-opacity hover:opacity-90`}
+      className={`relative w-full text-left rounded-3xl overflow-hidden p-4 aspect-square border border-black/10 dark:border-white/10 ${category.bg} shadow-lg ${category.glow} transition-all hover:scale-[1.02]`}
     >
-      {/* Titre + chevron */}
-      <div className="flex items-center justify-between w-full relative z-10">
-        <span className={`text-base font-extrabold uppercase tracking-wide ${category.titleColor}`}>
-          {t(category.titleKey)}
-        </span>
-        <Icon name="arrow" size={20} className={category.titleColor} />
-      </div>
+      {/* Titre en haut à gauche */}
+      <span className={`relative z-10 text-base font-extrabold uppercase tracking-wide leading-tight ${category.titleColor}`}>
+        {t(category.titleKey)}
+      </span>
 
-      {/* Icône décorative */}
-      <div className={`absolute -bottom-3 -left-3 opacity-40 ${category.iconColor}`} aria-hidden="true">
-        <Icon name={category.icon} size={80} />
+      {/* Icône décorative à gauche */}
+      <div className={`absolute -bottom-4 -left-4 opacity-30 ${category.iconColor}`} aria-hidden="true">
+        <Icon name={category.icon} size={110} />
       </div>
     </button>
   )
