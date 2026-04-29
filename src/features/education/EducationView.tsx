@@ -73,7 +73,7 @@ export default function EducationView() {
       </div>
 
       {/* Grille des catégories */}
-      <div className="flex-1 overflow-auto px-4 pb-32 lg:pb-8 pt-4 grid grid-cols-2 gap-4 content-start">
+      <div className="flex-1 overflow-auto px-4 pb-32 lg:pb-8 pt-4 grid grid-cols-1 lg:grid-cols-2 gap-4 content-start">
         {CATEGORIES.map((cat) => (
           <CategoryCard
             key={cat.id}
@@ -99,8 +99,7 @@ function CategoryCard({ category, onClick }: { category: Category; onClick: () =
       type="button"
       onClick={onClick}
       aria-label={t(category.titleKey)}
-      className={`relative w-full text-left rounded-3xl overflow-hidden p-4 aspect-square ${category.bg} transition-all hover:scale-[1.02]`}
-      style={{ boxShadow: `0 0 0 1.5px ${category.glowColor}, 0 0 18px 3px ${category.glowColor}` }}
+      className={`relative w-full text-left rounded-3xl overflow-hidden p-4 h-28 border border-black/20 dark:border-white/15 ${category.bg} transition-all hover:opacity-90`}
     >
       {/* Titre en haut à gauche */}
       <span className={`relative z-10 text-base font-extrabold uppercase tracking-wide leading-tight ${category.titleColor}`}>
