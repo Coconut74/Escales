@@ -9,7 +9,7 @@ const fr = {
 
   // Accueil
   'home.myInvestments': 'Mes investissements',
-  'home.editInvestments': 'Voir mes investissements',
+  'home.editInvestments': 'Voir le détail',
   'home.emptyChart': 'Aucun investissement',
   'home.portfolio': 'Portfolio',
   'home.categories': 'Catégories',
@@ -246,7 +246,7 @@ const en: typeof fr = {
   'nav.profile': 'Profile',
 
   'home.myInvestments': 'My investments',
-  'home.editInvestments': 'View my investments',
+  'home.editInvestments': 'View details',
   'home.emptyChart': 'No investments yet',
   'home.portfolio': 'Portfolio',
   'home.categories': 'Categories',
