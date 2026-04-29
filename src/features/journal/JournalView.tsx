@@ -12,7 +12,7 @@ export default function JournalView() {
   return (
     <div className="flex flex-col h-full">
       {/* Header + onglets */}
-      <div className="sticky top-0 z-10 bg-neutral-100/90 dark:bg-neutral-900/90 backdrop-blur-md px-4 pt-10 pb-3">
+      <div className="sticky top-0 z-10 bg-neutral-100/90 dark:bg-neutral-900/90 backdrop-blur-md px-4 pt-8 pb-3">
         <h1 className="text-xl font-bold text-neutral-900 dark:text-neutral-50 mb-4">{t('journal.title')}</h1>
         <div role="tablist" aria-label={t('journal.title')} className="flex gap-2">
           <button
