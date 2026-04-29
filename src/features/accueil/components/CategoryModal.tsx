@@ -61,6 +61,15 @@ export default function CategoryModal({ category, investments, total, onClose }:
 
   return (
     <>
+      {open && (
+        <div
+          className="fixed inset-0"
+          style={{ zIndex: 98 }}
+          onClick={onClose}
+          aria-hidden="true"
+        />
+      )}
+
       {exitStack.map(({ uid, category: exitCat }) => (
         <div
           key={uid}
