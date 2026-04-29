@@ -125,7 +125,7 @@ export default function ProjectEditor({ initial, onSave, onCancel }: Props) {
                       : 'border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600'
                   }`}
                 >
-                  <img src={pt.icon} alt="" className="w-8 h-8 object-contain shrink-0" />
+                  <img src={pt.icon} alt="" className="w-11 h-11 object-contain shrink-0" />
                   <div>
                     <p className={`text-sm font-semibold ${type === pt.value ? 'text-primary-700 dark:text-primary-300' : 'text-neutral-800 dark:text-neutral-100'}`}>{pt.label}</p>
                     <p className="text-xs text-neutral-400 dark:text-neutral-500">{pt.description}</p>

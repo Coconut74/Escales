@@ -129,7 +129,7 @@ function ProjectCard({ project, onClick }: {
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2.5 flex-1 min-w-0">
-          <img src={meta.icon} alt="" className="w-8 h-8 object-contain shrink-0" />
+          <img src={meta.icon} alt="" className="w-11 h-11 object-contain shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-neutral-900 dark:text-neutral-50 truncate">{project.name}</p>
             <p className="text-xs text-neutral-400 dark:text-neutral-500">{typeLabel}</p>
@@ -231,7 +231,7 @@ function ProjectDetail({ project, onClose, onDelete }: { project: Project; onClo
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-4 shrink-0 border-b border-neutral-100 dark:border-neutral-700">
           <div className="flex items-center gap-2">
-            <img src={meta.icon} alt="" className="w-8 h-8 object-contain shrink-0" />
+            <img src={meta.icon} alt="" className="w-11 h-11 object-contain shrink-0" />
             <div>
               <h2 className="text-base font-bold text-neutral-900 dark:text-neutral-50 leading-tight">{project.name}</h2>
               <p className="text-xs text-neutral-400 dark:text-neutral-500">{typeLabel}</p>
