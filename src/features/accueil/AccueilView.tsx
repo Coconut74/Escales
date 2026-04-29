@@ -158,6 +158,7 @@ export default function AccueilView() {
           style={{
             transform: `translateX(${vizMode === 'chart' ? '0%' : '-100%'})`,
             transition: 'transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)',
+            pointerEvents: vizMode === 'chart' ? 'auto' : 'none',
           }}
         >
           <div className="w-[90%] max-w-[480px] lg:max-w-[520px]">
@@ -185,6 +186,7 @@ export default function AccueilView() {
           style={{
             transform: `translateX(${vizMode === 'categories' ? '0%' : '100%'})`,
             transition: 'transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)',
+            pointerEvents: vizMode === 'categories' ? 'auto' : 'none',
           }}
         >
           <div className="w-[90%] max-w-[480px] lg:max-w-[520px]">
