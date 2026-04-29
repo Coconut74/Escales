@@ -153,7 +153,7 @@ export default function AccueilView() {
       >
         {/* Vue isométrique */}
         <div
-          className="absolute inset-0 flex flex-col items-center pt-16 lg:pt-0 lg:justify-center"
+          className="absolute inset-0 flex flex-col items-center pt-16 lg:pt-4"
           style={{
             transform: `translateX(${vizMode === 'chart' ? '0%' : '-100%'})`,
             transition: 'transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)',
@@ -176,12 +176,11 @@ export default function AccueilView() {
               />
             </div>
           </div>
-          {!selected && <Dots vizMode={vizMode} />}
         </div>
 
-        {/* Vue donut — même positionnement vertical que la vue isométrique */}
+        {/* Vue donut */}
         <div
-          className="absolute inset-0 flex flex-col items-center pt-16 lg:pt-0 lg:justify-center"
+          className="absolute inset-0 flex flex-col items-center pt-16 lg:pt-4"
           style={{
             transform: `translateX(${vizMode === 'categories' ? '0%' : '100%'})`,
             transition: 'transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)',
@@ -190,8 +189,14 @@ export default function AccueilView() {
           <div className="w-[90%] max-w-[480px] lg:max-w-[660px]">
             <CategoryChart investments={effectiveInvestments} total={total} />
           </div>
-          {!selected && <Dots vizMode={vizMode} />}
         </div>
+
+        {/* Dots statiques — hors des vues glissantes, position absolue sous les charts */}
+        {!selected && (
+          <div className="absolute top-[352px] lg:top-[548px] left-1/2 -translate-x-1/2 pointer-events-none z-10">
+            <Dots vizMode={vizMode} />
+          </div>
+        )}
       </div>
 
       {/* Bouton modifier */}
