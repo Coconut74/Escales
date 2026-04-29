@@ -2,12 +2,11 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useAccueilStore } from '../accueil.store'
 import type { Investment, InvestmentCategory, InvestmentSnapshot } from '../accueil.types'
-import { CATEGORY_LABELS } from '../accueil.types'
+import { CATEGORY_LABELS, CATEGORY_COLORS } from '../accueil.types'
 import { searchSymbol } from '@/services/finnhub'
 import type { FinnhubSearchResult } from '@/services/finnhub'
 import TextField from '@/components/ui/TextField'
 import DropdownField from '@/components/ui/DropdownField'
-import Button from '@/components/ui/Button'
 import Icon from '@/components/ui/Icon'
 import { useT } from '@/lib/i18n'
 import type { TKey } from '@/lib/i18n'
@@ -35,10 +34,14 @@ interface Props {
 }
 
 export default function EditInvestmentsPanel({ open, onClose }: Props) {
-  const { investments, setInvestments } = useAccueilStore()
+  const { investments, addInvestment, updateInvestment, removeInvestment } = useAccueilStore()
+  const currency = useProfilStore((s) => s.currency)
   const t = useT()
-  const [draft, setDraft] = useState<Investment[]>([])
-  const [errors, setErrors] = useState<Record<string, string>>({})
+
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editDraft, setEditDraft] = useState<Investment | null>(null)
+  const [editError, setEditError] = useState<string | null>(null)
+  const [isNew, setIsNew] = useState(false)
   const [openHistoryId, setOpenHistoryId] = useState<string | null>(null)
 
   const CATEGORY_OPTIONS = (Object.keys(CATEGORY_LABELS) as InvestmentCategory[]).map(
@@ -47,57 +50,84 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
 
   useEffect(() => {
     if (open) {
-      setDraft(investments.map((i) => ({ ...i })))
-      setErrors({})
+      setEditingId(null)
+      setEditDraft(null)
+      setEditError(null)
+      setIsNew(false)
+      setOpenHistoryId(null)
     }
-  }, [open, investments])
+  }, [open])
 
   useEffect(() => {
     if (!open) return
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { editingId ? cancelEdit() : onClose() }
+    }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [open, onClose])
+  }, [open, onClose, editingId])
 
-  function update(id: string, patch: Partial<Investment>) {
-    setDraft((d) => d.map((i) => (i.id === id ? { ...i, ...patch } : i)))
-    setErrors((e) => { const next = { ...e }; delete next[id]; return next })
+  function startEdit(inv: Investment) {
+    setEditDraft({ ...inv })
+    setEditingId(inv.id)
+    setEditError(null)
+    setOpenHistoryId(null)
   }
 
-  function add() {
-    setDraft((d) => [
-      ...d,
-      { id: crypto.randomUUID(), label: '', category: 'etf', value: 0 },
-    ])
+  function cancelEdit() {
+    setEditDraft(null)
+    setEditingId(null)
+    setEditError(null)
+    setIsNew(false)
   }
 
-  function remove(id: string) {
-    setDraft((d) => d.filter((i) => i.id !== id))
-  }
-
-  function save() {
-    const newErrors: Record<string, string> = {}
-    draft.forEach((inv) => {
-      if (!inv.label.trim()) newErrors[inv.id] = 'label'
-      else if (inv.ticker) {
-        if (!inv.shares || inv.shares <= 0) newErrors[inv.id] = 'shares'
-      } else if (inv.value <= 0) {
-        newErrors[inv.id] = 'value'
-      }
-    })
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors)
-      return
+  function validateEdit() {
+    if (!editDraft) return
+    if (!editDraft.label.trim()) { setEditError('label'); return }
+    if (editDraft.ticker) {
+      if (!editDraft.shares || editDraft.shares <= 0) { setEditError('shares'); return }
+    } else if (editDraft.value <= 0) {
+      setEditError('value'); return
     }
-    setInvestments(draft)
-    onClose()
+    if (isNew) {
+      addInvestment(editDraft)
+    } else {
+      updateInvestment(editDraft.id, editDraft)
+    }
+    cancelEdit()
   }
+
+  function startAdd() {
+    const newInv: Investment = { id: crypto.randomUUID(), label: '', category: 'etf', value: 0 }
+    setEditDraft(newInv)
+    setEditingId(newInv.id)
+    setEditError(null)
+    setIsNew(true)
+  }
+
+  function updateDraft(patch: Partial<Investment>) {
+    setEditDraft((d) => d ? { ...d, ...patch } : d)
+    setEditError(null)
+  }
+
+  // Liste affichée : investissements existants + nouvel item en cours d'ajout
+  const displayList: Investment[] = isNew && editDraft
+    ? [...investments, editDraft]
+    : investments
 
   const panelContent = (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 pt-6 pb-4 shrink-0">
-        <h2 className="text-lg font-bold text-neutral-900 dark:text-neutral-50">{t('edit.title')}</h2>
+      <div className="flex items-center gap-2 px-6 pt-6 pb-4 shrink-0">
+        <h2 className="flex-1 text-lg font-bold text-neutral-900 dark:text-neutral-50">{t('edit.title')}</h2>
+        <button
+          onClick={startAdd}
+          disabled={editingId !== null}
+          className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100/80 dark:bg-neutral-700/80 text-neutral-500 dark:text-neutral-400 hover:bg-primary-50 hover:text-primary-600 dark:hover:bg-primary-900/30 dark:hover:text-primary-400 disabled:opacity-30 transition-colors"
+          aria-label={t('edit.addInvestment')}
+        >
+          <Icon name="plus" size={18} />
+        </button>
         <button
           onClick={onClose}
           className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100/80 dark:bg-neutral-700/80 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-200/80 dark:hover:bg-neutral-600/80 transition-colors"
@@ -108,115 +138,37 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
       </div>
 
       {/* Liste scrollable */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-6 pb-4 space-y-3">
-        {draft.map((inv) => (
-          <div
-            key={inv.id}
-            className="bg-white/60 dark:bg-neutral-700/60 backdrop-blur-sm border border-neutral-200/50 dark:border-neutral-600/50 rounded-2xl p-4 space-y-3"
-          >
-            <div className="flex items-start gap-2">
-              <div className="flex-1 space-y-3">
-                <TextField
-                  placeholder={t('edit.investmentName')}
-                  value={inv.label}
-                  onChange={(e) => update(inv.id, { label: e.target.value })}
-                  error={errors[inv.id] === 'label' ? t('edit.nameRequired') : undefined}
-                />
-                <div className="flex gap-2">
-                  <div className="flex-1">
-                    <DropdownField
-                      options={CATEGORY_OPTIONS}
-                      value={inv.category}
-                      onChange={(e) => update(inv.id, { category: e.target.value as InvestmentCategory })}
-                    />
-                  </div>
-                  {!inv.ticker && (
-                    <>
-                      <div className="w-28">
-                        <TextField
-                          type="number"
-                          placeholder={t('edit.amount')}
-                          value={inv.value === 0 ? '' : inv.value}
-                          onChange={(e) => update(inv.id, { value: parseFloat(e.target.value) || 0 })}
-                          error={errors[inv.id] === 'value' ? t('edit.valueRequired') : undefined}
-                        />
-                      </div>
-                      <div className="w-20">
-                        <TextField
-                          type="number"
-                          placeholder={t('edit.changePct')}
-                          value={inv.change === undefined ? '' : inv.change}
-                          onChange={(e) => {
-                            const v = e.target.value
-                            update(inv.id, { change: v === '' ? undefined : parseFloat(v) })
-                          }}
-                        />
-                      </div>
-                    </>
-                  )}
-                  {inv.ticker && (
-                    <div className="w-28">
-                      <TextField
-                        type="number"
-                        placeholder={t('edit.shares')}
-                        value={inv.shares === undefined ? '' : inv.shares}
-                        onChange={(e) => update(inv.id, { shares: parseFloat(e.target.value) || undefined })}
-                        error={errors[inv.id] === 'shares' ? t('edit.sharesRequired') : undefined}
-                      />
-                    </div>
-                  )}
-                </div>
-
-                <TickerField
-                  ticker={inv.ticker}
-                  apiKey={import.meta.env.VITE_FINNHUB_KEY ?? ''}
-                  onSelect={(ticker) => update(inv.id, { ticker, shares: inv.shares ?? 1 })}
-                  onUnlink={() => update(inv.id, { ticker: undefined, shares: undefined })}
-                />
-
-                {/* Bouton historique */}
-                <button
-                  onClick={() => setOpenHistoryId(openHistoryId === inv.id ? null : inv.id)}
-                  className="flex items-center gap-1.5 text-xs font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
-                >
-                  <ChartIcon />
-                  {t('history.title')}
-                  <span className="text-neutral-400">{openHistoryId === inv.id ? '▲' : '▼'}</span>
-                </button>
-              </div>
-              <button
-                onClick={() => remove(inv.id)}
-                className="mt-2 p-1.5 text-neutral-400 hover:text-red-500 transition-colors shrink-0"
-                aria-label="Supprimer"
-              >
-                <Icon name="trash" size={18} />
-              </button>
-            </div>
-
-            {/* Section historique dépliante */}
-            {openHistoryId === inv.id && (
-              <HistorySection investmentId={inv.id} />
-            )}
-          </div>
-        ))}
-
-        <button
-          onClick={add}
-          className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl border border-dashed border-neutral-300 dark:border-neutral-600 text-neutral-500 dark:text-neutral-400 hover:border-primary-400 hover:text-primary-600 dark:hover:border-primary-500 dark:hover:text-primary-400 transition-colors text-sm font-semibold"
-        >
-          <Icon name="plus" size={16} />
-          {t('edit.addInvestment')}
-        </button>
-      </div>
-
-      {/* Footer */}
-      <div className="px-6 pt-3 pb-6 shrink-0 flex gap-3">
-        <Button variant="grey-outline" size="lg" className="flex-1 rounded-2xl" onClick={onClose}>
-          {t('edit.cancel')}
-        </Button>
-        <Button variant="primary" size="lg" className="flex-1 rounded-2xl" onClick={save}>
-          {t('edit.save')}
-        </Button>
+      <div className="flex-1 min-h-0 overflow-y-auto px-4 pb-6">
+        {displayList.length === 0 && (
+          <p className="text-sm text-neutral-400 dark:text-neutral-500 text-center py-10">{t('edit.empty')}</p>
+        )}
+        <div className="space-y-1">
+          {displayList.map((inv) =>
+            editingId === inv.id && editDraft ? (
+              <EditRow
+                key={inv.id}
+                draft={editDraft}
+                error={editError}
+                isNew={isNew}
+                openHistoryId={openHistoryId}
+                setOpenHistoryId={setOpenHistoryId}
+                categoryOptions={CATEGORY_OPTIONS}
+                onUpdate={updateDraft}
+                onValidate={validateEdit}
+                onCancel={cancelEdit}
+                onDelete={() => { removeInvestment(inv.id); cancelEdit() }}
+              />
+            ) : (
+              <ViewRow
+                key={inv.id}
+                inv={inv}
+                currency={currency}
+                onEdit={() => startEdit(inv)}
+                disabled={editingId !== null}
+              />
+            )
+          )}
+        </div>
       </div>
     </div>
   )
@@ -227,7 +179,8 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
       <div
         className={`
           lg:hidden fixed inset-0 z-[110] flex flex-col
-          bg-white/80 dark:bg-neutral-800/90 backdrop-blur-xl border-t border-white/40 dark:border-neutral-700/40 shadow-2xl
+          bg-white/80 dark:bg-neutral-800/90 backdrop-blur-xl
+          border-t border-white/40 dark:border-neutral-700/40 shadow-2xl
           transition-transform duration-300 ease-out
           ${open ? 'translate-y-0' : 'translate-y-full'}
         `}
@@ -249,7 +202,8 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
         <div
           className={`
             w-full max-w-lg h-[80vh] flex flex-col
-            bg-white/80 dark:bg-neutral-800/90 backdrop-blur-xl border border-white/40 dark:border-neutral-700/40 shadow-2xl rounded-3xl
+            bg-white/80 dark:bg-neutral-800/90 backdrop-blur-xl
+            border border-white/40 dark:border-neutral-700/40 shadow-2xl rounded-3xl
             transition-transform duration-300 ease-out
             ${open ? 'scale-100' : 'scale-95'}
           `}
@@ -261,7 +215,179 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
   )
 }
 
-// ─── Section historique ──────────────────────────────────────────────────────
+// ─── Ligne de visualisation ───────────────────────────────────────────────────
+
+function ViewRow({ inv, currency, onEdit, disabled }: {
+  inv: Investment
+  currency: string
+  onEdit: () => void
+  disabled: boolean
+}) {
+  const t = useT()
+  const color = CATEGORY_COLORS[inv.category]
+  const initials = inv.label.slice(0, 2).toUpperCase() || '?'
+
+  return (
+    <div className="flex items-center gap-3 px-3 py-2.5 rounded-2xl hover:bg-neutral-100/60 dark:hover:bg-neutral-700/40 transition-colors">
+      {/* Avatar */}
+      <div
+        className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold shrink-0"
+        style={{ backgroundColor: color.bg, color: color.text }}
+      >
+        {initials}
+      </div>
+
+      {/* Nom + catégorie */}
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-50 truncate leading-tight">
+          {inv.label || '—'}
+        </p>
+        <p className="text-xs text-neutral-400 dark:text-neutral-500 leading-tight">
+          {t(CATEGORY_TKEYS[inv.category])}
+        </p>
+      </div>
+
+      {/* Valeur */}
+      <span className="text-sm font-bold text-neutral-700 dark:text-neutral-200 shrink-0 tabular-nums">
+        {formatCurrency(inv.value, currency)}
+      </span>
+
+      {/* Bouton modifier */}
+      <button
+        onClick={onEdit}
+        disabled={disabled}
+        className="w-8 h-8 flex items-center justify-center rounded-full text-neutral-400 hover:bg-primary-50 hover:text-primary-600 dark:hover:bg-primary-900/30 dark:hover:text-primary-400 disabled:opacity-30 transition-colors shrink-0"
+        aria-label="Modifier"
+      >
+        <Icon name="write" size={15} />
+      </button>
+    </div>
+  )
+}
+
+// ─── Ligne d'édition (dépliée) ────────────────────────────────────────────────
+
+function EditRow({ draft, error, isNew, openHistoryId, setOpenHistoryId, categoryOptions, onUpdate, onValidate, onCancel, onDelete }: {
+  draft: Investment
+  error: string | null
+  isNew: boolean
+  openHistoryId: string | null
+  setOpenHistoryId: (id: string | null) => void
+  categoryOptions: { value: string; label: string }[]
+  onUpdate: (patch: Partial<Investment>) => void
+  onValidate: () => void
+  onCancel: () => void
+  onDelete: () => void
+}) {
+  const t = useT()
+
+  return (
+    <div className="bg-white/60 dark:bg-neutral-700/60 backdrop-blur-sm border border-primary-200/60 dark:border-primary-700/40 rounded-2xl p-4 space-y-3">
+      <div className="space-y-3">
+        <TextField
+          placeholder={t('edit.investmentName')}
+          value={draft.label}
+          onChange={(e) => onUpdate({ label: e.target.value })}
+          error={error === 'label' ? t('edit.nameRequired') : undefined}
+        />
+
+        <div className="flex gap-2">
+          <div className="flex-1">
+            <DropdownField
+              options={categoryOptions}
+              value={draft.category}
+              onChange={(e) => onUpdate({ category: e.target.value as InvestmentCategory })}
+            />
+          </div>
+          {!draft.ticker && (
+            <>
+              <div className="w-28">
+                <TextField
+                  type="number"
+                  placeholder={t('edit.amount')}
+                  value={draft.value === 0 ? '' : draft.value}
+                  onChange={(e) => onUpdate({ value: parseFloat(e.target.value) || 0 })}
+                  error={error === 'value' ? t('edit.valueRequired') : undefined}
+                />
+              </div>
+              <div className="w-20">
+                <TextField
+                  type="number"
+                  placeholder={t('edit.changePct')}
+                  value={draft.change === undefined ? '' : draft.change}
+                  onChange={(e) => {
+                    const v = e.target.value
+                    onUpdate({ change: v === '' ? undefined : parseFloat(v) })
+                  }}
+                />
+              </div>
+            </>
+          )}
+          {draft.ticker && (
+            <div className="w-28">
+              <TextField
+                type="number"
+                placeholder={t('edit.shares')}
+                value={draft.shares === undefined ? '' : draft.shares}
+                onChange={(e) => onUpdate({ shares: parseFloat(e.target.value) || undefined })}
+                error={error === 'shares' ? t('edit.sharesRequired') : undefined}
+              />
+            </div>
+          )}
+        </div>
+
+        <TickerField
+          ticker={draft.ticker}
+          apiKey={import.meta.env.VITE_FINNHUB_KEY ?? ''}
+          onSelect={(ticker) => onUpdate({ ticker, shares: draft.shares ?? 1 })}
+          onUnlink={() => onUpdate({ ticker: undefined, shares: undefined })}
+        />
+
+        {!isNew && (
+          <button
+            onClick={() => setOpenHistoryId(openHistoryId === draft.id ? null : draft.id)}
+            className="flex items-center gap-1.5 text-xs font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
+          >
+            <ChartIcon />
+            {t('history.title')}
+            <span className="text-neutral-400">{openHistoryId === draft.id ? '▲' : '▼'}</span>
+          </button>
+        )}
+
+        {openHistoryId === draft.id && <HistorySection investmentId={draft.id} />}
+      </div>
+
+      {/* Actions : poubelle à gauche, annuler + valider à droite */}
+      <div className="flex items-center justify-end gap-2 pt-1">
+        {!isNew && (
+          <button
+            onClick={onDelete}
+            className="mr-auto p-1.5 text-neutral-400 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
+            aria-label="Supprimer"
+          >
+            <Icon name="trash" size={16} />
+          </button>
+        )}
+        <button
+          onClick={onCancel}
+          className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-600 text-neutral-500 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-500 transition-colors"
+          aria-label={t('edit.cancel')}
+        >
+          <Icon name="x" size={15} />
+        </button>
+        <button
+          onClick={onValidate}
+          className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-500 text-white hover:bg-primary-600 transition-colors"
+          aria-label={t('edit.save')}
+        >
+          <Icon name="check" size={15} />
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// ─── Section historique ───────────────────────────────────────────────────────
 
 function HistorySection({ investmentId }: { investmentId: string }) {
   const t = useT()
@@ -294,7 +420,6 @@ function HistorySection({ investmentId }: { investmentId: string }) {
 
   return (
     <div className="mt-1 pt-3 border-t border-neutral-200/60 dark:border-neutral-600/60 space-y-2">
-      {/* Formulaire d'ajout */}
       <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">
         {t('history.addEntry')}
       </p>
@@ -324,7 +449,6 @@ function HistorySection({ investmentId }: { investmentId: string }) {
         </button>
       </div>
 
-      {/* Liste des entrées */}
       {invSnaps.length === 0 ? (
         <p className="text-xs text-neutral-400 dark:text-neutral-500 py-1">{t('history.noEntries')}</p>
       ) : (
@@ -361,7 +485,7 @@ function HistorySection({ investmentId }: { investmentId: string }) {
   )
 }
 
-// ─── Champ de recherche ticker ───────────────────────────────────────────────
+// ─── Champ de recherche ticker ────────────────────────────────────────────────
 
 function TickerField({ ticker, apiKey, onSelect, onUnlink }: {
   ticker?: string

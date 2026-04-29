@@ -9,7 +9,7 @@ const fr = {
 
   // Accueil
   'home.myInvestments': 'Mes investissements',
-  'home.editInvestments': 'Modifier mes investissements',
+  'home.editInvestments': 'Voir mes investissements',
   'home.emptyChart': 'Aucun investissement',
   'home.portfolio': 'Portfolio',
 
@@ -53,6 +53,7 @@ const fr = {
   'edit.addInvestment': 'Ajouter un investissement',
   'edit.cancel': 'Annuler',
   'edit.save': 'Enregistrer',
+  'edit.empty': 'Aucun investissement · appuyez sur + pour commencer',
 
   // Journal
   'journal.title': 'Journal de bord',
@@ -228,7 +229,7 @@ const en: typeof fr = {
   'nav.profile': 'Profile',
 
   'home.myInvestments': 'My investments',
-  'home.editInvestments': 'Edit my investments',
+  'home.editInvestments': 'View my investments',
   'home.emptyChart': 'No investments yet',
   'home.portfolio': 'Portfolio',
 
@@ -268,6 +269,7 @@ const en: typeof fr = {
   'edit.addInvestment': 'Add investment',
   'edit.cancel': 'Cancel',
   'edit.save': 'Save',
+  'edit.empty': 'No investments yet · tap + to get started',
 
   'journal.title': 'Journal',
   'journal.notes': 'Notes',

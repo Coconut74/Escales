@@ -209,7 +209,7 @@ export default function AccueilView() {
           onClick={() => setEditOpen(true)}
           className="whitespace-nowrap shadow-sm"
         >
-          <Icon name="write" size={18} />
+          <Icon name="eye" size={18} />
           {t('home.editInvestments')}
         </Button>
       </div>
