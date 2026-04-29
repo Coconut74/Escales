@@ -29,6 +29,7 @@ const fr = {
   'investment.value': 'Valeur',
   'investment.share': 'Part',
   'investment.change': 'Evolution',
+  'category.investments': 'investissement(s)',
 
   // Catégories
   'cat.etf': 'ETF / Actions',
@@ -264,6 +265,7 @@ const en: typeof fr = {
   'investment.value': 'Value',
   'investment.share': 'Share',
   'investment.change': 'Change',
+  'category.investments': 'investment(s)',
 
   'cat.etf': 'ETF / Stocks',
   'cat.immo': 'Real Estate',

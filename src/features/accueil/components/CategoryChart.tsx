@@ -62,10 +62,10 @@ function arcPath(startDeg: number, endDeg: number): string {
 interface Props {
   investments: Investment[]
   total: number
-  onSelectInvestment?: (inv: Investment) => void
+  onSelectCategory?: (category: InvestmentCategory) => void
 }
 
-export default function CategoryChart({ investments, total, onSelectInvestment }: Props) {
+export default function CategoryChart({ investments, total, onSelectCategory }: Props) {
   const t = useT()
 
   const segments = useMemo(() => {
@@ -92,8 +92,7 @@ export default function CategoryChart({ investments, total, onSelectInvestment }
   }, [investments, total])
 
   function handleClick(category: InvestmentCategory) {
-    const inv = investments.find(i => i.category === category)
-    if (inv) onSelectInvestment?.(inv)
+    onSelectCategory?.(category)
   }
 
   if (total === 0 || segments.length === 0) {
@@ -114,7 +113,7 @@ export default function CategoryChart({ investments, total, onSelectInvestment }
             d={path}
             fill={CATEGORY_COLORS[category].bg}
             onClick={() => handleClick(category)}
-            style={{ cursor: onSelectInvestment ? 'pointer' : 'default' }}
+            style={{ cursor: onSelectCategory ? 'pointer' : 'default' }}
           />
         ))}
         {/* Texte centre */}
@@ -135,7 +134,7 @@ export default function CategoryChart({ investments, total, onSelectInvestment }
         {segments.map(({ category }) => (
           <li
             key={category}
-            className={`flex items-center gap-1.5 ${onSelectInvestment ? 'cursor-pointer' : ''}`}
+            className={`flex items-center gap-1.5 ${onSelectCategory ? 'cursor-pointer' : ''}`}
             onClick={() => handleClick(category)}
           >
             <div

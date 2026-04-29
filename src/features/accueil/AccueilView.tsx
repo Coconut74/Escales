@@ -4,10 +4,11 @@ import { useAccueilStore, selectTotal, selectAverageChange, selectEffectiveChang
 import PortfolioTotal from './components/PortfolioTotal'
 import IsometricChart from './components/IsometricChart'
 import CategoryChart from './components/CategoryChart'
+import CategoryModal from './components/CategoryModal'
 import type { SvgPoint, IsometricChartHandle } from './components/IsometricChart'
 import InvestmentModal from './components/InvestmentModal'
 import EditInvestmentsPanel from './components/EditInvestmentsPanel'
-import type { Investment } from './accueil.types'
+import type { Investment, InvestmentCategory } from './accueil.types'
 import Icon from '@/components/ui/Icon'
 import { useStockPrices } from '@/hooks/useStockPrices'
 import { useT } from '@/lib/i18n'
@@ -52,6 +53,7 @@ export default function AccueilView() {
     ? effectiveInvestments.find(i => i.id === selected.id) ?? selected
     : null
 
+  const [selectedCategory, setSelectedCategory] = useState<InvestmentCategory | null>(null)
   const [editOpen, setEditOpen] = useState(false)
   const [zoom, setZoom] = useState(1)
   const [zoomOrigin, setZoomOrigin] = useState({ x: 50, y: 50 })
@@ -193,7 +195,7 @@ export default function AccueilView() {
             <CategoryChart
               investments={effectiveInvestments}
               total={total}
-              onSelectInvestment={(inv) => setSelected(inv)}
+              onSelectCategory={(cat) => setSelectedCategory(cat)}
             />
           </div>
         </div>
@@ -221,6 +223,13 @@ export default function AccueilView() {
       </div>
 
       <EditInvestmentsPanel open={editOpen} onClose={() => setEditOpen(false)} />
+
+      <CategoryModal
+        category={selectedCategory}
+        investments={effectiveInvestments}
+        total={total}
+        onClose={() => setSelectedCategory(null)}
+      />
 
       <InvestmentModal
         investment={effectiveSelected}
