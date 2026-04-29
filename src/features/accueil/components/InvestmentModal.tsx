@@ -134,6 +134,15 @@ export default function InvestmentModal({ investment, total, onClose, onNext, on
 
   return (
     <>
+      {open && (
+        <div
+          className="fixed inset-0"
+          style={{ zIndex: 98 }}
+          onClick={onClose}
+          aria-hidden="true"
+        />
+      )}
+
       {exitStack.map(({ uid, inv, dir, position: exitPos }) => (
         <div
           key={uid}
