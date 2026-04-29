@@ -30,7 +30,7 @@ export default function Sidebar({ activeView, onNavigate }: SidebarProps) {
       {/* Logo */}
       <div className="flex items-center gap-2 px-5 pt-6 pb-5">
         <img src="/logo.png" alt="Escales" className="w-7 h-7 object-contain" />
-        <span className="text-base font-bold tracking-widest text-primary-500 uppercase">
+        <span className="text-base font-bold tracking-widest text-orange-500 uppercase">
           Escales
         </span>
       </div>
