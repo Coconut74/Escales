@@ -217,7 +217,17 @@ const fr = {
 
   // Education
   'education.title': 'Éducation financière',
-  'education.wip': 'Cette section est en cours de développement.',
+  'education.videos': 'Vidéos',
+  'education.podcasts': 'Podcasts',
+  'education.articles': 'Articles',
+  'education.bref': 'En bref',
+  'education.brefSoon': 'Cette catégorie arrive bientôt.',
+  'education.search.video': 'Rechercher une vidéo…',
+  'education.search.podcast': 'Rechercher un podcast…',
+  'education.search.article': 'Rechercher un article…',
+  'education.noResults': 'Aucun résultat.',
+  'education.by': 'par',
+  'common.back': 'Retour',
 
   // Devises
   'currency.EUR': 'Euro',
@@ -426,7 +436,17 @@ const en: typeof fr = {
   'profil.deleteConfirmAction': 'Delete',
 
   'education.title': 'Financial education',
-  'education.wip': 'This section is under development.',
+  'education.videos': 'Videos',
+  'education.podcasts': 'Podcasts',
+  'education.articles': 'Articles',
+  'education.bref': 'In brief',
+  'education.brefSoon': 'This category is coming soon.',
+  'education.search.video': 'Search for a video…',
+  'education.search.podcast': 'Search for a podcast…',
+  'education.search.article': 'Search for an article…',
+  'education.noResults': 'No results.',
+  'education.by': 'by',
+  'common.back': 'Back',
 
   'currency.EUR': 'Euro',
   'currency.USD': 'US Dollar',
