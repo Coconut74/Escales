@@ -62,9 +62,10 @@ function arcPath(startDeg: number, endDeg: number): string {
 interface Props {
   investments: Investment[]
   total: number
+  onSelectInvestment?: (inv: Investment) => void
 }
 
-export default function CategoryChart({ investments, total }: Props) {
+export default function CategoryChart({ investments, total, onSelectInvestment }: Props) {
   const t = useT()
 
   const segments = useMemo(() => {
@@ -90,6 +91,11 @@ export default function CategoryChart({ investments, total }: Props) {
     })
   }, [investments, total])
 
+  function handleClick(category: InvestmentCategory) {
+    const inv = investments.find(i => i.category === category)
+    if (inv) onSelectInvestment?.(inv)
+  }
+
   if (total === 0 || segments.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-neutral-400 dark:text-neutral-600">
@@ -107,6 +113,8 @@ export default function CategoryChart({ investments, total }: Props) {
             key={category}
             d={path}
             fill={CATEGORY_COLORS[category].bg}
+            onClick={() => handleClick(category)}
+            style={{ cursor: onSelectInvestment ? 'pointer' : 'default' }}
           />
         ))}
         {/* Texte centre */}
@@ -125,7 +133,11 @@ export default function CategoryChart({ investments, total }: Props) {
       {/* Légende horizontale */}
       <ul role="list" className="flex flex-wrap justify-center gap-x-4 gap-y-1.5 mt-3">
         {segments.map(({ category }) => (
-          <li key={category} className="flex items-center gap-1.5">
+          <li
+            key={category}
+            className={`flex items-center gap-1.5 ${onSelectInvestment ? 'cursor-pointer' : ''}`}
+            onClick={() => handleClick(category)}
+          >
             <div
               aria-hidden="true"
               className="w-2.5 h-2.5 rounded-full shrink-0"

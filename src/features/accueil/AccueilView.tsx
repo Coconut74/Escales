@@ -188,7 +188,11 @@ export default function AccueilView() {
           }}
         >
           <div className="w-[90%] max-w-[480px] lg:max-w-[520px]">
-            <CategoryChart investments={effectiveInvestments} total={total} />
+            <CategoryChart
+              investments={effectiveInvestments}
+              total={total}
+              onSelectInvestment={(inv) => setSelected(inv)}
+            />
           </div>
         </div>
 
