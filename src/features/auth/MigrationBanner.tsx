@@ -60,20 +60,20 @@ export default function MigrationBanner() {
 
   return (
     <div className="mx-4 mt-4 px-4 py-3 rounded-2xl bg-primary-50 dark:bg-primary-950/30 border border-primary-200 dark:border-primary-800 flex items-center justify-between gap-4">
-      <p className="text-sm text-primary-800 dark:text-primary-200">
+      <p className="text-base text-primary-800 dark:text-primary-200">
         Vous avez des données locales non synchronisées. Voulez-vous les importer dans votre compte ?
       </p>
       <div className="flex items-center gap-2 shrink-0">
         <button
           onClick={() => { localStorage.setItem('escales-migration-dismissed', '1'); setDismissed(true) }}
-          className="text-sm text-primary-500 hover:text-primary-700 dark:hover:text-primary-300 px-2 py-1"
+          className="text-base text-primary-500 hover:text-primary-700 dark:hover:text-primary-300 px-2 py-1"
         >
           Ignorer
         </button>
         <button
           onClick={handleImport}
           disabled={importing}
-          className="text-sm font-semibold px-3 py-1.5 rounded-xl bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-50 transition-colors"
+          className="text-base font-semibold px-3 py-1.5 rounded-xl bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-50 transition-colors"
         >
           {importing ? 'Import…' : 'Importer'}
         </button>

@@ -59,7 +59,7 @@ export default function NotesTab() {
         {notes.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 gap-3 text-center">
             <img src="/3dicon/Note.png" alt="" className="w-16 h-16 object-contain" />
-            <p className="text-sm text-neutral-400 dark:text-neutral-500">{t('notes.empty')}</p>
+            <p className="text-base text-neutral-400 dark:text-neutral-500">{t('notes.empty')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -74,10 +74,10 @@ export default function NotesTab() {
                 <p className="font-semibold text-neutral-900 dark:text-neutral-50 truncate mb-1">
                   {note.title || <span className="italic text-neutral-400">{t('notes.noTitle')}</span>}
                 </p>
-                <p className="text-sm text-neutral-500 dark:text-neutral-400 line-clamp-2 mb-3">
+                <p className="text-base text-neutral-500 dark:text-neutral-400 line-clamp-2 mb-3">
                   {stripHtml(note.content) || <span className="italic">{t('notes.emptyNote')}</span>}
                 </p>
-                <p className="text-sm text-neutral-400 dark:text-neutral-500">{relativeDate(note.updatedAt, t, lang)}</p>
+                <p className="text-base text-neutral-400 dark:text-neutral-500">{relativeDate(note.updatedAt, t, lang)}</p>
               </button>
             ))}
           </div>
@@ -87,9 +87,9 @@ export default function NotesTab() {
       {/* Bouton flottant */}
       <button
         onClick={createNote}
-        className="fixed bottom-[120px] lg:bottom-8 right-6 flex items-center gap-2 px-4 py-3 rounded-2xl bg-primary-500 text-white text-sm font-semibold shadow-lg shadow-primary-500/30 hover:bg-primary-600 transition-colors z-40"
+        className="fixed bottom-[120px] lg:bottom-8 right-6 flex items-center gap-2 px-4 py-3 rounded-2xl bg-primary-500 text-white text-base font-semibold shadow-lg shadow-primary-500/30 hover:bg-primary-600 transition-colors z-40"
       >
-        <Icon name="plus" size={16} />
+        <Icon name="plus" size={20} />
         {t('notes.newNote')}
       </button>
     </div>

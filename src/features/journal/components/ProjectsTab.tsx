@@ -72,8 +72,8 @@ export default function ProjectsTab() {
         {projects.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 gap-3 text-center">
             <img src="/3dicon/Project.png" alt="" className="w-16 h-16 object-contain" />
-            <p className="text-sm text-neutral-400 dark:text-neutral-500">{t('projects.empty')}</p>
-            <p className="text-sm text-neutral-400 dark:text-neutral-600">{t('projects.emptyHint')}</p>
+            <p className="text-base text-neutral-400 dark:text-neutral-500">{t('projects.empty')}</p>
+            <p className="text-base text-neutral-400 dark:text-neutral-600">{t('projects.emptyHint')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
@@ -91,9 +91,9 @@ export default function ProjectsTab() {
       {/* Bouton flottant */}
       <button
         onClick={() => setShowEditor(true)}
-        className="fixed bottom-[120px] lg:bottom-8 right-6 flex items-center gap-2 px-4 py-3 rounded-2xl bg-primary-500 text-white text-sm font-semibold shadow-lg shadow-primary-500/30 hover:bg-primary-600 transition-colors z-40"
+        className="fixed bottom-[120px] lg:bottom-8 right-6 flex items-center gap-2 px-4 py-3 rounded-2xl bg-primary-500 text-white text-base font-semibold shadow-lg shadow-primary-500/30 hover:bg-primary-600 transition-colors z-40"
       >
-        <Icon name="plus" size={16} />
+        <Icon name="plus" size={20} />
         {t('projects.new')}
       </button>
 
@@ -134,11 +134,11 @@ function ProjectCard({ project, onClick }: {
           <img src={meta.icon} alt="" className="w-11 h-11 object-contain shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-neutral-900 dark:text-neutral-50 truncate">{project.name}</p>
-            <p className="text-sm text-neutral-400 dark:text-neutral-500">{typeLabel}</p>
+            <p className="text-base text-neutral-400 dark:text-neutral-500">{typeLabel}</p>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <span className="text-sm font-bold text-primary-600 dark:text-primary-400">{progress}%</span>
+          <span className="text-base font-bold text-primary-600 dark:text-primary-400">{progress}%</span>
         </div>
       </div>
 
@@ -166,13 +166,13 @@ function CardMeta({ project, currency }: { project: Project; currency: string })
       return (
         <>
           {project.currentAmount !== undefined && (
-            <span className="text-sm text-neutral-500 dark:text-neutral-400">
+            <span className="text-base text-neutral-500 dark:text-neutral-400">
               {formatCurrency(project.currentAmount, currency)}
               {project.targetAmount ? <span className="text-neutral-300 dark:text-neutral-600"> / {formatCurrency(project.targetAmount, currency)}</span> : null}
             </span>
           )}
           {project.type === 'investment' && project.assetName && (
-            <span className="text-sm text-neutral-400 dark:text-neutral-500">{project.assetName}</span>
+            <span className="text-base text-neutral-400 dark:text-neutral-500">{project.assetName}</span>
           )}
         </>
       )
@@ -183,12 +183,12 @@ function CardMeta({ project, currency }: { project: Project; currency: string })
       return (
         <>
           {total > 0 && (
-            <span className="text-sm text-neutral-500 dark:text-neutral-400">
+            <span className="text-base text-neutral-500 dark:text-neutral-400">
               {done}/{total} {t('projects.step')}{total > 1 ? 's' : ''}
             </span>
           )}
           {project.type === 'real-estate' && project.city && (
-            <span className="text-sm text-neutral-400 dark:text-neutral-500">{project.city}</span>
+            <span className="text-base text-neutral-400 dark:text-neutral-500">{project.city}</span>
           )}
         </>
       )
@@ -200,11 +200,11 @@ function CardMeta({ project, currency }: { project: Project; currency: string })
       return (
         <>
           {project.loanAmount && (
-            <span className="text-sm text-neutral-500 dark:text-neutral-400">
+            <span className="text-base text-neutral-500 dark:text-neutral-400">
               {formatCurrency(project.loanAmount, currency)}
             </span>
           )}
-          <span className="text-sm text-neutral-400 dark:text-neutral-500">
+          <span className="text-base text-neutral-400 dark:text-neutral-500">
             {t('projects.monthsRemaining', { n: remaining })}
           </span>
         </>
@@ -236,13 +236,13 @@ function ProjectDetail({ project, onClose, onDelete }: { project: Project; onClo
             <img src={meta.icon} alt="" className="w-11 h-11 object-contain shrink-0" />
             <div>
               <h2 id="project-detail-title" className="text-base font-bold text-neutral-900 dark:text-neutral-50 leading-tight">{project.name}</h2>
-              <p className="text-sm text-neutral-400 dark:text-neutral-500">{typeLabel}</p>
+              <p className="text-base text-neutral-400 dark:text-neutral-500">{typeLabel}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={onDelete}
-              className="px-3 py-1.5 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 text-sm font-semibold transition-colors"
+              className="px-3 py-1.5 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 text-base font-semibold transition-colors"
             >
               {t('projects.delete')}
             </button>
@@ -260,8 +260,8 @@ function ProjectDetail({ project, onClose, onDelete }: { project: Project; onClo
           {/* Barre de progression */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <span className="text-sm font-medium text-neutral-500 dark:text-neutral-400">{t('projects.progress')}</span>
-              <span className="text-sm font-bold text-primary-600 dark:text-primary-400">{progress}%</span>
+              <span className="text-base font-medium text-neutral-500 dark:text-neutral-400">{t('projects.progress')}</span>
+              <span className="text-base font-bold text-primary-600 dark:text-primary-400">{progress}%</span>
             </div>
             <div className="h-2 rounded-full bg-neutral-100 dark:bg-neutral-700 overflow-hidden">
               <div
@@ -273,7 +273,7 @@ function ProjectDetail({ project, onClose, onDelete }: { project: Project; onClo
 
           {/* Description */}
           {project.description && (
-            <p className="text-sm text-neutral-600 dark:text-neutral-300">{project.description}</p>
+            <p className="text-base text-neutral-600 dark:text-neutral-300">{project.description}</p>
           )}
 
           {/* Contenu spécifique */}
@@ -314,21 +314,21 @@ function DetailContent({ project, currency, currentInput, setCurrentInput, onTog
         <div className="space-y-3">
           {project.targetAmount && (
             <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-xl">
-              <span className="text-sm text-neutral-500 dark:text-neutral-400">{t('projects.target')}</span>
-              <span className="text-sm font-semibold text-neutral-900 dark:text-neutral-50">
+              <span className="text-base text-neutral-500 dark:text-neutral-400">{t('projects.target')}</span>
+              <span className="text-base font-semibold text-neutral-900 dark:text-neutral-50">
                 {formatCurrency(project.targetAmount, currency)}
               </span>
             </div>
           )}
           <div className="flex items-center justify-between p-3 bg-primary-50 dark:bg-primary-900/20 rounded-xl gap-2">
-            <span className="text-sm text-primary-700 dark:text-primary-300 shrink-0">{t('projects.current')}</span>
+            <span className="text-base text-primary-700 dark:text-primary-300 shrink-0">{t('projects.current')}</span>
             <div className="flex items-center gap-1.5">
               <input
                 type="number"
                 value={currentInput}
                 onChange={(e) => setCurrentInput(e.target.value)}
                 placeholder="0"
-                className="w-28 text-right px-2 py-1 rounded-lg border border-primary-200 dark:border-primary-800 bg-transparent text-sm font-semibold text-primary-700 dark:text-primary-300 focus:outline-none focus:ring-1 focus:ring-primary-400 dark:focus:ring-primary-600"
+                className="w-28 text-right px-2 py-1 rounded-lg border border-primary-200 dark:border-primary-800 bg-transparent text-base font-semibold text-primary-700 dark:text-primary-300 focus:outline-none focus:ring-1 focus:ring-primary-400 dark:focus:ring-primary-600"
               />
               {isDirty && (
                 <>
@@ -336,13 +336,13 @@ function DetailContent({ project, currency, currentInput, setCurrentInput, onTog
                     onClick={() => setCurrentInput(project.currentAmount?.toString() ?? '')}
                     className="w-7 h-7 flex items-center justify-center rounded-lg bg-neutral-100 dark:bg-neutral-600 text-neutral-500 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-500 transition-colors"
                   >
-                    <Icon name="x" size={13} />
+                    <Icon name="x" size={20} />
                   </button>
                   <button
                     onClick={onSave}
                     className="w-7 h-7 flex items-center justify-center rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition-colors"
                   >
-                    <Icon name="check" size={13} />
+                    <Icon name="check" size={20} />
                   </button>
                 </>
               )}
@@ -350,16 +350,16 @@ function DetailContent({ project, currency, currentInput, setCurrentInput, onTog
           </div>
           {project.targetAmount && project.currentAmount !== undefined && (
             <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-xl">
-              <span className="text-sm text-neutral-500 dark:text-neutral-400">{t('projects.remaining')}</span>
-              <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+              <span className="text-base text-neutral-500 dark:text-neutral-400">{t('projects.remaining')}</span>
+              <span className="text-base font-semibold text-neutral-700 dark:text-neutral-200">
                 {formatCurrency(Math.max(0, project.targetAmount - project.currentAmount), currency)}
               </span>
             </div>
           )}
           {project.type === 'investment' && project.assetName && (
             <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-xl">
-              <span className="text-sm text-neutral-500 dark:text-neutral-400">{t('projects.asset')}</span>
-              <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">{project.assetName}</span>
+              <span className="text-base text-neutral-500 dark:text-neutral-400">{t('projects.asset')}</span>
+              <span className="text-base font-semibold text-neutral-700 dark:text-neutral-200">{project.assetName}</span>
             </div>
           )}
         </div>
@@ -369,11 +369,11 @@ function DetailContent({ project, currency, currentInput, setCurrentInput, onTog
     case 'real-estate':
     case 'free': {
       if (project.checklist.length === 0) {
-        return <p className="text-sm text-neutral-400 dark:text-neutral-500 text-center py-4">{t('projects.noSteps')}</p>
+        return <p className="text-base text-neutral-400 dark:text-neutral-500 text-center py-4">{t('projects.noSteps')}</p>
       }
       return (
         <div className="space-y-2">
-          <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+          <p className="text-base font-medium text-neutral-500 dark:text-neutral-400">
             {project.type === 'real-estate' ? t('projects.steps') : t('projects.checklist')}
           </p>
           {project.checklist.map((item) => (
@@ -387,7 +387,7 @@ function DetailContent({ project, currency, currentInput, setCurrentInput, onTog
               <span aria-hidden="true" className={`text-lg ${item.done ? 'text-green-500' : 'text-neutral-300 dark:text-neutral-600'}`}>
                 {item.done ? '✅' : '⬜'}
               </span>
-              <span className={`text-sm ${item.done ? 'line-through text-neutral-400 dark:text-neutral-500' : 'text-neutral-800 dark:text-neutral-100'}`}>
+              <span className={`text-base ${item.done ? 'line-through text-neutral-400 dark:text-neutral-500' : 'text-neutral-800 dark:text-neutral-100'}`}>
                 {item.label}
               </span>
             </button>
@@ -404,23 +404,23 @@ function DetailContent({ project, currency, currentInput, setCurrentInput, onTog
         <div className="space-y-3">
           {project.loanAmount && (
             <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-xl">
-              <span className="text-sm text-neutral-500 dark:text-neutral-400">{t('projects.loanAmount')}</span>
-              <span className="text-sm font-semibold text-neutral-900 dark:text-neutral-50">
+              <span className="text-base text-neutral-500 dark:text-neutral-400">{t('projects.loanAmount')}</span>
+              <span className="text-base font-semibold text-neutral-900 dark:text-neutral-50">
                 {formatCurrency(project.loanAmount, currency)}
               </span>
             </div>
           )}
           <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-xl">
-            <span className="text-sm text-neutral-500 dark:text-neutral-400">{t('projects.totalDuration')}</span>
-            <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">{project.loanDurationMonths} {t('projects.months')}</span>
+            <span className="text-base text-neutral-500 dark:text-neutral-400">{t('projects.totalDuration')}</span>
+            <span className="text-base font-semibold text-neutral-700 dark:text-neutral-200">{project.loanDurationMonths} {t('projects.months')}</span>
           </div>
           <div className="flex items-center justify-between p-3 bg-primary-50 dark:bg-primary-900/20 rounded-xl">
-            <span className="text-sm text-primary-700 dark:text-primary-300">{t('projects.elapsed')}</span>
-            <span className="text-sm font-semibold text-primary-700 dark:text-primary-300">{elapsed} {t('projects.months')}</span>
+            <span className="text-base text-primary-700 dark:text-primary-300">{t('projects.elapsed')}</span>
+            <span className="text-base font-semibold text-primary-700 dark:text-primary-300">{elapsed} {t('projects.months')}</span>
           </div>
           <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-700 rounded-xl">
-            <span className="text-sm text-neutral-500 dark:text-neutral-400">{t('projects.remaining')}</span>
-            <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">{remaining} {t('projects.months')}</span>
+            <span className="text-base text-neutral-500 dark:text-neutral-400">{t('projects.remaining')}</span>
+            <span className="text-base font-semibold text-neutral-700 dark:text-neutral-200">{remaining} {t('projects.months')}</span>
           </div>
         </div>
       )

@@ -101,7 +101,7 @@ function CategoryCard({ category, onClick }: { category: Category; onClick: () =
         <span className={`text-base font-extrabold uppercase tracking-wide ${category.titleColor}`}>
           {t(category.titleKey)}
         </span>
-        <Icon name="arrow" size={18} className={category.titleColor} />
+        <Icon name="arrow" size={20} className={category.titleColor} />
       </div>
 
       {/* Icône décorative */}
@@ -121,11 +121,11 @@ function BrefModal({ onClose }: { onClose: () => void }) {
           <Icon name="external-link" size={28} className="text-sky-500" />
         </div>
         <p id="bref-title" className="text-base font-semibold text-neutral-800 dark:text-neutral-100">{t('education.bref')}</p>
-        <p className="text-sm text-neutral-500 dark:text-neutral-400">{t('education.brefSoon')}</p>
+        <p className="text-base text-neutral-500 dark:text-neutral-400">{t('education.brefSoon')}</p>
         <button
           type="button"
           onClick={onClose}
-          className="mt-2 w-full py-3 rounded-2xl bg-neutral-100 dark:bg-neutral-700 text-sm font-semibold text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors"
+          className="mt-2 w-full py-3 rounded-2xl bg-neutral-100 dark:bg-neutral-700 text-base font-semibold text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors"
         >
           {t('common.close')}
         </button>

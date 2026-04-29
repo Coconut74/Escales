@@ -29,7 +29,7 @@ export default function PortfolioTotal({ total, monthlyChange }: PortfolioTotalP
       {monthlyChange !== undefined && (
         <div className="flex items-center gap-1.5">
           <svg
-            width="16" height="16" viewBox="0 0 16 16" fill="none"
+            width="20" height="20" viewBox="0 0 16 16" fill="none"
             aria-hidden="true"
             style={{ transform: monthlyChange >= 0 ? 'none' : 'rotate(90deg)' }}
           >

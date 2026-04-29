@@ -85,18 +85,18 @@ export default function NoteEditor({ note, onClose, onDelete }: Props) {
             className="p-1.5 rounded-lg text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors mr-1"
             aria-label={t('noteEditor.back')}
           >
-            <Icon name="arrow" size={18} className="rotate-180" />
+            <Icon name="arrow" size={20} className="rotate-180" />
           </button>
           <div className="w-px h-5 bg-neutral-200 dark:bg-neutral-700 mx-1" />
-          <ToolbarBtn onClick={() => execFmt('bold')} label={t('noteEditor.bold')}><strong className="text-sm">G</strong></ToolbarBtn>
-          <ToolbarBtn onClick={() => execFmt('italic')} label={t('noteEditor.italic')}><em className="text-sm font-serif">I</em></ToolbarBtn>
-          <ToolbarBtn onClick={() => execFmt('insertUnorderedList')} label={t('noteEditor.bulletList')}><span className="text-sm">•≡</span></ToolbarBtn>
-          <ToolbarBtn onClick={() => execFmt('insertOrderedList')} label={t('noteEditor.numberedList')}><span className="text-sm">1≡</span></ToolbarBtn>
+          <ToolbarBtn onClick={() => execFmt('bold')} label={t('noteEditor.bold')}><strong className="text-base">G</strong></ToolbarBtn>
+          <ToolbarBtn onClick={() => execFmt('italic')} label={t('noteEditor.italic')}><em className="text-base font-serif">I</em></ToolbarBtn>
+          <ToolbarBtn onClick={() => execFmt('insertUnorderedList')} label={t('noteEditor.bulletList')}><span className="text-base">•≡</span></ToolbarBtn>
+          <ToolbarBtn onClick={() => execFmt('insertOrderedList')} label={t('noteEditor.numberedList')}><span className="text-base">1≡</span></ToolbarBtn>
           <ToolbarBtn onClick={insertCheckbox} label={t('noteEditor.checkbox')}><span className="text-base leading-none">☑</span></ToolbarBtn>
           <div className="flex-1" />
           <button
             onClick={onDelete}
-            className="px-3 py-1.5 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 text-xs font-semibold transition-colors"
+            className="px-3 py-1.5 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 text-base font-semibold transition-colors"
           >
             {t('noteEditor.delete')}
           </button>
@@ -125,7 +125,7 @@ export default function NoteEditor({ note, onClose, onDelete }: Props) {
           onInput={handleBodyInput}
           onClick={handleBodyClick}
           data-placeholder={t('noteEditor.bodyPlaceholder')}
-          className="flex-1 px-6 py-2 pb-6 text-sm text-neutral-800 dark:text-neutral-200 leading-relaxed focus:outline-none overflow-auto
+          className="flex-1 px-6 py-2 pb-6 text-base text-neutral-800 dark:text-neutral-200 leading-relaxed focus:outline-none overflow-auto
             [&>ul]:list-disc [&>ul]:pl-5 [&>ol]:list-decimal [&>ol]:pl-5
             empty:before:content-[attr(data-placeholder)] empty:before:text-neutral-300 dark:empty:before:text-neutral-600 empty:before:pointer-events-none"
         />

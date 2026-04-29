@@ -65,8 +65,8 @@ export default function ProfilView() {
               className="w-full flex items-center gap-4 px-5 py-4 bg-white dark:bg-neutral-800 rounded-2xl border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700/60 transition-colors"
             >
               <Icon name={item.icon} size={20} className="text-neutral-500 dark:text-neutral-400 shrink-0" />
-              <span className="flex-1 text-left text-sm font-medium text-neutral-800 dark:text-neutral-100">{t(item.labelKey)}</span>
-              <Icon name="arrow" size={16} className="text-neutral-400 shrink-0" />
+              <span className="flex-1 text-left text-base font-medium text-neutral-800 dark:text-neutral-100">{t(item.labelKey)}</span>
+              <Icon name="arrow" size={20} className="text-neutral-400 shrink-0" />
             </button>
           ))}
         </div>
@@ -74,9 +74,9 @@ export default function ProfilView() {
         {/* Déconnexion */}
         <button
           onClick={() => setShowSignOutConfirm(true)}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-950/50 transition-colors"
+          className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 text-base font-semibold text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-950/50 transition-colors"
         >
-          <Icon name="logout" size={16} />
+          <Icon name="logout" size={20} />
           {t('profil.signOut')}
         </button>
 
@@ -117,14 +117,14 @@ function SettingsModal({ title, children, onClose, onConfirm, saving }: {
         <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-neutral-100 dark:border-neutral-700">
           <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50">{title}</h2>
           <button onClick={onClose} className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors">
-            <Icon name="x" size={18} />
+            <Icon name="x" size={20} />
           </button>
         </div>
         <div className="flex-1 overflow-y-auto p-5 space-y-5">{children}</div>
         <div className="flex gap-3 px-5 py-4 border-t border-neutral-100 dark:border-neutral-700">
           <button
             onClick={onClose}
-            className="flex-1 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 text-sm font-medium text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
+            className="flex-1 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 text-base font-medium text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
           >
             {onConfirm ? t('profil.abandon') : t('profil.close')}
           </button>
@@ -132,7 +132,7 @@ function SettingsModal({ title, children, onClose, onConfirm, saving }: {
             <button
               onClick={onConfirm}
               disabled={saving}
-              className="flex-1 py-2.5 rounded-xl bg-primary-600 text-white text-sm font-semibold hover:bg-primary-700 disabled:opacity-50 transition-colors"
+              className="flex-1 py-2.5 rounded-xl bg-primary-600 text-white text-base font-semibold hover:bg-primary-700 disabled:opacity-50 transition-colors"
             >
               {saving ? t('profil.saving') : t('profil.confirm')}
             </button>
@@ -162,18 +162,18 @@ function ConfirmDialog({
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onCancel} />
       <div className="relative w-full max-w-sm bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl p-6 space-y-4">
         <h3 className="text-base font-semibold text-neutral-900 dark:text-neutral-50">{title}</h3>
-        <p className="text-sm text-neutral-600 dark:text-neutral-400">{message}</p>
+        <p className="text-base text-neutral-600 dark:text-neutral-400">{message}</p>
         <div className="flex gap-3 pt-1">
           <button
             onClick={onCancel}
-            className="flex-1 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 text-sm font-medium text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
+            className="flex-1 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 text-base font-medium text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
           >
             {t('profil.cancel')}
           </button>
           <button
             onClick={onConfirm}
             disabled={loading}
-            className={`flex-1 py-2.5 rounded-xl text-white text-sm font-semibold disabled:opacity-50 transition-colors ${
+            className={`flex-1 py-2.5 rounded-xl text-white text-base font-semibold disabled:opacity-50 transition-colors ${
               dangerous ? 'bg-red-600 hover:bg-red-700' : 'bg-primary-600 hover:bg-primary-700'
             }`}
           >
@@ -206,7 +206,7 @@ function AccountModal({ onClose }: { onClose: () => void }) {
   return (
     <SettingsModal title={t('profil.accountInfo')} onClose={onClose} onConfirm={handleConfirm} saving={saving}>
       <div className="space-y-1.5">
-        <label className="text-sm font-medium text-neutral-700 dark:text-neutral-200">{t('profil.pseudonyme')}</label>
+        <label className="text-base font-medium text-neutral-700 dark:text-neutral-200">{t('profil.pseudonyme')}</label>
         <input
           type="text"
           value={localPseudonyme}
@@ -217,7 +217,7 @@ function AccountModal({ onClose }: { onClose: () => void }) {
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium text-neutral-700 dark:text-neutral-200">{t('profil.avatar')}</label>
+        <label className="text-base font-medium text-neutral-700 dark:text-neutral-200">{t('profil.avatar')}</label>
         <div className="grid grid-cols-5 gap-2">
           {AVATAR_OPTIONS.map((id) => (
             <button
@@ -263,7 +263,7 @@ function PreferencesModal({ onClose }: { onClose: () => void }) {
   return (
     <SettingsModal title={t('profil.preferences')} onClose={onClose} onConfirm={handleConfirm} saving={saving}>
       <div className="space-y-1.5">
-        <label className="text-sm font-medium text-neutral-700 dark:text-neutral-200">{t('profil.currency')}</label>
+        <label className="text-base font-medium text-neutral-700 dark:text-neutral-200">{t('profil.currency')}</label>
         <div className="relative">
           <select
             value={localCurrency}
@@ -275,13 +275,13 @@ function PreferencesModal({ onClose }: { onClose: () => void }) {
             ))}
           </select>
           <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none">
-            <Icon name="arrow" size={16} />
+            <Icon name="arrow" size={20} />
           </span>
         </div>
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-sm font-medium text-neutral-700 dark:text-neutral-200">{t('profil.language')}</label>
+        <label className="text-base font-medium text-neutral-700 dark:text-neutral-200">{t('profil.language')}</label>
         <div className="relative">
           <select
             value={localLanguage}
@@ -293,26 +293,26 @@ function PreferencesModal({ onClose }: { onClose: () => void }) {
             ))}
           </select>
           <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none">
-            <Icon name="arrow" size={16} />
+            <Icon name="arrow" size={20} />
           </span>
         </div>
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium text-neutral-700 dark:text-neutral-200">{t('profil.displayMode')}</label>
+        <label className="text-base font-medium text-neutral-700 dark:text-neutral-200">{t('profil.displayMode')}</label>
         <div className="flex gap-2">
           {(['light', 'dark', 'system'] as Theme[]).map((th) => (
             <button
               key={th}
               type="button"
               onClick={() => setLocalTheme(th)}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-base font-semibold transition-all ${
                 localTheme === th
                   ? 'bg-primary-600 text-white shadow-sm'
                   : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-600'
               }`}
             >
-              <Icon name={th === 'light' ? 'sun' : th === 'dark' ? 'moon' : 'monitor'} size={15} />
+              <Icon name={th === 'light' ? 'sun' : th === 'dark' ? 'moon' : 'monitor'} size={20} />
               {t(th === 'light' ? 'profil.light' : th === 'dark' ? 'profil.dark' : 'profil.system')}
             </button>
           ))}
@@ -320,7 +320,7 @@ function PreferencesModal({ onClose }: { onClose: () => void }) {
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium text-neutral-700 dark:text-neutral-200">{t('profil.accentColor')}</label>
+        <label className="text-base font-medium text-neutral-700 dark:text-neutral-200">{t('profil.accentColor')}</label>
         <div className="flex gap-3">
           {COLOR_THEMES.map((ct) => (
             <button
@@ -402,13 +402,13 @@ function SecurityModal({ onClose, user, signOut }: {
     <SettingsModal title={t('profil.securityTitle')} onClose={onClose}>
       {/* Identifiant actuel */}
       <div className="space-y-1.5">
-        <p className="text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">{t('profil.currentId')}</p>
+        <p className="text-base font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">{t('profil.currentId')}</p>
         <div className={`${inputCls} text-neutral-500 dark:text-neutral-400 select-all`}>{displayIdentifier}</div>
       </div>
 
       {/* Changer identifiant */}
       <div className="space-y-2">
-        <p className="text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">{t('profil.changeId')}</p>
+        <p className="text-base font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">{t('profil.changeId')}</p>
         <input
           type="text"
           value={newId}
@@ -416,11 +416,11 @@ function SecurityModal({ onClose, user, signOut }: {
           placeholder={t('profil.newIdPlaceholder')}
           className={inputCls}
         />
-        {idMsg && <p className={`text-xs ${idMsg.ok ? 'text-green-600 dark:text-green-400' : 'text-red-500'}`}>{idMsg.text}</p>}
+        {idMsg && <p className={`text-base ${idMsg.ok ? 'text-green-600 dark:text-green-400' : 'text-red-500'}`}>{idMsg.text}</p>}
         <button
           onClick={handleChangeId}
           disabled={savingId || !newId.trim()}
-          className="w-full py-2.5 rounded-xl bg-primary-600 text-white text-sm font-semibold hover:bg-primary-700 disabled:opacity-40 transition-colors"
+          className="w-full py-2.5 rounded-xl bg-primary-600 text-white text-base font-semibold hover:bg-primary-700 disabled:opacity-40 transition-colors"
         >
           {savingId ? t('profil.updating') : t('profil.update')}
         </button>
@@ -428,7 +428,7 @@ function SecurityModal({ onClose, user, signOut }: {
 
       {/* Changer mot de passe */}
       <div className="space-y-2">
-        <p className="text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">{t('profil.changePassword')}</p>
+        <p className="text-base font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">{t('profil.changePassword')}</p>
         <div className="relative">
           <input
             type={showNewPw ? 'text' : 'password'}
@@ -438,7 +438,7 @@ function SecurityModal({ onClose, user, signOut }: {
             className={`${inputCls} pr-10`}
           />
           <button type="button" onClick={() => setShowNewPw(v => !v)} tabIndex={-1} className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200">
-            <Icon name={showNewPw ? 'eye-off' : 'eye'} size={16} />
+            <Icon name={showNewPw ? 'eye-off' : 'eye'} size={20} />
           </button>
         </div>
         <input
@@ -448,11 +448,11 @@ function SecurityModal({ onClose, user, signOut }: {
           placeholder={t('profil.confirmPasswordPlaceholder')}
           className={inputCls}
         />
-        {pwMsg && <p className={`text-xs ${pwMsg.ok ? 'text-green-600 dark:text-green-400' : 'text-red-500'}`}>{pwMsg.text}</p>}
+        {pwMsg && <p className={`text-base ${pwMsg.ok ? 'text-green-600 dark:text-green-400' : 'text-red-500'}`}>{pwMsg.text}</p>}
         <button
           onClick={handleChangePassword}
           disabled={savingPw || !newPassword}
-          className="w-full py-2.5 rounded-xl bg-primary-600 text-white text-sm font-semibold hover:bg-primary-700 disabled:opacity-40 transition-colors"
+          className="w-full py-2.5 rounded-xl bg-primary-600 text-white text-base font-semibold hover:bg-primary-700 disabled:opacity-40 transition-colors"
         >
           {savingPw ? t('profil.updating') : t('profil.update')}
         </button>
@@ -460,10 +460,10 @@ function SecurityModal({ onClose, user, signOut }: {
 
       {/* Supprimer le compte */}
       <div className="pt-2 border-t border-neutral-100 dark:border-neutral-700 space-y-3">
-        <p className="text-xs font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">{t('profil.dangerZone')}</p>
+        <p className="text-base font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">{t('profil.dangerZone')}</p>
         <button
           onClick={() => setShowDeleteConfirm(true)}
-          className="w-full py-2.5 rounded-xl border border-red-200 dark:border-red-900 text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+          className="w-full py-2.5 rounded-xl border border-red-200 dark:border-red-900 text-base font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
         >
           {t('profil.deleteAccount')}
         </button>
@@ -484,4 +484,4 @@ function SecurityModal({ onClose, user, signOut }: {
   )
 }
 
-const inputCls = 'w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-sm placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800'
+const inputCls = 'w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-base placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800'

@@ -166,9 +166,9 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
         <button
           onClick={startAdd}
           disabled={editingId !== null}
-          className="mt-3 w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl border border-dashed border-neutral-300 dark:border-neutral-600 text-neutral-500 dark:text-neutral-400 hover:border-primary-400 hover:text-primary-600 dark:hover:border-primary-500 dark:hover:text-primary-400 disabled:opacity-30 transition-colors text-sm font-semibold"
+          className="mt-3 w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl border border-dashed border-neutral-300 dark:border-neutral-600 text-neutral-500 dark:text-neutral-400 hover:border-primary-400 hover:text-primary-600 dark:hover:border-primary-500 dark:hover:text-primary-400 disabled:opacity-30 transition-colors text-base font-semibold"
         >
-          <Icon name="plus" size={16} />
+          <Icon name="plus" size={20} />
           {t('edit.addInvestment')}
         </button>
       </div>

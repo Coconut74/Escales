@@ -216,12 +216,12 @@ function CardContent({
           <div className="flex items-center gap-2">
             <p className="text-base font-bold text-neutral-900 dark:text-neutral-50 truncate">{investment.label}</p>
             {investment.ticker && (
-              <span className="text-xs font-mono px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400 shrink-0">
+              <span className="text-base font-mono px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400 shrink-0">
                 {investment.ticker}
               </span>
             )}
           </div>
-          <span className="text-sm font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: `${color.bg}22`, color: color.bg }}>
+          <span className="text-base font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: `${color.bg}22`, color: color.bg }}>
             {label}
           </span>
         </div>
@@ -258,7 +258,7 @@ function Metric({ label, value, highlight, positive, negative }: {
   if (negative) valueColor = 'text-red-500 dark:text-red-400'
   return (
     <div className="bg-neutral-50 dark:bg-neutral-700 rounded-2xl px-3 py-3">
-      <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-1 leading-tight">{label}</p>
+      <p className="text-base text-neutral-500 dark:text-neutral-400 mb-1 leading-tight">{label}</p>
       <p className={`text-base font-bold leading-tight ${highlight ? 'text-primary-700 dark:text-primary-400' : valueColor}`}>{value}</p>
     </div>
   )

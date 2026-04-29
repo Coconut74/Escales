@@ -44,7 +44,7 @@ export default function AuthGate({ children }: Props) {
             <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" strokeOpacity="0.25" />
             <path d="M21 12a9 9 0 00-9-9" />
           </svg>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">Chargement…</p>
+          <p className="text-base text-neutral-500 dark:text-neutral-400">Chargement…</p>
         </div>
       </div>
     )
@@ -73,7 +73,7 @@ export default function AuthGate({ children }: Props) {
                       <path d="M2 6l3 3 5-5" stroke="white" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
-                  <span className="text-sm text-primary-100">{item}</span>
+                  <span className="text-base text-primary-100">{item}</span>
                 </div>
               ))}
             </div>

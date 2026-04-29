@@ -43,13 +43,13 @@ export default function Sidebar({ activeView, onNavigate }: SidebarProps) {
             <button
               key={item.id}
               onClick={() => onNavigate(item.id)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 w-full text-left
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-semibold transition-all duration-200 w-full text-left
                 ${isActive
                   ? 'bg-primary-500 text-white shadow-md shadow-primary-500/25'
                   : 'text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100/80 dark:hover:bg-neutral-800/60 hover:text-neutral-700'
                 }`}
             >
-              <Icon name={item.icon} size={19} />
+              <Icon name={item.icon} size={20} />
               {item.label}
             </button>
           )
@@ -62,7 +62,7 @@ export default function Sidebar({ activeView, onNavigate }: SidebarProps) {
       <div className="px-3 pb-5 space-y-1">
         <button
           onClick={() => onNavigate('profil')}
-          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 w-full text-left
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-semibold transition-all duration-200 w-full text-left
             ${activeView === 'profil'
               ? 'bg-primary-500 text-white shadow-md shadow-primary-500/25'
               : 'text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100/80 dark:hover:bg-neutral-800/60 hover:text-neutral-700'

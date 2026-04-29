@@ -22,19 +22,19 @@ export default function LoginView({ onSwitchToSignup, onContinueAsGuest }: Props
     <div className="w-full max-w-sm space-y-6">
       <div className="text-center space-y-1">
         <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-50">Connexion</h1>
-        <p className="text-sm text-neutral-500 dark:text-neutral-400">Accédez à votre espace Escales</p>
+        <p className="text-base text-neutral-500 dark:text-neutral-400">Accédez à votre espace Escales</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="px-4 py-3 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 text-sm text-red-700 dark:text-red-400 flex items-center justify-between gap-2">
+          <div className="px-4 py-3 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 text-base text-red-700 dark:text-red-400 flex items-center justify-between gap-2">
             <span>{error}</span>
             <button type="button" onClick={clearError} className="text-red-400 hover:text-red-600 shrink-0">✕</button>
           </div>
         )}
 
         <div className="space-y-1.5">
-          <label className="text-sm font-medium text-neutral-700 dark:text-neutral-200">E-mail ou identifiant</label>
+          <label className="text-base font-medium text-neutral-700 dark:text-neutral-200">E-mail ou identifiant</label>
           <input
             type="text"
             value={email}
@@ -42,12 +42,12 @@ export default function LoginView({ onSwitchToSignup, onContinueAsGuest }: Props
             placeholder="identifiant ou vous@exemple.com"
             required
             autoComplete="username"
-            className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-sm placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
+            className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-base placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
           />
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-sm font-medium text-neutral-700 dark:text-neutral-200">Mot de passe</label>
+          <label className="text-base font-medium text-neutral-700 dark:text-neutral-200">Mot de passe</label>
           <div className="relative">
             <input
               type={showPassword ? 'text' : 'password'}
@@ -56,7 +56,7 @@ export default function LoginView({ onSwitchToSignup, onContinueAsGuest }: Props
               placeholder="••••••••"
               required
               autoComplete="current-password"
-              className="w-full px-3 py-2.5 pr-10 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-sm placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
+              className="w-full px-3 py-2.5 pr-10 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-base placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
             />
             <button
               type="button"
@@ -65,12 +65,12 @@ export default function LoginView({ onSwitchToSignup, onContinueAsGuest }: Props
               tabIndex={-1}
             >
               {showPassword ? (
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
                   <path fillRule="evenodd" d="M3.28 2.22a.75.75 0 0 0-1.06 1.06l14.5 14.5a.75.75 0 1 0 1.06-1.06l-1.745-1.745a10.029 10.029 0 0 0 3.3-4.38 1.651 1.651 0 0 0 0-1.185A10.004 10.004 0 0 0 9.999 3a9.956 9.956 0 0 0-4.744 1.194L3.28 2.22ZM7.752 6.69l1.092 1.092a2.5 2.5 0 0 1 3.374 3.373l1.091 1.092a4 4 0 0 0-5.557-5.557Z" clipRule="evenodd" />
                   <path d="M10.748 13.93l2.523 2.523a9.987 9.987 0 0 1-3.27.547c-4.258 0-7.894-2.66-9.337-6.41a1.651 1.651 0 0 1 0-1.186A10.007 10.007 0 0 1 2.839 6.02L6.07 9.252a4 4 0 0 0 4.678 4.678Z" />
                 </svg>
               ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
                   <path d="M10 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />
                   <path fillRule="evenodd" d="M.664 10.59a1.651 1.651 0 0 1 0-1.186A10.004 10.004 0 0 1 10 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0 1 10 17c-4.257 0-7.893-2.66-9.336-6.41ZM14 10a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z" clipRule="evenodd" />
                 </svg>
@@ -84,7 +84,7 @@ export default function LoginView({ onSwitchToSignup, onContinueAsGuest }: Props
         </Button>
       </form>
 
-      <p className="text-center text-sm text-neutral-500 dark:text-neutral-400">
+      <p className="text-center text-base text-neutral-500 dark:text-neutral-400">
         Pas encore de compte ?{' '}
         <button
           type="button"
@@ -100,17 +100,17 @@ export default function LoginView({ onSwitchToSignup, onContinueAsGuest }: Props
           <div className="w-full border-t border-neutral-200 dark:border-neutral-700" />
         </div>
         <div className="relative flex justify-center">
-          <span className="px-3 text-xs text-neutral-400 dark:text-neutral-500 bg-neutral-100 dark:bg-neutral-900">ou</span>
+          <span className="px-3 text-base text-neutral-400 dark:text-neutral-500 bg-neutral-100 dark:bg-neutral-900">ou</span>
         </div>
       </div>
 
       <button
         type="button"
         onClick={onContinueAsGuest}
-        className="w-full py-2.5 rounded-2xl border border-neutral-200 dark:border-neutral-700 text-sm text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
+        className="w-full py-2.5 rounded-2xl border border-neutral-200 dark:border-neutral-700 text-base text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
       >
         Continuer en tant qu'invité
-        <span className="block text-xs text-neutral-400 dark:text-neutral-500 mt-0.5">Données sauvegardées localement</span>
+        <span className="block text-base text-neutral-400 dark:text-neutral-500 mt-0.5">Données sauvegardées localement</span>
       </button>
     </div>
   )

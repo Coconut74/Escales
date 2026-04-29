@@ -21,7 +21,7 @@ export default function JournalView() {
             id="tab-notes"
             aria-controls="panel-notes"
             onClick={() => setTab('notes')}
-            className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${
+            className={`px-4 py-1.5 rounded-full text-base font-semibold transition-all ${
               tab === 'notes'
                 ? 'bg-primary-500 text-white shadow-sm'
                 : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200'
@@ -35,7 +35,7 @@ export default function JournalView() {
             id="tab-projects"
             aria-controls="panel-projects"
             onClick={() => setTab('projects')}
-            className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${
+            className={`px-4 py-1.5 rounded-full text-base font-semibold transition-all ${
               tab === 'projects'
                 ? 'bg-primary-500 text-white shadow-sm'
                 : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200'

@@ -129,8 +129,8 @@ export default function ProjectEditor({ initial, onSave, onCancel }: Props) {
                 >
                   <img src={pt.icon} alt="" className="w-11 h-11 object-contain shrink-0" />
                   <div>
-                    <p className={`text-sm font-semibold ${type === pt.value ? 'text-primary-700 dark:text-primary-300' : 'text-neutral-800 dark:text-neutral-100'}`}>{pt.label}</p>
-                    <p className="text-sm text-neutral-400 dark:text-neutral-500">{pt.description}</p>
+                    <p className={`text-base font-semibold ${type === pt.value ? 'text-primary-700 dark:text-primary-300' : 'text-neutral-800 dark:text-neutral-100'}`}>{pt.label}</p>
+                    <p className="text-base text-neutral-400 dark:text-neutral-500">{pt.description}</p>
                   </div>
                 </button>
               ))}
@@ -207,10 +207,10 @@ export default function ProjectEditor({ initial, onSave, onCancel }: Props) {
               <div className="space-y-1.5">
                 {checklist.map((item) => (
                   <div key={item.id} className="flex items-center gap-2 group">
-                    <span className="text-neutral-300 dark:text-neutral-600 text-sm shrink-0">•</span>
-                    <span className="flex-1 text-sm text-neutral-700 dark:text-neutral-200">{item.label}</span>
+                    <span className="text-neutral-300 dark:text-neutral-600 text-base shrink-0">•</span>
+                    <span className="flex-1 text-base text-neutral-700 dark:text-neutral-200">{item.label}</span>
                     <button type="button" onClick={() => removeItem(item.id)} aria-label={t('projectEditor.removeStepAria')} className="opacity-0 group-hover:opacity-100 p-0.5 text-neutral-400 hover:text-red-500 transition-all">
-                      <Icon name="trash" size={13} />
+                      <Icon name="trash" size={20} />
                     </button>
                   </div>
                 ))}
@@ -220,13 +220,13 @@ export default function ProjectEditor({ initial, onSave, onCancel }: Props) {
                   onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addItem() } }}
                   placeholder={t('projectEditor.addStep')} className={`${inputCls(false)} flex-1`} />
                 <button type="button" onClick={addItem} aria-label={t('projectEditor.addStepAria')} className="px-3 py-2 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
-                  <Icon name="plus" size={15} />
+                  <Icon name="plus" size={20} />
                 </button>
               </div>
             </div>
           )}
 
-          {error && <p className="text-sm text-red-500">{error}</p>}
+          {error && <p className="text-base text-red-500">{error}</p>}
         </div>
 
         {/* Footer */}
@@ -248,8 +248,8 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   )
 }
 
-const labelCls = 'text-sm font-medium text-neutral-500 dark:text-neutral-400'
+const labelCls = 'text-base font-medium text-neutral-500 dark:text-neutral-400'
 const inputCls = (err: boolean) =>
-  `w-full px-3 py-2 rounded-xl border text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-50 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-300 dark:focus:ring-primary-700 transition-colors ${
+  `w-full px-3 py-2 rounded-xl border text-base bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-50 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-300 dark:focus:ring-primary-700 transition-colors ${
     err ? 'border-red-400' : 'border-neutral-200 dark:border-neutral-600'
   }`
