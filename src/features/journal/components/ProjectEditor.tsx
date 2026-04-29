@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { Project, ProjectType, ChecklistItem } from '../journal.types'
 import Button from '@/components/ui/Button'
+import DropdownField from '@/components/ui/DropdownField'
 import Icon from '@/components/ui/Icon'
 import { useT } from '@/lib/i18n'
 import type { TKey } from '@/lib/i18n'
@@ -161,13 +162,12 @@ export default function ProjectEditor({ initial, onSave, onCancel }: Props) {
               <Field label={t('projectEditor.city')}>
                 <input type="text" value={city} onChange={(e) => setCity(e.target.value)} placeholder={t('projectEditor.cityPlaceholder')} className={inputCls(false)} />
               </Field>
-              <Field label={t('projectEditor.propertyType')}>
-                <select value={propertyType} onChange={(e) => setPropertyType(e.target.value)} className={inputCls(false)}>
-                  {PROPERTY_TYPE_VALUES.map((p) => (
-                    <option key={p} value={p}>{t(PROPERTY_TKEYS[p])}</option>
-                  ))}
-                </select>
-              </Field>
+              <DropdownField
+                label={t('projectEditor.propertyType')}
+                value={propertyType}
+                onChange={(e) => setPropertyType(e.target.value)}
+                options={PROPERTY_TYPE_VALUES.map((p) => ({ value: p, label: t(PROPERTY_TKEYS[p]) }))}
+              />
               <div className="col-span-2">
                 <Field label={t('projectEditor.budget')}>
                   <input type="number" value={targetAmount} onChange={(e) => setTargetAmount(e.target.value)} placeholder="200 000" className={inputCls(false)} />

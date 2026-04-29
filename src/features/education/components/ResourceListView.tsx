@@ -50,7 +50,7 @@ export default function ResourceListView({ type, onBack }: Props) {
           {t(TITLE_KEY[type])}
         </h1>
         {/* Barre de recherche */}
-        <div className="relative">
+        <div className="relative w-full lg:max-w-[300px]">
           <input
             type="search"
             value={query}
