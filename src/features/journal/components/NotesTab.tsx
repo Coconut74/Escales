@@ -58,7 +58,7 @@ export default function NotesTab() {
       <div className="px-4 pt-4">
         {notes.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 gap-3 text-center">
-            <span className="text-4xl">📝</span>
+            <img src="/3dicon/Note.png" alt="" className="w-16 h-16 object-contain" />
             <p className="text-sm text-neutral-400 dark:text-neutral-500">{t('notes.empty')}</p>
           </div>
         ) : (

@@ -24,11 +24,11 @@ export default function ProjectEditor({ initial, onSave, onCancel }: Props) {
   const t = useT()
 
   const PROJECT_TYPES: { value: ProjectType; label: string; icon: string; description: string }[] = [
-    { value: 'savings',     icon: '💰', label: t('projectEditor.savings.label'),    description: t('projectEditor.savings.desc') },
-    { value: 'real-estate', icon: '🏠', label: t('projectEditor.realEstate.label'), description: t('projectEditor.realEstate.desc') },
-    { value: 'investment',  icon: '📈', label: t('projectEditor.investment.label'), description: t('projectEditor.investment.desc') },
-    { value: 'loan',        icon: '🏦', label: t('projectEditor.loan.label'),       description: t('projectEditor.loan.desc') },
-    { value: 'free',        icon: '📋', label: t('projectEditor.free.label'),       description: t('projectEditor.free.desc') },
+    { value: 'savings',     icon: '/3dicon/Saving.png', label: t('projectEditor.savings.label'),    description: t('projectEditor.savings.desc') },
+    { value: 'real-estate', icon: '/3dicon/House.png',  label: t('projectEditor.realEstate.label'), description: t('projectEditor.realEstate.desc') },
+    { value: 'investment',  icon: '/3dicon/Invest.png', label: t('projectEditor.investment.label'), description: t('projectEditor.investment.desc') },
+    { value: 'loan',        icon: '/3dicon/Loan.png',   label: t('projectEditor.loan.label'),       description: t('projectEditor.loan.desc') },
+    { value: 'free',        icon: '/3dicon/Task.png',   label: t('projectEditor.free.label'),       description: t('projectEditor.free.desc') },
   ]
 
   const [type, setType] = useState<ProjectType>(initial?.type ?? 'savings')
@@ -125,7 +125,7 @@ export default function ProjectEditor({ initial, onSave, onCancel }: Props) {
                       : 'border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600'
                   }`}
                 >
-                  <span className="text-xl">{pt.icon}</span>
+                  <img src={pt.icon} alt="" className="w-8 h-8 object-contain shrink-0" />
                   <div>
                     <p className={`text-sm font-semibold ${type === pt.value ? 'text-primary-700 dark:text-primary-300' : 'text-neutral-800 dark:text-neutral-100'}`}>{pt.label}</p>
                     <p className="text-xs text-neutral-400 dark:text-neutral-500">{pt.description}</p>

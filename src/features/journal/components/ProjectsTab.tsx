@@ -10,11 +10,11 @@ import { useT } from '@/lib/i18n'
 import type { TKey } from '@/lib/i18n'
 
 const TYPE_META: Record<ProjectType, { icon: string }> = {
-  savings:       { icon: '💰' },
-  'real-estate': { icon: '🏠' },
-  investment:    { icon: '📈' },
-  loan:          { icon: '🏦' },
-  free:          { icon: '📋' },
+  savings:       { icon: '/3dicon/Saving.png' },
+  'real-estate': { icon: '/3dicon/House.png' },
+  investment:    { icon: '/3dicon/Invest.png' },
+  loan:          { icon: '/3dicon/Loan.png' },
+  free:          { icon: '/3dicon/Task.png' },
 }
 
 const TYPE_LABEL_KEYS: Record<ProjectType, TKey> = {
@@ -71,7 +71,7 @@ export default function ProjectsTab() {
       <div className="px-4 pt-4">
         {projects.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 gap-3 text-center">
-            <span className="text-4xl">🗂️</span>
+            <img src="/3dicon/Project.png" alt="" className="w-16 h-16 object-contain" />
             <p className="text-sm text-neutral-400 dark:text-neutral-500">{t('projects.empty')}</p>
             <p className="text-xs text-neutral-400 dark:text-neutral-600">{t('projects.emptyHint')}</p>
           </div>
@@ -129,7 +129,7 @@ function ProjectCard({ project, onClick }: {
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2.5 flex-1 min-w-0">
-          <span className="text-xl shrink-0">{meta.icon}</span>
+          <img src={meta.icon} alt="" className="w-8 h-8 object-contain shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-neutral-900 dark:text-neutral-50 truncate">{project.name}</p>
             <p className="text-xs text-neutral-400 dark:text-neutral-500">{typeLabel}</p>
@@ -231,7 +231,7 @@ function ProjectDetail({ project, onClose, onDelete }: { project: Project; onClo
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-4 shrink-0 border-b border-neutral-100 dark:border-neutral-700">
           <div className="flex items-center gap-2">
-            <span className="text-xl">{meta.icon}</span>
+            <img src={meta.icon} alt="" className="w-8 h-8 object-contain shrink-0" />
             <div>
               <h2 className="text-base font-bold text-neutral-900 dark:text-neutral-50 leading-tight">{project.name}</h2>
               <p className="text-xs text-neutral-400 dark:text-neutral-500">{typeLabel}</p>
