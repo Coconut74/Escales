@@ -12,6 +12,7 @@ const fr = {
   'home.editInvestments': 'Voir mes investissements',
   'home.emptyChart': 'Aucun investissement',
   'home.portfolio': 'Portfolio',
+  'home.categories': 'Catégories',
 
   // Historique investissements
   'history.title': 'Historique',
@@ -232,6 +233,7 @@ const en: typeof fr = {
   'home.editInvestments': 'View my investments',
   'home.emptyChart': 'No investments yet',
   'home.portfolio': 'Portfolio',
+  'home.categories': 'Categories',
 
   'history.title': 'History',
   'history.addEntry': 'Add an entry',

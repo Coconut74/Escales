@@ -114,32 +114,23 @@ export default function CategoryChart({ investments, total }: Props) {
         ))}
         {/* Texte centre */}
         <text
-          x={CX} y={CY - 7}
+          x={CX} y={CY + 5}
           textAnchor="middle"
-          fontSize="10"
+          fontSize="11"
+          fontWeight="600"
           fontFamily="Urbanist, sans-serif"
-          className="fill-neutral-400 dark:fill-neutral-500"
+          className="fill-neutral-500 dark:fill-neutral-400"
         >
-          {t('home.portfolio')}
-        </text>
-        <text
-          x={CX} y={CY + 10}
-          textAnchor="middle"
-          fontSize="13"
-          fontWeight="700"
-          fontFamily="Urbanist, sans-serif"
-          className="fill-neutral-800 dark:fill-neutral-100"
-        >
-          {formatCurrency(total, currency)}
+          {t('home.categories')}
         </text>
       </svg>
 
       {/* Légende en colonne */}
       <div className="w-full max-w-[260px] lg:max-w-[320px] flex flex-col gap-2 mt-3">
         {segments.map(({ category, value, pct }) => (
-          <div key={category} className="flex items-center gap-2.5">
+          <div key={category} className="flex items-start gap-2.5">
             <div
-              className="w-2.5 h-2.5 rounded-full shrink-0"
+              className="w-2.5 h-2.5 rounded-full shrink-0 mt-0.5"
               style={{ backgroundColor: CATEGORY_COLORS[category].bg }}
             />
             <span className="text-xs font-semibold text-neutral-700 dark:text-neutral-200 w-28 shrink-0">
