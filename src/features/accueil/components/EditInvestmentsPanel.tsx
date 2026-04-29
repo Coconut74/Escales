@@ -372,17 +372,17 @@ function EditRow({ draft, error, isNew, openHistoryId, setOpenHistoryId, categor
         )}
         <button
           onClick={onCancel}
-          className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-600 text-neutral-500 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-500 transition-colors"
+          className="w-7 h-7 flex items-center justify-center rounded-lg bg-neutral-100 dark:bg-neutral-600 text-neutral-500 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-500 transition-colors"
           aria-label={t('edit.cancel')}
         >
-          <Icon name="x" size={15} />
+          <Icon name="x" size={13} />
         </button>
         <button
           onClick={onValidate}
-          className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-500 text-white hover:bg-primary-600 transition-colors"
+          className="w-7 h-7 flex items-center justify-center rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition-colors"
           aria-label={t('edit.save')}
         >
-          <Icon name="check" size={15} />
+          <Icon name="check" size={13} />
         </button>
       </div>
     </div>
