@@ -194,14 +194,14 @@ export default function AccueilView() {
 
         {/* Dots — ancrés en bas de la zone, au-dessus du bouton fixe */}
         {!selected && (
-          <div className="absolute bottom-[200px] lg:bottom-[120px] left-1/2 -translate-x-1/2 pointer-events-none z-10">
+          <div className="absolute bottom-[200px] lg:bottom-[200px] left-1/2 -translate-x-1/2 pointer-events-none z-10">
             <Dots vizMode={vizMode} />
           </div>
         )}
       </div>
 
       {/* Bouton modifier */}
-      <div className="fixed bottom-[120px] lg:bottom-8 left-1/2 lg:left-[calc(312px+(100vw-312px)/2)] -translate-x-1/2 z-[45]">
+      <div className="fixed bottom-[120px] lg:bottom-12 left-1/2 lg:left-[calc(312px+(100vw-312px)/2)] -translate-x-1/2 z-[45]">
         <Button
           variant="grey-outline"
           size="lg"
