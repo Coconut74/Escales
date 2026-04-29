@@ -64,7 +64,7 @@ export default function ResourceListView({ type, onBack }: Props) {
       </div>
 
       {/* Liste */}
-      <div className="flex-1 overflow-auto px-4 pb-32 lg:pb-8 pt-3 space-y-4">
+      <div className="flex-1 overflow-auto px-4 pb-32 lg:pb-8 pt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 content-start">
         {filtered.length === 0 ? (
           <p className="text-sm text-neutral-400 dark:text-neutral-500 text-center py-16">
             {t('education.noResults')}
