@@ -14,7 +14,7 @@ import { formatCurrency, formatDate } from '@/lib/formatting'
 import { useProfilStore } from '@/features/profil/profil.store'
 
 const ChartIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
     <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" /><polyline points="16 7 22 7 22 13" />
   </svg>
 )
@@ -233,7 +233,7 @@ function ViewRow({ inv, currency, onEdit, disabled }: {
     <div className="flex items-center gap-3 px-3 py-2.5 rounded-2xl hover:bg-neutral-100/60 dark:hover:bg-neutral-700/40 transition-colors">
       {/* Avatar */}
       <div
-        className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold shrink-0"
+        className="w-11 h-11 rounded-xl flex items-center justify-center text-base font-bold shrink-0"
         style={{ backgroundColor: color.bg, color: color.text }}
       >
         {initials}
@@ -241,16 +241,16 @@ function ViewRow({ inv, currency, onEdit, disabled }: {
 
       {/* Nom + catégorie */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-50 truncate leading-tight">
+        <p className="text-base font-semibold text-neutral-900 dark:text-neutral-50 truncate leading-tight">
           {inv.label || '—'}
         </p>
-        <p className="text-xs text-neutral-400 dark:text-neutral-500 leading-tight">
+        <p className="text-base text-neutral-400 dark:text-neutral-500 leading-tight">
           {t(CATEGORY_TKEYS[inv.category])}
         </p>
       </div>
 
       {/* Valeur */}
-      <span className="text-sm font-bold text-neutral-700 dark:text-neutral-200 shrink-0 tabular-nums">
+      <span className="text-base font-bold text-neutral-700 dark:text-neutral-200 shrink-0 tabular-nums">
         {formatCurrency(inv.value, currency)}
       </span>
 
@@ -258,10 +258,10 @@ function ViewRow({ inv, currency, onEdit, disabled }: {
       <button
         onClick={onEdit}
         disabled={disabled}
-        className="w-8 h-8 flex items-center justify-center rounded-full text-neutral-400 hover:bg-primary-50 hover:text-primary-600 dark:hover:bg-primary-900/30 dark:hover:text-primary-400 disabled:opacity-30 transition-colors shrink-0"
+        className="w-10 h-10 flex items-center justify-center rounded-full text-neutral-400 hover:bg-primary-50 hover:text-primary-600 dark:hover:bg-primary-900/30 dark:hover:text-primary-400 disabled:opacity-30 transition-colors shrink-0"
         aria-label="Modifier"
       >
-        <Icon name="write" size={15} />
+        <Icon name="write" size={20} />
       </button>
     </div>
   )
@@ -348,7 +348,7 @@ function EditRow({ draft, error, isNew, openHistoryId, setOpenHistoryId, categor
         {!isNew && (
           <button
             onClick={() => setOpenHistoryId(openHistoryId === draft.id ? null : draft.id)}
-            className="flex items-center gap-1.5 text-xs font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
+            className="flex items-center gap-1.5 text-base font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
           >
             <ChartIcon />
             {t('history.title')}
@@ -364,25 +364,25 @@ function EditRow({ draft, error, isNew, openHistoryId, setOpenHistoryId, categor
         {!isNew && (
           <button
             onClick={onDelete}
-            className="mr-auto p-1.5 text-neutral-400 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
+            className="mr-auto p-2 text-neutral-400 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
             aria-label="Supprimer"
           >
-            <Icon name="trash" size={16} />
+            <Icon name="trash" size={20} />
           </button>
         )}
         <button
           onClick={onCancel}
-          className="w-7 h-7 flex items-center justify-center rounded-lg bg-neutral-100 dark:bg-neutral-600 text-neutral-500 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-500 transition-colors"
+          className="w-9 h-9 flex items-center justify-center rounded-lg bg-neutral-100 dark:bg-neutral-600 text-neutral-500 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-500 transition-colors"
           aria-label={t('edit.cancel')}
         >
-          <Icon name="x" size={13} />
+          <Icon name="x" size={20} />
         </button>
         <button
           onClick={onValidate}
-          className="w-7 h-7 flex items-center justify-center rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition-colors"
+          className="w-9 h-9 flex items-center justify-center rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition-colors"
           aria-label={t('edit.save')}
         >
-          <Icon name="check" size={13} />
+          <Icon name="check" size={20} />
         </button>
       </div>
     </div>
@@ -422,7 +422,7 @@ function HistorySection({ investmentId }: { investmentId: string }) {
 
   return (
     <div className="mt-1 pt-3 border-t border-neutral-200/60 dark:border-neutral-600/60 space-y-2">
-      <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">
+      <p className="text-base font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">
         {t('history.addEntry')}
       </p>
       <div className="flex gap-2 items-end">
@@ -431,7 +431,7 @@ function HistorySection({ investmentId }: { investmentId: string }) {
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="w-full px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
+            className="w-full px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-base focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
           />
         </div>
         <div className="w-28">
@@ -440,27 +440,27 @@ function HistorySection({ investmentId }: { investmentId: string }) {
             placeholder={t('history.value')}
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            className="w-full px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-sm placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
+            className="w-full px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-base placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
           />
         </div>
         <button
           onClick={handleAdd}
-          className="px-3 py-2 rounded-xl bg-primary-500 text-white text-sm font-semibold hover:bg-primary-600 transition-colors shrink-0"
+          className="px-3 py-2 rounded-xl bg-primary-500 text-white text-base font-semibold hover:bg-primary-600 transition-colors shrink-0"
         >
           {t('history.add')}
         </button>
       </div>
 
       {invSnaps.length === 0 ? (
-        <p className="text-xs text-neutral-400 dark:text-neutral-500 py-1">{t('history.noEntries')}</p>
+        <p className="text-base text-neutral-400 dark:text-neutral-500 py-1">{t('history.noEntries')}</p>
       ) : (
         <div className="space-y-1">
           {invSnaps.map((snap, i) => {
             const prev = invSnaps[i + 1]
             const delta = prev ? ((snap.value - prev.value) / prev.value) * 100 : null
             return (
-              <div key={snap.id} className="flex items-center gap-2 text-xs py-1">
-                <span className="text-neutral-500 dark:text-neutral-400 w-24 shrink-0">
+              <div key={snap.id} className="flex items-center gap-2 text-base py-1">
+                <span className="text-neutral-500 dark:text-neutral-400 w-28 shrink-0">
                   {formatDate(snap.date)}
                 </span>
                 <span className="font-semibold text-neutral-800 dark:text-neutral-100">
@@ -473,10 +473,10 @@ function HistorySection({ investmentId }: { investmentId: string }) {
                 )}
                 <button
                   onClick={() => removeSnapshot(snap.id)}
-                  className="ml-auto text-neutral-400 hover:text-red-500 transition-colors p-0.5"
+                  className="ml-auto text-neutral-400 hover:text-red-500 transition-colors p-1.5"
                   aria-label={t('history.delete')}
                 >
-                  <Icon name="trash" size={13} />
+                  <Icon name="trash" size={20} />
                 </button>
               </div>
             )
@@ -541,8 +541,8 @@ function TickerField({ ticker, apiKey, onSelect, onUnlink }: {
     return (
       <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-primary-300 dark:border-primary-700 bg-primary-50 dark:bg-primary-900/20">
         <ChartIcon />
-        <span className="text-sm font-bold text-primary-700 dark:text-primary-300 font-mono">{ticker}</span>
-        <span className="text-xs text-primary-500 dark:text-primary-400">{t('edit.livePriceEnabled')}</span>
+        <span className="text-base font-bold text-primary-700 dark:text-primary-300 font-mono">{ticker}</span>
+        <span className="text-base text-primary-500 dark:text-primary-400">{t('edit.livePriceEnabled')}</span>
         <button
           onClick={onUnlink}
           onMouseDown={(e) => e.stopPropagation()}
@@ -573,9 +573,9 @@ function TickerField({ ticker, apiKey, onSelect, onUnlink }: {
               onClick={() => { onSelect(r.symbol); setQuery(''); setResults([]); setOpen(false) }}
               className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-neutral-50 dark:hover:bg-neutral-700 text-left transition-colors"
             >
-              <span className="text-sm font-bold text-neutral-900 dark:text-neutral-50 font-mono w-20 shrink-0">{r.displaySymbol}</span>
-              <span className="text-xs text-neutral-500 dark:text-neutral-400 truncate">{r.description}</span>
-              <span className="text-xs text-neutral-400 dark:text-neutral-500 shrink-0 ml-auto">{r.type}</span>
+              <span className="text-base font-bold text-neutral-900 dark:text-neutral-50 font-mono w-24 shrink-0">{r.displaySymbol}</span>
+              <span className="text-base text-neutral-500 dark:text-neutral-400 truncate">{r.description}</span>
+              <span className="text-base text-neutral-400 dark:text-neutral-500 shrink-0 ml-auto">{r.type}</span>
             </button>
           ))}
         </div>,
@@ -594,13 +594,13 @@ function TickerField({ ticker, apiKey, onSelect, onUnlink }: {
           onFocus={() => { if (results.length > 0) openDropdown() }}
           placeholder={apiKey ? t('edit.linkTicker') : t('edit.configureFinnhub')}
           disabled={!apiKey}
-          className="w-full px-3 py-2 pl-8 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-sm placeholder:text-neutral-400 dark:placeholder:text-neutral-500 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
+          className="w-full px-3 py-2 pl-10 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-base placeholder:text-neutral-400 dark:placeholder:text-neutral-500 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
         />
-        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none">
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none">
           {searching ? (
-            <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" strokeOpacity="0.25"/><path d="M21 12a9 9 0 00-9-9" /></svg>
+            <svg className="animate-spin" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" strokeOpacity="0.25"/><path d="M21 12a9 9 0 00-9-9" /></svg>
           ) : (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
           )}
         </span>
       </div>
