@@ -94,7 +94,7 @@ function CategoryCard({ category, onClick }: { category: Category; onClick: () =
       type="button"
       onClick={onClick}
       aria-label={t(category.titleKey)}
-      className={`relative w-full text-left rounded-3xl overflow-hidden p-5 h-28 border border-black/10 dark:border-white/10 ${category.bg} transition-opacity hover:opacity-90`}
+      className={`relative w-full text-left rounded-3xl overflow-hidden p-5 aspect-square border border-black/10 dark:border-white/10 ${category.bg} transition-opacity hover:opacity-90`}
     >
       {/* Titre + chevron */}
       <div className="flex items-center justify-between w-full relative z-10">
