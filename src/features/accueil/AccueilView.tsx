@@ -192,9 +192,9 @@ export default function AccueilView() {
           </div>
         </div>
 
-        {/* Dots statiques — hors des vues glissantes, position absolue sous les charts */}
+        {/* Dots — ancrés en bas de la zone, au-dessus du bouton fixe */}
         {!selected && (
-          <div className="absolute top-[352px] lg:top-[432px] left-1/2 -translate-x-1/2 pointer-events-none z-10">
+          <div className="absolute bottom-[168px] lg:bottom-14 left-1/2 -translate-x-1/2 pointer-events-none z-10">
             <Dots vizMode={vizMode} />
           </div>
         )}

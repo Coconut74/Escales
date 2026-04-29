@@ -126,22 +126,23 @@ export default function CategoryChart({ investments, total }: Props) {
       </svg>
 
       {/* Légende en colonne */}
-      <div className="w-full max-w-[260px] lg:max-w-[320px] flex flex-col gap-2 mt-3">
+      <ul role="list" className="w-full max-w-[260px] lg:max-w-[320px] flex flex-col gap-2 mt-3">
         {segments.map(({ category, value, pct }) => (
-          <div key={category} className="flex items-start gap-2.5">
+          <li key={category} className="flex items-start gap-2.5">
             <div
-              className="w-2.5 h-2.5 rounded-full shrink-0 mt-0.5"
+              aria-hidden="true"
+              className="w-3 h-3 rounded-full shrink-0 mt-0.5"
               style={{ backgroundColor: CATEGORY_COLORS[category].bg }}
             />
-            <span className="text-xs font-semibold text-neutral-700 dark:text-neutral-200 w-28 shrink-0">
+            <span className="text-sm font-semibold text-neutral-800 dark:text-neutral-100 w-28 shrink-0">
               {t(CATEGORY_TKEYS[category])}
             </span>
-            <span className="text-xs text-neutral-500 dark:text-neutral-400 ml-auto">
+            <span className="text-sm text-neutral-600 dark:text-neutral-300 ml-auto">
               {formatCurrency(value, currency)} · {(pct * 100).toFixed(1)}%
             </span>
-          </div>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   )
 }
