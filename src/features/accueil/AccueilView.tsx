@@ -143,8 +143,9 @@ export default function AccueilView() {
       <PortfolioTotal total={total} monthlyChange={avgChange ?? undefined} />
 
       {/* Zone graphique — overflow-x:clip pour le swipe, overflow-y:visible pour le zoom vers le haut */}
+      {/* pb-[160px] mobile : réserve la place pour le bouton fixe + BottomNav */}
       <div
-        className="flex-1 relative"
+        className="flex-1 relative pb-[160px] lg:pb-0"
         style={{ overflowX: 'clip', overflowY: 'visible' }}
         onTouchStart={(e) => handleChartSwipeStart(e.touches[0]?.clientX ?? 0)}
         onTouchEnd={(e) => handleChartSwipeEnd(e.changedTouches[0]?.clientX ?? 0)}
@@ -159,7 +160,7 @@ export default function AccueilView() {
             transition: 'transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)',
           }}
         >
-          <div className="w-[90%] max-w-[480px] lg:max-w-[660px]">
+          <div className="w-[90%] max-w-[480px] lg:max-w-[520px]">
             <div
               style={{
                 transformOrigin: '0% 0%',
@@ -186,7 +187,7 @@ export default function AccueilView() {
             transition: 'transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)',
           }}
         >
-          <div className="w-[90%] max-w-[480px] lg:max-w-[660px]">
+          <div className="w-[90%] max-w-[480px] lg:max-w-[520px]">
             <CategoryChart investments={effectiveInvestments} total={total} />
           </div>
         </div>
