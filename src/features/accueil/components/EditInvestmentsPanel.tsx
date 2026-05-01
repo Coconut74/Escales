@@ -38,12 +38,16 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
   const { prices } = useStockPrices(investments, apiKey)
 
   const [view, setView] = useState<'list' | 'detail' | 'create'>('list')
-  const [detailInvestment, setDetailInvestment] = useState<Investment | null>(null)
+  // Stocker l'ID plutôt que l'objet pour que le détail reste réactif au store
+  const [detailId, setDetailId] = useState<string | null>(null)
+  const detailInvestment = detailId ? (investments.find((i) => i.id === detailId) ?? null) : null
 
-  // Mini-modal pour modifier nom + catégorie
+  // Mini-modal pour modifier nom + catégorie + ticker
   const [editTarget, setEditTarget] = useState<Investment | null>(null)
   const [editName, setEditName] = useState('')
   const [editCategory, setEditCategory] = useState<InvestmentCategory>('etf')
+  const [editTicker, setEditTicker] = useState<string | undefined>(undefined)
+  const [editShares, setEditShares] = useState<number | undefined>(undefined)
   const [editError, setEditError] = useState(false)
 
   // Formulaire de création
@@ -59,7 +63,7 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
   useEffect(() => {
     if (open) {
       setView('list')
-      setDetailInvestment(null)
+      setDetailId(null)
       setEditTarget(null)
       setCreateDraft(freshDraft())
       setCreateError(null)
@@ -80,25 +84,32 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
   }, [open, onClose, view, editTarget])
 
   function openDetail(inv: Investment) {
-    setDetailInvestment(inv)
+    setDetailId(inv.id)
     setView('detail')
   }
 
   function backToList() {
     setView('list')
-    setDetailInvestment(null)
+    setDetailId(null)
   }
 
   function openEditModal(inv: Investment) {
     setEditTarget(inv)
     setEditName(inv.label)
     setEditCategory(inv.category)
+    setEditTicker(inv.ticker)
+    setEditShares(inv.shares)
     setEditError(false)
   }
 
   function saveEdit() {
     if (!editName.trim()) { setEditError(true); return }
-    updateInvestment(editTarget!.id, { label: editName.trim(), category: editCategory })
+    updateInvestment(editTarget!.id, {
+      label: editName.trim(),
+      category: editCategory,
+      ticker: editTicker,
+      shares: editTicker ? editShares : undefined,
+    })
     setEditTarget(null)
   }
 
@@ -124,11 +135,15 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
     setCreateError(null)
   }
 
-  // Calcul de l'évolution par investissement
   function getChange(inv: Investment): number | null {
     if (inv.ticker && prices[inv.id]) return prices[inv.id]?.changePercent ?? null
     const invSnaps = snapshots.filter((s) => s.investmentId === inv.id)
     return selectEffectiveChange(inv, invSnaps) ?? inv.change ?? null
+  }
+
+  function getLiveValue(inv: Investment): number {
+    if (inv.ticker && prices[inv.id]) return prices[inv.id]!.price * (inv.shares ?? 1)
+    return inv.value
   }
 
   const panelContent = (
@@ -161,6 +176,7 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
                 key={inv.id}
                 inv={inv}
                 currency={currency}
+                value={getLiveValue(inv)}
                 change={getChange(inv)}
                 onDetail={() => openDetail(inv)}
               />
@@ -311,6 +327,20 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
               value={editCategory}
               onChange={(e) => setEditCategory(e.target.value as InvestmentCategory)}
             />
+            {editTicker && (
+              <TextField
+                type="number"
+                placeholder={t('edit.shares')}
+                value={editShares === undefined ? '' : editShares}
+                onChange={(e) => setEditShares(parseFloat(e.target.value) || undefined)}
+              />
+            )}
+            <TickerField
+              ticker={editTicker}
+              apiKey={apiKey}
+              onSelect={(ticker) => { setEditTicker(ticker); setEditShares(editShares ?? 1) }}
+              onUnlink={() => { setEditTicker(undefined); setEditShares(undefined) }}
+            />
             <div className="flex justify-end gap-2 pt-1">
               <button
                 onClick={() => setEditTarget(null)}
@@ -375,9 +405,10 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
 
 // ─── Ligne de la liste ────────────────────────────────────────────────────────
 
-function ViewRow({ inv, currency, change, onDetail }: {
+function ViewRow({ inv, currency, value, change, onDetail }: {
   inv: Investment
   currency: string
+  value: number
   change: number | null
   onDetail: () => void
 }) {
@@ -411,7 +442,7 @@ function ViewRow({ inv, currency, change, onDetail }: {
 
       <div className="flex flex-col items-end shrink-0 gap-0.5">
         <span className="text-base font-bold text-neutral-700 dark:text-neutral-200 tabular-nums">
-          {formatCurrency(inv.value, currency)}
+          {formatCurrency(value, currency)}
         </span>
         {change !== null && (
           <span className={`text-base font-semibold tabular-nums ${change >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}`}>
