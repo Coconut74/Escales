@@ -175,16 +175,20 @@ export function selectAverageChange(investments: Investment[]): number | null {
   return withChange.reduce((sum, inv) => sum + inv.change!, 0) / withChange.length
 }
 
-export function selectEffectiveChange(inv: Investment, snapshots: InvestmentSnapshot[]): number | null {
+// currentValue permet de passer la valeur live (Finnhub) comme "dernière valeur"
+export function selectEffectiveChange(
+  inv: Investment,
+  snapshots: InvestmentSnapshot[],
+  currentValue?: number
+): number | null {
   const invSnaps = snapshots
     .filter((s) => s.investmentId === inv.id)
     .sort((a, b) => a.date.localeCompare(b.date))
-  if (invSnaps.length < 2) return null
-  const firstSnap = invSnaps[0]
-  const lastSnap = invSnaps[invSnaps.length - 1]
-  if (!firstSnap || !lastSnap) return null
-  const first = firstSnap.value
-  const last = lastSnap.value
-  if (first === 0) return null
-  return ((last - first) / first) * 100
+  if (invSnaps.length === 0) return null
+  const firstSnap = invSnaps[0]!
+  if (firstSnap.value === 0) return null
+  // Avec currentValue (live) : 1 snapshot suffit ; sans : il en faut 2
+  const last = currentValue ?? (invSnaps.length >= 2 ? invSnaps[invSnaps.length - 1]!.value : null)
+  if (last === null) return null
+  return ((last - firstSnap.value) / firstSnap.value) * 100
 }

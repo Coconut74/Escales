@@ -82,11 +82,10 @@ export default function InvestmentDetailView({ investment, livePrice, onBack, on
     return points
   })()
 
-  // Performance globale
-  const effectiveChange = selectEffectiveChange(investment, snapshots)
+  // Performance globale : première valeur historique → valeur actuelle
   const displayChange = isTicker && livePrice
-    ? livePrice.changePercent
-    : (effectiveChange ?? investment.change)
+    ? (selectEffectiveChange(investment, snapshots, currentValue) ?? livePrice.changePercent)
+    : (selectEffectiveChange(investment, snapshots) ?? investment.change)
 
   function handleRemoveSnapshot(id: string) {
     const remaining = invSnaps.filter((s) => s.id !== id)

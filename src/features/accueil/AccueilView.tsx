@@ -38,7 +38,9 @@ export default function AccueilView() {
     investments.map(inv => {
       const live = prices[inv.id]
       if (live && inv.ticker && inv.shares) {
-        return { ...inv, value: Math.round(live.price * inv.shares * 100) / 100, change: live.changePercent }
+        const liveValue = Math.round(live.price * inv.shares * 100) / 100
+        const change = selectEffectiveChange(inv, snapshots, liveValue) ?? live.changePercent
+        return { ...inv, value: liveValue, change }
       }
       const computedChange = selectEffectiveChange(inv, snapshots)
       return computedChange !== null ? { ...inv, change: computedChange } : inv
