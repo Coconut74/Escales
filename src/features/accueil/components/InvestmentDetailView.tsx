@@ -210,6 +210,7 @@ export default function InvestmentDetailView({ investment, livePrice, onBack, on
               <input
                 type="date"
                 value={snapDate}
+                max={today}
                 onChange={(e) => setSnapDate(e.target.value)}
                 className="w-36 shrink-0 px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-base focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
               />

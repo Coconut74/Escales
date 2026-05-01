@@ -57,12 +57,14 @@ export default function InvestmentLineChart({ data, currency }: Props) {
   if (data.length === 1) {
     const point = data[0]!
     return (
-      <div className="h-[180px] flex flex-col items-center justify-center gap-2">
-        <div className="w-3 h-3 rounded-full bg-primary-500 ring-4 ring-primary-200 dark:ring-primary-900/40" />
-        <p className="text-lg font-bold text-neutral-900 dark:text-neutral-50 tabular-nums">
-          {formatCurrency(point.value, currency)}
-        </p>
-        <p className="text-base text-neutral-400 dark:text-neutral-500">
+      <div className="h-[180px] flex flex-col justify-center gap-1 pl-12 pt-2">
+        <div className="flex items-center gap-3">
+          <div className="w-3 h-3 rounded-full bg-primary-500 ring-4 ring-primary-200 dark:ring-primary-900/40 shrink-0" />
+          <p className="text-lg font-bold text-neutral-900 dark:text-neutral-50 tabular-nums">
+            {formatCurrency(point.value, currency)}
+          </p>
+        </div>
+        <p className="text-base text-neutral-400 dark:text-neutral-500 pl-6">
           {formatDate(point.date)}
         </p>
       </div>
