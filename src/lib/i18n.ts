@@ -39,6 +39,20 @@ const fr = {
   'cat.obligations': 'Obligations',
   'cat.autre': 'Autre',
 
+  // InvestmentDetailView
+  'detail.back': 'Retour',
+  'detail.editInfo': 'Modifier les infos',
+  'detail.currentValue': 'Valeur actuelle',
+  'detail.shares': 'Parts détenues',
+  'detail.livePrice': 'Prix live',
+  'detail.performance': 'Performance',
+  'detail.addValue': 'Ajouter une valeur',
+  'detail.note': 'Note (optionnel)',
+  'detail.noHistory': 'Aucune entrée d\'historique',
+  'detail.autoSnapshot': 'Relevé auto du jour',
+  'detail.deleteInvest': 'Supprimer cet investissement',
+  'detail.saved': 'Enregistré',
+
   // EditInvestmentsPanel
   'edit.title': 'Mes investissements',
   'edit.close': 'Fermer',
@@ -273,6 +287,20 @@ const en: typeof fr = {
   'cat.epargne': 'Savings',
   'cat.obligations': 'Bonds',
   'cat.autre': 'Other',
+
+  // InvestmentDetailView
+  'detail.back': 'Back',
+  'detail.editInfo': 'Edit info',
+  'detail.currentValue': 'Current value',
+  'detail.shares': 'Shares held',
+  'detail.livePrice': 'Live price',
+  'detail.performance': 'Performance',
+  'detail.addValue': 'Add a value',
+  'detail.note': 'Note (optional)',
+  'detail.noHistory': 'No history entries',
+  'detail.autoSnapshot': 'Auto daily snapshot',
+  'detail.deleteInvest': 'Delete this investment',
+  'detail.saved': 'Saved',
 
   'edit.title': 'My investments',
   'edit.close': 'Close',
