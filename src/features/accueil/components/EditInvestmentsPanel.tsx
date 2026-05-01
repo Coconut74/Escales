@@ -159,9 +159,11 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
   }
 
   function getChange(inv: Investment): number | null {
-    if (inv.ticker && prices[inv.id]) return prices[inv.id]?.changePercent ?? null
-    const invSnaps = snapshots.filter((s) => s.investmentId === inv.id)
-    return selectEffectiveChange(inv, invSnaps) ?? inv.change ?? null
+    if (inv.ticker && prices[inv.id]) {
+      const liveValue = prices[inv.id]!.price * (inv.shares ?? 1)
+      return selectEffectiveChange(inv, snapshots, liveValue) ?? prices[inv.id]!.changePercent
+    }
+    return selectEffectiveChange(inv, snapshots) ?? inv.change ?? null
   }
 
   function getLiveValue(inv: Investment): number {
