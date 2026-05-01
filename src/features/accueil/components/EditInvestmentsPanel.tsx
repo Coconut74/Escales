@@ -163,7 +163,6 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
                 currency={currency}
                 change={getChange(inv)}
                 onDetail={() => openDetail(inv)}
-                onEdit={() => openEditModal(inv)}
               />
             ))}
           </div>
@@ -190,6 +189,7 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
             livePrice={prices[detailInvestment.id]}
             onBack={backToList}
             onDeleted={backToList}
+            onEditInfo={() => openEditModal(detailInvestment)}
           />
         )}
       </div>
@@ -375,12 +375,11 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
 
 // ─── Ligne de la liste ────────────────────────────────────────────────────────
 
-function ViewRow({ inv, currency, change, onDetail, onEdit }: {
+function ViewRow({ inv, currency, change, onDetail }: {
   inv: Investment
   currency: string
   change: number | null
   onDetail: () => void
-  onEdit: () => void
 }) {
   const t = useT()
   const color = CATEGORY_COLORS[inv.category]
@@ -421,13 +420,6 @@ function ViewRow({ inv, currency, change, onDetail, onEdit }: {
         )}
       </div>
 
-      <button
-        onClick={(e) => { e.stopPropagation(); onEdit() }}
-        className="w-10 h-10 flex items-center justify-center rounded-full text-neutral-400 hover:bg-primary-50 hover:text-primary-600 dark:hover:bg-primary-900/30 dark:hover:text-primary-400 transition-colors shrink-0"
-        aria-label={t('detail.editInfo')}
-      >
-        <Icon name="write" size={20} />
-      </button>
     </div>
   )
 }

@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useAccueilStore, selectEffectiveChange } from '../accueil.store'
 import type { Investment, InvestmentCategory, InvestmentSnapshot } from '../accueil.types'
-import { CATEGORY_COLORS, CATEGORY_LABELS } from '../accueil.types'
+import { CATEGORY_COLORS } from '../accueil.types'
 import type { StockPrice } from '@/hooks/useStockPrices'
-import TextField from '@/components/ui/TextField'
-import DropdownField from '@/components/ui/DropdownField'
 import Icon from '@/components/ui/Icon'
 import { useT } from '@/lib/i18n'
 import type { TKey } from '@/lib/i18n'
@@ -12,7 +10,6 @@ import { formatCurrency, formatDate } from '@/lib/formatting'
 import { useProfilStore } from '@/features/profil/profil.store'
 import InvestmentLineChart from './InvestmentLineChart'
 import type { ChartPoint } from './InvestmentLineChart'
-import TickerField from './TickerField'
 
 const CATEGORY_TKEYS: Record<InvestmentCategory, TKey> = {
   etf: 'cat.etf',
@@ -23,31 +20,24 @@ const CATEGORY_TKEYS: Record<InvestmentCategory, TKey> = {
   autre: 'cat.autre',
 }
 
-const CATEGORY_OPTIONS_KEYS = Object.keys(CATEGORY_LABELS) as InvestmentCategory[]
-
 interface Props {
   investment: Investment
   livePrice?: StockPrice
   onBack: () => void
   onDeleted: () => void
+  onEditInfo?: () => void
 }
 
-export default function InvestmentDetailView({ investment, livePrice, onBack, onDeleted }: Props) {
+export default function InvestmentDetailView({ investment, livePrice, onBack, onDeleted, onEditInfo }: Props) {
   const t = useT()
   const currency = useProfilStore((s) => s.currency)
   const snapshots = useAccueilStore((s) => s.snapshots)
   const { addSnapshot, removeSnapshot, updateInvestment, removeInvestment } = useAccueilStore()
 
-  const [editMode, setEditMode] = useState(false)
-  const [draft, setDraft] = useState<Investment>({ ...investment })
-  const [editError, setEditError] = useState<string | null>(null)
-
   const today = new Date().toISOString().slice(0, 10)
   const [snapDate, setSnapDate] = useState(today)
   const [snapValue, setSnapValue] = useState('')
   const [snapNote, setSnapNote] = useState('')
-
-  const apiKey = import.meta.env.VITE_FINNHUB_KEY ?? ''
 
   const isTicker = !!investment.ticker
 
@@ -112,18 +102,6 @@ export default function InvestmentDetailView({ investment, livePrice, onBack, on
     setSnapDate(today)
   }
 
-  function handleSaveEdit() {
-    if (!draft.label.trim()) { setEditError('label'); return }
-    if (draft.ticker) {
-      if (!draft.shares || draft.shares <= 0) { setEditError('shares'); return }
-    } else if (draft.value <= 0) {
-      setEditError('value'); return
-    }
-    updateInvestment(draft.id, draft)
-    setEditMode(false)
-    setEditError(null)
-  }
-
   function handleDelete() {
     removeInvestment(investment.id)
     onDeleted()
@@ -131,11 +109,6 @@ export default function InvestmentDetailView({ investment, livePrice, onBack, on
 
   const color = CATEGORY_COLORS[investment.category]
   const initials = investment.label.slice(0, 2).toUpperCase() || '?'
-
-  const CATEGORY_OPTIONS = CATEGORY_OPTIONS_KEYS.map((k) => ({
-    value: k,
-    label: t(CATEGORY_TKEYS[k]),
-  }))
 
   // Historique inversé (plus récent en premier)
   const invSnapsDesc = [...invSnaps].reverse()
@@ -153,12 +126,8 @@ export default function InvestmentDetailView({ investment, livePrice, onBack, on
         </button>
         <div className="flex-1" />
         <button
-          onClick={() => { setEditMode((v) => !v); setDraft({ ...investment }); setEditError(null) }}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-base font-semibold transition-colors ${
-            editMode
-              ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-              : 'text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700'
-          }`}
+          onClick={() => onEditInfo?.()}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-base font-semibold transition-colors text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700"
         >
           <Icon name="write" size={20} />
           {t('detail.editInfo')}
@@ -224,69 +193,6 @@ export default function InvestmentDetailView({ investment, livePrice, onBack, on
             </span>
           )}
         </div>
-
-        {/* Section édition (si activée) */}
-        {editMode && (
-          <div className="bg-neutral-50 dark:bg-neutral-800 border border-primary-200 dark:border-primary-800 rounded-2xl p-4 space-y-3">
-            <TextField
-              placeholder={t('edit.investmentName')}
-              value={draft.label}
-              onChange={(e) => { setDraft((d) => ({ ...d, label: e.target.value })); setEditError(null) }}
-              error={editError === 'label' ? t('edit.nameRequired') : undefined}
-            />
-            <div className="flex gap-2">
-              <div className="flex-1">
-                <DropdownField
-                  options={CATEGORY_OPTIONS}
-                  value={draft.category}
-                  onChange={(e) => setDraft((d) => ({ ...d, category: e.target.value as InvestmentCategory }))}
-                />
-              </div>
-              {!draft.ticker && (
-                <div className="w-32">
-                  <TextField
-                    type="number"
-                    placeholder={t('edit.amount')}
-                    value={draft.value === 0 ? '' : draft.value}
-                    onChange={(e) => { setDraft((d) => ({ ...d, value: parseFloat(e.target.value) || 0 })); setEditError(null) }}
-                    error={editError === 'value' ? t('edit.valueRequired') : undefined}
-                  />
-                </div>
-              )}
-              {draft.ticker && (
-                <div className="w-28">
-                  <TextField
-                    type="number"
-                    placeholder={t('edit.shares')}
-                    value={draft.shares === undefined ? '' : draft.shares}
-                    onChange={(e) => { setDraft((d) => ({ ...d, shares: parseFloat(e.target.value) || undefined })); setEditError(null) }}
-                    error={editError === 'shares' ? t('edit.sharesRequired') : undefined}
-                  />
-                </div>
-              )}
-            </div>
-            <TickerField
-              ticker={draft.ticker}
-              apiKey={apiKey}
-              onSelect={(ticker) => setDraft((d) => ({ ...d, ticker, shares: d.shares ?? 1 }))}
-              onUnlink={() => setDraft((d) => ({ ...d, ticker: undefined, shares: undefined }))}
-            />
-            <div className="flex justify-end gap-2 pt-1">
-              <button
-                onClick={() => { setEditMode(false); setEditError(null) }}
-                className="w-9 h-9 flex items-center justify-center rounded-lg bg-neutral-100 dark:bg-neutral-600 text-neutral-500 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-500 transition-colors"
-              >
-                <Icon name="x" size={20} />
-              </button>
-              <button
-                onClick={handleSaveEdit}
-                className="w-9 h-9 flex items-center justify-center rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition-colors"
-              >
-                <Icon name="check" size={20} />
-              </button>
-            </div>
-          </div>
-        )}
 
         {/* Graphique */}
         {chartData.length >= 2 ? (
