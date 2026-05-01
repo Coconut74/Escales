@@ -52,6 +52,11 @@ const fr = {
   'detail.autoSnapshot': 'Relevé auto du jour',
   'detail.deleteInvest': 'Supprimer cet investissement',
   'detail.saved': 'Enregistré',
+  'detail.evolution': 'Évolution',
+
+  // Création investissement
+  'create.title': 'Nouvel investissement',
+  'create.save': 'Enregistrer',
 
   // EditInvestmentsPanel
   'edit.title': 'Mes investissements',
@@ -301,6 +306,11 @@ const en: typeof fr = {
   'detail.autoSnapshot': 'Auto daily snapshot',
   'detail.deleteInvest': 'Delete this investment',
   'detail.saved': 'Saved',
+  'detail.evolution': 'Evolution',
+
+  // New investment
+  'create.title': 'New investment',
+  'create.save': 'Save',
 
   'edit.title': 'My investments',
   'edit.close': 'Close',
