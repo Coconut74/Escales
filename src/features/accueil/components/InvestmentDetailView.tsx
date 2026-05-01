@@ -37,7 +37,6 @@ export default function InvestmentDetailView({ investment, livePrice, onBack, on
   const today = new Date().toISOString().slice(0, 10)
   const [snapDate, setSnapDate] = useState(today)
   const [snapValue, setSnapValue] = useState('')
-  const [snapNote, setSnapNote] = useState('')
 
   const isTicker = !!investment.ticker
 
@@ -93,12 +92,10 @@ export default function InvestmentDetailView({ investment, livePrice, onBack, on
       investmentId: investment.id,
       value: v,
       date: snapDate,
-      note: snapNote.trim() || undefined,
     }
     addSnapshot(snap)
     updateInvestment(investment.id, { value: v })
     setSnapValue('')
-    setSnapNote('')
     setSnapDate(today)
   }
 
@@ -216,28 +213,19 @@ export default function InvestmentDetailView({ investment, livePrice, onBack, on
             <p className="text-base font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wide">
               {t('detail.addValue')}
             </p>
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex gap-2">
               <input
                 type="date"
                 value={snapDate}
                 onChange={(e) => setSnapDate(e.target.value)}
-                className="flex-1 min-w-0 px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-base focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
+                className="w-36 shrink-0 px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-base focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
               />
               <input
                 type="number"
                 placeholder={`Valeur (${currency})`}
                 value={snapValue}
                 onChange={(e) => setSnapValue(e.target.value)}
-                className="w-32 px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-base placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
-              />
-            </div>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder={t('detail.note')}
-                value={snapNote}
-                onChange={(e) => setSnapNote(e.target.value)}
-                className="flex-1 px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-base placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
+                className="flex-1 min-w-0 px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-50 text-base placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800"
               />
               <button
                 onClick={handleAddSnapshot}
