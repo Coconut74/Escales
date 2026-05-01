@@ -178,6 +178,7 @@ export default function AccueilView() {
                 investments={effectiveInvestments}
                 total={total}
                 onSelect={handleSelect}
+                onClickEmpty={selected ? handleClose : undefined}
                 selected={effectiveSelected}
               />
             </div>

@@ -65,11 +65,12 @@ interface Props {
   investments: Investment[]
   total: number
   onSelect: (inv: Investment, svgPoint: SvgPoint) => void
+  onClickEmpty?: () => void
   selected: Investment | null
 }
 
 const IsometricChart = forwardRef<IsometricChartHandle, Props>(function IsometricChart(
-  { investments, total, onSelect, selected }, ref
+  { investments, total, onSelect, onClickEmpty, selected }, ref
 ) {
   const colorTheme = useProfilStore((s) => s.colorTheme)
   const isDark = useIsDark()
@@ -129,6 +130,7 @@ const IsometricChart = forwardRef<IsometricChartHandle, Props>(function Isometri
       style={{ overflow: 'visible' }}
       role="img"
       aria-label="Carte isométrique du portefeuille"
+      onClick={() => onClickEmpty?.()}
     >
       {cubes.map(({ col, row, layer, faceH, filled, isTop, inv, pct }) => {
         const { x, y } = origin(col, row, layer, faceH)
@@ -145,7 +147,7 @@ const IsometricChart = forwardRef<IsometricChartHandle, Props>(function Isometri
           <g
             key={key}
             onClick={filled && isTop && inv
-              ? () => onSelect(inv, { x, y: y + HH })
+              ? (e) => { e.stopPropagation(); onSelect(inv, { x, y: y + HH }) }
               : undefined}
             style={{ cursor: filled ? 'pointer' : 'default' }}
           >
