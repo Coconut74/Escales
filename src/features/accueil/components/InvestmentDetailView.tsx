@@ -88,6 +88,15 @@ export default function InvestmentDetailView({ investment, livePrice, onBack, on
     ? livePrice.changePercent
     : (effectiveChange ?? investment.change)
 
+  function handleRemoveSnapshot(id: string) {
+    const remaining = invSnaps.filter((s) => s.id !== id)
+    const newValue = remaining.length > 0
+      ? remaining[remaining.length - 1]!.value
+      : 0
+    removeSnapshot(id)
+    updateInvestment(investment.id, { value: newValue })
+  }
+
   function handleAddSnapshot() {
     const v = parseFloat(snapValue)
     if (!snapDate || isNaN(v) || v <= 0) return
@@ -268,7 +277,7 @@ export default function InvestmentDetailView({ investment, livePrice, onBack, on
                     <span className="text-base text-neutral-400 dark:text-neutral-500 truncate flex-1">{snap.note}</span>
                   )}
                   <button
-                    onClick={() => removeSnapshot(snap.id)}
+                    onClick={() => handleRemoveSnapshot(snap.id)}
                     className="ml-auto p-1.5 text-neutral-300 hover:text-red-500 dark:text-neutral-600 dark:hover:text-red-400 transition-colors rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 shrink-0"
                     aria-label={t('history.delete')}
                   >
