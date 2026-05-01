@@ -126,7 +126,7 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
 
   // Calcul de l'évolution par investissement
   function getChange(inv: Investment): number | null {
-    if (inv.ticker && prices[inv.id]) return prices[inv.id].changePercent
+    if (inv.ticker && prices[inv.id]) return prices[inv.id]?.changePercent ?? null
     const invSnaps = snapshots.filter((s) => s.investmentId === inv.id)
     return selectEffectiveChange(inv, invSnaps) ?? inv.change ?? null
   }
