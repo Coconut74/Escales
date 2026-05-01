@@ -106,7 +106,9 @@ export default function InvestmentDetailView({ investment, livePrice, onBack, on
       date: snapDate,
     }
     addSnapshot(snap)
-    updateInvestment(investment.id, { value: v })
+    // Valeur courante = snapshot à la date la plus récente (pas la dernière saisie)
+    const latest = [...invSnaps, snap].sort((a, b) => b.date.localeCompare(a.date))[0]!
+    updateInvestment(investment.id, { value: latest.value })
     setSnapValue('')
     setSnapDate(today)
   }
