@@ -45,14 +45,18 @@ export default function InvestmentDetailView({ investment, livePrice, onBack, on
     ? livePrice.price * (investment.shares ?? 1)
     : investment.value
 
-  // Auto-snapshot Finnhub (1 fois/jour)
+  // Auto-snapshot Finnhub (1 fois/jour) + sync inv.value dans le store
   useEffect(() => {
     if (!investment.ticker || !livePrice || livePrice.price <= 0) return
+    const value = livePrice.price * (investment.shares ?? 1)
+    // Mise à jour de la valeur stockée pour que la liste affiche le bon prix
+    if (Math.abs(value - investment.value) > 0.01) {
+      updateInvestment(investment.id, { value })
+    }
     const alreadyToday = snapshots.some(
       (s) => s.investmentId === investment.id && s.date === today
     )
     if (!alreadyToday) {
-      const value = livePrice.price * (investment.shares ?? 1)
       addSnapshot({
         id: crypto.randomUUID(),
         investmentId: investment.id,
@@ -192,20 +196,9 @@ export default function InvestmentDetailView({ investment, livePrice, onBack, on
         </div>
 
         {/* Graphique */}
-        {chartData.length >= 2 ? (
-          <div className="bg-neutral-50 dark:bg-neutral-800/60 rounded-2xl p-3">
-            <InvestmentLineChart data={chartData} currency={currency} />
-          </div>
-        ) : (
-          <div className="bg-neutral-50 dark:bg-neutral-800/60 rounded-2xl p-6 text-center">
-            <p className="text-base text-neutral-400 dark:text-neutral-500">
-              {isTicker ? t('detail.autoSnapshot') : t('detail.noHistory')}
-            </p>
-            <p className="text-base text-neutral-300 dark:text-neutral-600 mt-1">
-              {!isTicker && 'Ajoutez au moins 2 valeurs pour voir le graphique'}
-            </p>
-          </div>
-        )}
+        <div className="bg-neutral-50 dark:bg-neutral-800/60 rounded-2xl p-3">
+          <InvestmentLineChart data={chartData} currency={currency} />
+        </div>
 
         {/* Ajout de valeur (manuel uniquement) */}
         {!isTicker && (

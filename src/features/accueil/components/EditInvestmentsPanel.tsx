@@ -30,12 +30,25 @@ interface Props {
 }
 
 export default function EditInvestmentsPanel({ open, onClose }: Props) {
-  const { investments, snapshots, addInvestment, updateInvestment } = useAccueilStore()
+  const { investments, snapshots, addInvestment, updateInvestment, addSnapshot } = useAccueilStore()
   const currency = useProfilStore((s) => s.currency)
   const t = useT()
 
   const apiKey = import.meta.env.VITE_FINNHUB_KEY ?? ''
   const { prices } = useStockPrices(investments, apiKey)
+
+  // Sync inv.value dans le store quand les prix Finnhub arrivent
+  useEffect(() => {
+    investments.forEach((inv) => {
+      const p = inv.ticker ? prices[inv.id] : undefined
+      if (!p || p.price <= 0) return
+      const liveValue = p.price * (inv.shares ?? 1)
+      if (Math.abs(liveValue - inv.value) > 0.01) {
+        updateInvestment(inv.id, { value: liveValue })
+      }
+    })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prices])
 
   const [view, setView] = useState<'list' | 'detail' | 'create'>('list')
   // Stocker l'ID plutôt que l'objet pour que le détail reste réactif au store
@@ -127,6 +140,16 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
       setCreateError('value'); return
     }
     addInvestment(createDraft)
+    // Snapshot initial pour les investissements manuels
+    if (!createDraft.ticker && createDraft.value > 0) {
+      const today = new Date().toISOString().slice(0, 10)
+      addSnapshot({
+        id: crypto.randomUUID(),
+        investmentId: createDraft.id,
+        value: createDraft.value,
+        date: today,
+      })
+    }
     backToList()
   }
 
