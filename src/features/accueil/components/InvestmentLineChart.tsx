@@ -78,7 +78,7 @@ export default function InvestmentLineChart({ data, currency }: Props) {
 
   return (
     <ResponsiveContainer width="100%" height={180}>
-      <LineChart data={data} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
+      <LineChart data={data} margin={{ top: 8, right: 12, left: 0, bottom: 0 }} style={{ outline: 'none' }}>
         <CartesianGrid strokeDasharray="3 3" stroke="currentColor" strokeOpacity={0.08} />
         <XAxis
           dataKey="date"
