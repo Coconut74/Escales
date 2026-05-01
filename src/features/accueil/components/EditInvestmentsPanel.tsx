@@ -88,7 +88,7 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         if (editTarget) { setEditTarget(null); return }
-        if (view !== 'list') { setView('list'); setDetailInvestment(null); return }
+        if (view !== 'list') { setView('list'); setDetailId(null); return }
         onClose()
       }
     }
