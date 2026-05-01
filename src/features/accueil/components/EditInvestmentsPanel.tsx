@@ -117,12 +117,31 @@ export default function EditInvestmentsPanel({ open, onClose }: Props) {
 
   function saveEdit() {
     if (!editName.trim()) { setEditError(true); return }
-    updateInvestment(editTarget!.id, {
+    const id = editTarget!.id
+    const newShares = editTicker ? editShares : undefined
+    const sharesChanged = editTicker && newShares && newShares > 0 &&
+      (newShares !== editTarget!.shares || editTicker !== editTarget!.ticker)
+
+    const patch: Partial<Investment> = {
       label: editName.trim(),
       category: editCategory,
       ticker: editTicker,
-      shares: editTicker ? editShares : undefined,
-    })
+      shares: newShares,
+    }
+
+    // Snapshot automatique si les parts changent et qu'un prix live est dispo
+    if (sharesChanged && prices[id]) {
+      const value = Math.round(prices[id]!.price * newShares! * 100) / 100
+      patch.value = value
+      addSnapshot({
+        id: crypto.randomUUID(),
+        investmentId: id,
+        value,
+        date: new Date().toISOString().slice(0, 10),
+      })
+    }
+
+    updateInvestment(id, patch)
     setEditTarget(null)
   }
 
